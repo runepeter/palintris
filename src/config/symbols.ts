@@ -1,67 +1,72 @@
 import type { Symbol, SymbolCategory } from '../types';
 import { COLORS } from './gameConfig';
 
-// Letter symbols (A-Z)
+// Sprite color assignments for letters (cycle through colors)
+const LETTER_SPRITE_COLORS = ['blue', 'red', 'green', 'yellow', 'orange', 'pink'] as const;
+const NUMBER_SPRITE_COLORS = ['yellow', 'orange', 'red', 'green', 'blue', 'pink', 'grey', 'black', 'red', 'green'] as const;
+
+// Letter symbols (A-Z) with colored circle sprites
 const createLetterSymbols = (): Symbol[] => {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  return letters.map((letter) => ({
+  return letters.map((letter, i) => ({
     id: `letter_${letter}`,
     display: letter,
     category: 'letters' as SymbolCategory,
     color: COLORS.symbols.letters,
+    sprite: `tile_${LETTER_SPRITE_COLORS[i % LETTER_SPRITE_COLORS.length]}_circle`,
   }));
 };
 
-// Number symbols (0-9)
+// Number symbols (0-9) with colored square sprites
 const createNumberSymbols = (): Symbol[] => {
   const numbers = '0123456789'.split('');
-  return numbers.map((num) => ({
+  return numbers.map((num, i) => ({
     id: `number_${num}`,
     display: num,
     category: 'numbers' as SymbolCategory,
     color: COLORS.symbols.numbers,
+    sprite: `tile_${NUMBER_SPRITE_COLORS[i]}_square`,
   }));
 };
 
-// Shape symbols
+// Shape symbols with dedicated sprites
 const createShapeSymbols = (): Symbol[] => {
   const shapes = [
-    { display: '●', id: 'circle' },
-    { display: '■', id: 'square' },
-    { display: '▲', id: 'triangle' },
-    { display: '◆', id: 'diamond' },
-    { display: '★', id: 'star' },
-    { display: '♥', id: 'heart' },
-    { display: '♦', id: 'club' },
-    { display: '♠', id: 'spade' },
-    { display: '✦', id: 'sparkle' },
-    { display: '⬡', id: 'hexagon' },
+    { display: '●', id: 'circle', shape: 'circle', tileColor: 'blue' },
+    { display: '■', id: 'square', shape: 'square', tileColor: 'red' },
+    { display: '▲', id: 'triangle', shape: 'triangle', tileColor: 'green' },
+    { display: '◆', id: 'diamond', shape: 'diamond', tileColor: 'yellow' },
+    { display: '★', id: 'star', shape: 'star', tileColor: 'orange' },
+    { display: '♥', id: 'heart', shape: 'heart', tileColor: 'pink' },
+    { display: '⬡', id: 'hexagon', shape: 'hexagon', tileColor: 'grey' },
   ];
   return shapes.map((shape) => ({
     id: `shape_${shape.id}`,
     display: shape.display,
     category: 'shapes' as SymbolCategory,
     color: COLORS.symbols.shapes,
+    sprite: `tile_${shape.tileColor}_${shape.shape}`,
   }));
 };
 
-// Color block symbols (represented by colored squares with labels)
+// Color block symbols with colored sprites
 const createColorSymbols = (): Symbol[] => {
   const colors = [
-    { display: 'R', id: 'red', color: 0xff4444 },
-    { display: 'G', id: 'green', color: 0x44ff44 },
-    { display: 'B', id: 'blue', color: 0x4444ff },
-    { display: 'Y', id: 'yellow', color: 0xffff44 },
-    { display: 'P', id: 'purple', color: 0xff44ff },
-    { display: 'O', id: 'orange', color: 0xff8844 },
-    { display: 'C', id: 'cyan', color: 0x44ffff },
-    { display: 'W', id: 'white', color: 0xffffff },
+    { display: 'R', id: 'red', color: 0xff4444, tileColor: 'red', shape: 'diamond' },
+    { display: 'G', id: 'green', color: 0x44ff44, tileColor: 'green', shape: 'diamond' },
+    { display: 'B', id: 'blue', color: 0x4444ff, tileColor: 'blue', shape: 'diamond' },
+    { display: 'Y', id: 'yellow', color: 0xffff44, tileColor: 'yellow', shape: 'diamond' },
+    { display: 'P', id: 'purple', color: 0xff44ff, tileColor: 'pink', shape: 'diamond' },
+    { display: 'O', id: 'orange', color: 0xff8844, tileColor: 'orange', shape: 'diamond' },
+    { display: 'C', id: 'cyan', color: 0x44ffff, tileColor: 'blue', shape: 'hexagon' },
+    { display: 'W', id: 'white', color: 0xffffff, tileColor: 'grey', shape: 'diamond' },
   ];
   return colors.map((c) => ({
     id: `color_${c.id}`,
     display: c.display,
     category: 'colors' as SymbolCategory,
     color: c.color,
+    sprite: `tile_${c.tileColor}_${c.shape}`,
   }));
 };
 
@@ -125,4 +130,9 @@ export const getRandomSymbols = (
   }
 
   return result;
+};
+
+// Get sprite key for a symbol - used by Tile component
+export const getSpriteForSymbol = (symbol: Symbol): string | undefined => {
+  return symbol.sprite;
 };

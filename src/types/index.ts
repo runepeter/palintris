@@ -7,6 +7,7 @@ export interface Symbol {
   readonly display: string;
   readonly category: SymbolCategory;
   readonly color: number;
+  readonly sprite?: string;  // Optional sprite key for image-based symbols
 }
 
 // Available operations
