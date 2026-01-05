@@ -110,6 +110,34 @@ export class BootScene extends Phaser.Scene {
     this.load.image('tile_bg_blue', '/assets/ui/tile_bg_blue.png');
     this.load.image('tile_bg_green', '/assets/ui/tile_bg_green.png');
     this.load.image('tile_bg_red', '/assets/ui/tile_bg_red.png');
+
+    // Load mechanical puzzle assets
+    // Pipes (grey) - various shapes for pipe puzzles
+    for (let i = 1; i <= 44; i++) {
+      const num = i.toString().padStart(2, '0');
+      this.load.image(`pipe_${num}`, `/assets/mechanical/pipes/pipeGrey_${num}.png`);
+    }
+
+    // Gears/Rotate blocks
+    this.load.image('gear_large', '/assets/mechanical/gears/block_rotate_large.png');
+    this.load.image('gear_narrow', '/assets/mechanical/gears/block_rotate_narrow.png');
+
+    // Buttons/Switches
+    this.load.image('button_blue', '/assets/mechanical/buttons/button_blue.png');
+    this.load.image('button_grey', '/assets/mechanical/buttons/button_grey.png');
+    this.load.image('button_yellow', '/assets/mechanical/buttons/button_yellow.png');
+
+    // Balls for marble mechanics
+    for (let i = 1; i <= 10; i++) {
+      const num = i.toString().padStart(2, '0');
+      this.load.image(`ball_grey_${num}`, `/assets/mechanical/balls/ballGrey_${num}.png`);
+    }
+
+    // Paddles for levers
+    for (let i = 1; i <= 12; i++) {
+      const num = i.toString().padStart(2, '0');
+      this.load.image(`paddle_${num}`, `/assets/mechanical/paddles/paddle_${num}.png`);
+    }
   }
 
   create(): void {

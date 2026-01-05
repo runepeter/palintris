@@ -1,13 +1,18 @@
 import Phaser from 'phaser';
 import { COLORS, GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig';
 import { LEVELS } from '../config/levels';
+import { MECHANICAL_LEVELS, getMechanicalLevelById } from '../config/mechanicalLevels';
 import { loadGameState } from '../utils/storage';
 import type { Difficulty } from '../types';
+
+type LevelMode = 'classic' | 'mechanical';
 
 export class LevelSelectScene extends Phaser.Scene {
   private currentPage = 0;
   private readonly levelsPerPage = 10;
   private pageContainer: Phaser.GameObjects.Container | null = null;
+  private currentMode: LevelMode = 'classic';
+  private tabContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
     super({ key: 'LevelSelectScene' });
@@ -17,9 +22,9 @@ export class LevelSelectScene extends Phaser.Scene {
     const gameState = loadGameState();
 
     // Title
-    const title = this.add.text(GAME_WIDTH / 2, 50, 'Select Level', {
+    const title = this.add.text(GAME_WIDTH / 2, 30, 'Select Level', {
       fontFamily: 'Arial',
-      fontSize: '36px',
+      fontSize: '32px',
       fontStyle: 'bold',
       color: '#ffffff',
     });
@@ -27,6 +32,9 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // Back button
     this.createBackButton();
+
+    // Mode tabs
+    this.createModeTabs();
 
     // Level grid
     this.pageContainer = this.add.container(0, 0);
@@ -36,22 +44,83 @@ export class LevelSelectScene extends Phaser.Scene {
     this.createNavigation();
   }
 
+  private createModeTabs(): void {
+    this.tabContainer = this.add.container(GAME_WIDTH / 2, 70);
+
+    // Classic tab
+    const classicTab = this.createTab(-80, 'Classic', this.currentMode === 'classic', () => {
+      this.currentMode = 'classic';
+      this.currentPage = 0;
+      this.updateTabs();
+      const gameState = loadGameState();
+      this.renderLevelPage(gameState.levelsCompleted);
+      this.createNavigation();
+    });
+
+    // Mechanical tab
+    const mechanicalTab = this.createTab(80, 'Mechanical', this.currentMode === 'mechanical', () => {
+      this.currentMode = 'mechanical';
+      this.currentPage = 0;
+      this.updateTabs();
+      const gameState = loadGameState();
+      this.renderLevelPage(gameState.levelsCompleted);
+      this.createNavigation();
+    });
+
+    this.tabContainer.add([classicTab, mechanicalTab]);
+  }
+
+  private createTab(x: number, text: string, isActive: boolean, onClick: () => void): Phaser.GameObjects.Container {
+    const tab = this.add.container(x, 0);
+
+    const bg = this.add.graphics();
+    bg.fillStyle(isActive ? 0x44aa88 : 0x2a2a4a, 1);
+    bg.fillRoundedRect(-70, -18, 140, 36, 8);
+    if (isActive) {
+      bg.lineStyle(2, 0x66ddaa, 1);
+      bg.strokeRoundedRect(-70, -18, 140, 36, 8);
+    }
+
+    const label = this.add.text(0, 0, text, {
+      fontFamily: 'Arial',
+      fontSize: '16px',
+      fontStyle: isActive ? 'bold' : 'normal',
+      color: isActive ? '#ffffff' : '#888888',
+    });
+    label.setOrigin(0.5, 0.5);
+
+    tab.add([bg, label]);
+    tab.setSize(140, 36);
+    tab.setInteractive({ useHandCursor: true });
+    tab.on('pointerdown', onClick);
+
+    return tab;
+  }
+
+  private updateTabs(): void {
+    if (this.tabContainer !== null) {
+      this.tabContainer.destroy();
+    }
+    this.createModeTabs();
+  }
+
   private renderLevelPage(completedLevels: number[]): void {
     if (this.pageContainer === null) return;
 
     this.pageContainer.removeAll(true);
 
+    const levels = this.currentMode === 'classic' ? LEVELS : MECHANICAL_LEVELS;
     const startIndex = this.currentPage * this.levelsPerPage;
-    const endIndex = Math.min(startIndex + this.levelsPerPage, LEVELS.length);
+    const endIndex = Math.min(startIndex + this.levelsPerPage, levels.length);
 
     const gridCols = 5;
     const tileSize = 80;
     const spacing = 20;
     const startX = GAME_WIDTH / 2 - ((gridCols * (tileSize + spacing)) - spacing) / 2 + tileSize / 2;
-    const startY = 140;
+    const startY = 120;
 
     for (let i = startIndex; i < endIndex; i++) {
-      const level = LEVELS[i];
+      const level = levels[i];
       if (level === undefined) continue;
 
       const col = (i - startIndex) % gridCols;
@@ -60,13 +129,16 @@ export class LevelSelectScene extends Phaser.Scene {
       const y = startY + row * (tileSize + spacing + 20);
 
       const isCompleted = completedLevels.includes(level.id);
-      const isUnlocked = level.id === 1 || completedLevels.includes(level.id - 1) || isCompleted;
+      // For mechanical levels, unlock based on previous mechanical level or all classic completed
+      const isUnlocked = this.currentMode === 'classic'
+        ? level.id === 1 || completedLevels.includes(level.id - 1) || isCompleted
+        : i === 0 || completedLevels.includes(levels[i - 1]?.id ?? 0) || isCompleted || completedLevels.length >= 15;
 
       this.createLevelTile(x, y, level.id, level.difficulty, isCompleted, isUnlocked);
     }
 
     // Page indicator
-    const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
+    const totalPages = Math.ceil(levels.length / this.levelsPerPage);
     const pageText = this.add.text(
       GAME_WIDTH / 2,
       GAME_HEIGHT - 80,
@@ -79,6 +151,23 @@ export class LevelSelectScene extends Phaser.Scene {
     );
     pageText.setOrigin(0.5, 0.5);
     this.pageContainer.add(pageText);
+
+    // Mode description
+    const modeDesc = this.currentMode === 'mechanical'
+      ? 'Use gears, pipes & buttons to create palindromes!'
+      : 'Swap, rotate & mirror symbols to create palindromes!';
+    const descText = this.add.text(
+      GAME_WIDTH / 2,
+      GAME_HEIGHT - 55,
+      modeDesc,
+      {
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        color: '#666666',
+      }
+    );
+    descText.setOrigin(0.5, 0.5);
+    this.pageContainer.add(descText);
   }
 
   private createLevelTile(
@@ -172,7 +261,14 @@ export class LevelSelectScene extends Phaser.Scene {
       });
 
       container.on('pointerdown', () => {
-        this.scene.start('GameScene', { levelId });
+        if (this.currentMode === 'mechanical') {
+          const mechanicalLevel = getMechanicalLevelById(levelId);
+          if (mechanicalLevel !== undefined) {
+            this.scene.start('MechanicalGameScene', { levelConfig: mechanicalLevel });
+          }
+        } else {
+          this.scene.start('GameScene', { levelId });
+        }
       });
     }
 
@@ -218,7 +314,8 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private createNavigation(): void {
-    const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
+    const levels = this.currentMode === 'classic' ? LEVELS : MECHANICAL_LEVELS;
+    const totalPages = Math.ceil(levels.length / this.levelsPerPage);
 
     // Previous button
     if (this.currentPage > 0) {
