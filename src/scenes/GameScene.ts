@@ -66,6 +66,9 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     if (this.levelConfig === null) return;
 
+    // Start gameplay music
+    audio.startMusic('gameplay');
+
     // Reset state
     this.tiles = [];
     this.selectedTileIndex = null;

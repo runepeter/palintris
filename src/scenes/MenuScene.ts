@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig';
 import { loadGameState } from '../utils/storage';
 import { getTotalLevels } from '../config/levels';
+import { audio } from '../utils/audio';
 
 // Available tile sprites for background
 const BACKGROUND_TILES = [
@@ -17,6 +18,9 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     const gameState = loadGameState();
+
+    // Start menu music
+    audio.startMusic('menu');
 
     // Create animated background first
     this.createBackgroundAnimation();
@@ -235,7 +239,10 @@ export class MenuScene extends Phaser.Scene {
       });
     });
 
-    button.on('pointerdown', callback);
+    button.on('pointerdown', () => {
+      audio.playClick();
+      callback();
+    });
   }
 
   private createBackgroundAnimation(): void {

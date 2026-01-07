@@ -60,6 +60,9 @@ export class MechanicalGameScene extends Phaser.Scene {
       return;
     }
 
+    // Start gameplay music
+    audio.startMusic('gameplay');
+
     // Reset state
     this.tiles = [];
     this.gears.clear();
