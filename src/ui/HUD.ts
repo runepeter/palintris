@@ -14,75 +14,113 @@ export class HUD extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, y: number, levelConfig: LevelConfig) {
     super(scene, GAME_WIDTH / 2, y);
 
-    // Background bar
+    // Background bar - more refined with subtle gradient effect
     const bg = scene.add.graphics();
-    bg.fillStyle(COLORS.primary, 0.9);
-    bg.fillRoundedRect(-GAME_WIDTH / 2 + 20, -25, GAME_WIDTH - 40, 50, 10);
+    bg.fillStyle(COLORS.primary, 0.95);
+    bg.fillRoundedRect(-GAME_WIDTH / 2 + 20, -24, GAME_WIDTH - 40, 48, 8);
+    bg.lineStyle(1, COLORS.secondary, 0.5);
+    bg.strokeRoundedRect(-GAME_WIDTH / 2 + 20, -24, GAME_WIDTH - 40, 48, 8);
     this.add(bg);
 
-    // Level name
-    this.levelText = scene.add.text(
-      -GAME_WIDTH / 2 + 40,
-      0,
-      `Level ${levelConfig.id}: ${levelConfig.name}`,
-      {
+    // Level name - left aligned with accent
+    const levelContainer = scene.add.container(-GAME_WIDTH / 2 + 40, 0);
+
+    const levelLabel = scene.add.text(0, -8, 'LEVEL ' + levelConfig.id, {
+      fontFamily: 'Arial',
+      fontSize: '11px',
+      fontStyle: 'bold',
+      color: '#8b949e',
+    });
+    levelLabel.setOrigin(0, 0.5);
+    levelContainer.add(levelLabel);
+
+    this.levelText = scene.add.text(0, 8, levelConfig.name, {
+      fontFamily: 'Arial',
+      fontSize: '15px',
+      fontStyle: 'bold',
+      color: '#f0f6fc',
+    });
+    this.levelText.setOrigin(0, 0.5);
+    levelContainer.add(this.levelText);
+
+    this.add(levelContainer);
+
+    // Operations remaining - center with icon-style display
+    const opsContainer = scene.add.container(0, 0);
+
+    const opsIcon = scene.add.text(-35, 0, '◆', {
+      fontSize: '12px',
+      color: '#8b949e',
+    });
+    opsIcon.setOrigin(0.5, 0.5);
+    opsContainer.add(opsIcon);
+
+    this.operationsText = scene.add.text(0, 0, `${levelConfig.maxOperations}`, {
+      fontFamily: 'Arial',
+      fontSize: '20px',
+      fontStyle: 'bold',
+      color: '#3fb950',
+    });
+    this.operationsText.setOrigin(0.5, 0.5);
+    opsContainer.add(this.operationsText);
+
+    const opsLabel = scene.add.text(0, 16, 'moves', {
+      fontFamily: 'Arial',
+      fontSize: '10px',
+      color: '#8b949e',
+    });
+    opsLabel.setOrigin(0.5, 0.5);
+    opsContainer.add(opsLabel);
+
+    this.add(opsContainer);
+
+    // Timer (if applicable) - right side with clear visual state
+    if (levelConfig.timeLimit !== null) {
+      const timerContainer = scene.add.container(GAME_WIDTH / 2 - 150, 0);
+
+      // Timer glow background
+      this.timerGlow = scene.add.graphics();
+      timerContainer.add(this.timerGlow);
+
+      const timerIcon = scene.add.text(-30, 0, '⏱', {
+        fontSize: '14px',
+      });
+      timerIcon.setOrigin(0.5, 0.5);
+      timerContainer.add(timerIcon);
+
+      this.timerText = scene.add.text(10, 0, this.formatTime(levelConfig.timeLimit), {
         fontFamily: 'Arial',
         fontSize: '18px',
         fontStyle: 'bold',
-        color: '#ffffff',
-      }
-    );
-    this.levelText.setOrigin(0, 0.5);
-    this.add(this.levelText);
+        color: '#3fb950',
+      });
+      this.timerText.setOrigin(0.5, 0.5);
+      timerContainer.add(this.timerText);
 
-    // Operations remaining
-    this.operationsText = scene.add.text(
-      0,
-      0,
-      `Moves: ${levelConfig.maxOperations}`,
-      {
-        fontFamily: 'Arial',
-        fontSize: '16px',
-        color: '#ffaa00',
-      }
-    );
-    this.operationsText.setOrigin(0.5, 0.5);
-    this.add(this.operationsText);
-
-    // Timer (if applicable)
-    if (levelConfig.timeLimit !== null) {
-      // Timer glow background
-      this.timerGlow = scene.add.graphics();
-      this.add(this.timerGlow);
-
-      this.timerText = scene.add.text(
-        GAME_WIDTH / 2 - 140,
-        0,
-        this.formatTime(levelConfig.timeLimit),
-        {
-          fontFamily: 'Arial',
-          fontSize: '16px',
-          fontStyle: 'bold',
-          color: '#00ff88',
-        }
-      );
-      this.timerText.setOrigin(1, 0.5);
-      this.add(this.timerText);
+      this.add(timerContainer);
     }
 
-    // Score
-    this.scoreText = scene.add.text(
-      GAME_WIDTH / 2 - 40,
-      0,
-      'Score: 0',
-      {
-        fontFamily: 'Arial',
-        fontSize: '16px',
-        color: '#ffffff',
-      }
-    );
+    // Score - far right
+    const scoreContainer = scene.add.container(GAME_WIDTH / 2 - 60, 0);
+
+    const scoreLabel = scene.add.text(0, -8, 'SCORE', {
+      fontFamily: 'Arial',
+      fontSize: '10px',
+      color: '#8b949e',
+    });
+    scoreLabel.setOrigin(1, 0.5);
+    scoreContainer.add(scoreLabel);
+
+    this.scoreText = scene.add.text(0, 8, '0', {
+      fontFamily: 'Arial',
+      fontSize: '16px',
+      fontStyle: 'bold',
+      color: '#ffc83d',
+    });
     this.scoreText.setOrigin(1, 0.5);
-    this.add(this.scoreText);
+    scoreContainer.add(this.scoreText);
+
+    this.add(scoreContainer);
 
     scene.add.existing(this);
   }
@@ -94,14 +132,14 @@ export class HUD extends Phaser.GameObjects.Container {
   }
 
   public updateOperations(remaining: number): void {
-    this.operationsText.setText(`Moves: ${remaining}`);
+    this.operationsText.setText(`${remaining}`);
 
     if (remaining <= 2) {
-      this.operationsText.setColor('#ff4444');
+      this.operationsText.setColor('#f85149');
     } else if (remaining <= 4) {
-      this.operationsText.setColor('#ffaa00');
+      this.operationsText.setColor('#d29922');
     } else {
-      this.operationsText.setColor('#00ff88');
+      this.operationsText.setColor('#3fb950');
     }
   }
 
@@ -125,21 +163,21 @@ export class HUD extends Phaser.GameObjects.Container {
 
     if (seconds <= 5) {
       // CRITICAL: Red pulsing + shake
-      this.timerText.setColor('#ff0000');
+      this.timerText.setColor('#f85149');
       this.timerText.setFontStyle('bold');
 
       // Draw pulsing red glow
       if (this.timerGlow) {
         this.timerGlow.clear();
-        this.timerGlow.fillStyle(0xff0000, 0.3);
-        this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 35);
+        this.timerGlow.fillStyle(0xf85149, 0.2);
+        this.timerGlow.fillCircle(10, 0, 30);
       }
 
       // Continuous pulse
       this.pulseTween = this.scene.tweens.add({
         targets: this.timerText,
-        scaleX: 1.3,
-        scaleY: 1.3,
+        scaleX: 1.2,
+        scaleY: 1.2,
         duration: 300,
         yoyo: true,
         repeat: -1,
@@ -150,7 +188,7 @@ export class HUD extends Phaser.GameObjects.Container {
       const originalX = this.timerText.x;
       this.shakeTween = this.scene.tweens.add({
         targets: this.timerText,
-        x: originalX - 3,
+        x: originalX - 2,
         duration: 50,
         yoyo: true,
         repeat: -1,
@@ -160,7 +198,7 @@ export class HUD extends Phaser.GameObjects.Container {
       if (this.timerGlow) {
         this.scene.tweens.add({
           targets: this.timerGlow,
-          alpha: 0.6,
+          alpha: 0.5,
           duration: 300,
           yoyo: true,
           repeat: -1,
@@ -168,19 +206,19 @@ export class HUD extends Phaser.GameObjects.Container {
       }
 
     } else if (seconds <= 10) {
-      // WARNING: Red pulse (no shake yet)
-      this.timerText.setColor('#ff3366');
+      // WARNING: Orange-red pulse (no shake yet)
+      this.timerText.setColor('#ff7b72');
       this.timerText.setFontStyle('bold');
 
       // Draw orange glow
       if (this.timerGlow) {
         this.timerGlow.clear();
-        this.timerGlow.fillStyle(0xff6600, 0.25);
-        this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 30);
+        this.timerGlow.fillStyle(0xffa657, 0.15);
+        this.timerGlow.fillCircle(10, 0, 25);
 
         this.scene.tweens.add({
           targets: this.timerGlow,
-          alpha: 0.5,
+          alpha: 0.4,
           duration: 500,
           yoyo: true,
           repeat: -1,
@@ -190,8 +228,8 @@ export class HUD extends Phaser.GameObjects.Container {
       // Gentle pulse
       this.pulseTween = this.scene.tweens.add({
         targets: this.timerText,
-        scaleX: 1.15,
-        scaleY: 1.15,
+        scaleX: 1.1,
+        scaleY: 1.1,
         duration: 500,
         yoyo: true,
         repeat: -1,
@@ -199,8 +237,8 @@ export class HUD extends Phaser.GameObjects.Container {
       });
 
     } else if (seconds <= 30) {
-      // CAUTION: Yellow
-      this.timerText.setColor('#ffaa00');
+      // CAUTION: Amber
+      this.timerText.setColor('#d29922');
 
       // Clear glow
       if (this.timerGlow) {
@@ -209,7 +247,7 @@ export class HUD extends Phaser.GameObjects.Container {
 
     } else {
       // SAFE: Green
-      this.timerText.setColor('#00ff88');
+      this.timerText.setColor('#3fb950');
 
       // Clear glow
       if (this.timerGlow) {
@@ -219,7 +257,7 @@ export class HUD extends Phaser.GameObjects.Container {
   }
 
   public updateScore(score: number): void {
-    this.scoreText.setText(`Score: ${score.toLocaleString()}`);
+    this.scoreText.setText(score.toLocaleString());
   }
 
   public showTimeUp(): void {
@@ -234,11 +272,11 @@ export class HUD extends Phaser.GameObjects.Container {
     }
 
     this.timerText.setText('TIME UP!');
-    this.timerText.setColor('#ff0000');
+    this.timerText.setColor('#f85149');
     this.scene.tweens.add({
       targets: this.timerText,
-      scaleX: 1.5,
-      scaleY: 1.5,
+      scaleX: 1.3,
+      scaleY: 1.3,
       duration: 300,
       yoyo: true,
       repeat: 2,
@@ -250,20 +288,20 @@ export class HUD extends Phaser.GameObjects.Container {
 
     // Flash green for time bonus
     this.timerGlow.clear();
-    this.timerGlow.fillStyle(0x00ff88, 0.6);
-    this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 40);
+    this.timerGlow.fillStyle(0x3fb950, 0.4);
+    this.timerGlow.fillCircle(10, 0, 35);
 
     // Bonus text
     const bonusText = this.scene.add.text(
-      GAME_WIDTH / 2 - 140,
-      -30,
+      10,
+      -25,
       `+${bonusSeconds}s`,
       {
         fontFamily: 'Arial Black',
-        fontSize: '18px',
+        fontSize: '16px',
         fontStyle: 'bold',
-        color: '#00ff88',
-        stroke: '#000000',
+        color: '#3fb950',
+        stroke: '#0d1117',
         strokeThickness: 3,
       }
     );
@@ -273,9 +311,9 @@ export class HUD extends Phaser.GameObjects.Container {
     // Animate bonus text
     this.scene.tweens.add({
       targets: bonusText,
-      y: -60,
+      y: -50,
       alpha: 0,
-      scale: 1.5,
+      scale: 1.3,
       duration: 800,
       ease: 'Back.easeOut',
       onComplete: () => bonusText.destroy(),
@@ -292,8 +330,8 @@ export class HUD extends Phaser.GameObjects.Container {
     // Pulse timer text
     this.scene.tweens.add({
       targets: this.timerText,
-      scaleX: 1.3,
-      scaleY: 1.3,
+      scaleX: 1.2,
+      scaleY: 1.2,
       duration: 150,
       yoyo: true,
       ease: 'Back.easeOut',
