@@ -396,6 +396,143 @@ export class ParticleEffects {
     });
   }
 
+  // NEW: Confetti explosion for major celebrations
+  public confettiExplosion(x: number, y: number, count: number = 80): void {
+    const types: Array<'white' | 'blue' | 'yellow'> = ['white', 'blue', 'yellow'];
+
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+      const speed = 150 + Math.random() * 300;
+      const type = types[Math.floor(Math.random() * types.length)] ?? 'white';
+      const scale = 0.25 + Math.random() * 0.35;
+
+      const particle = this.createSpriteParticle(x, y, type, scale);
+      particle.setAlpha(1);
+
+      // Explosion with gravity
+      this.scene.tweens.add({
+        targets: particle,
+        x: x + Math.cos(angle) * speed,
+        y: {
+          from: y,
+          to: y + Math.sin(angle) * speed + 200, // Add gravity
+        },
+        alpha: 0,
+        scale: 0,
+        angle: Math.random() * 1080 - 540,
+        duration: 1200 + Math.random() * 800,
+        ease: 'Cubic.easeOut',
+        onComplete: () => particle.destroy(),
+      });
+    }
+  }
+
+  // NEW: Sparkle trail that follows movement
+  public sparkleTrail(fromX: number, fromY: number, toX: number, toY: number): void {
+    const steps = 15;
+
+    for (let i = 0; i < steps; i++) {
+      const t = i / steps;
+      const x = fromX + (toX - fromX) * t;
+      const y = fromY + (toY - fromY) * t;
+      const delay = i * 20;
+
+      this.scene.time.delayedCall(delay, () => {
+        const particle = this.createSpriteParticle(x, y, 'yellow', 0.2);
+        particle.setAlpha(0.8);
+
+        // Sparkle and fade
+        this.scene.tweens.add({
+          targets: particle,
+          alpha: { from: 0.8, to: 0 },
+          scale: { from: 0.2, to: 0.4 },
+          y: y + (Math.random() - 0.5) * 20,
+          duration: 400,
+          ease: 'Cubic.easeOut',
+          onComplete: () => particle.destroy(),
+        });
+      });
+    }
+  }
+
+  // NEW: Pulse ring for palindrome detection
+  public pulseRing(x: number, y: number, color: number = 0xffd700, size: number = 40): void {
+    const ring = this.scene.add.circle(x, y, size, color, 0);
+    ring.setStrokeStyle(4, color, 0.8);
+
+    // Expand and fade
+    this.scene.tweens.add({
+      targets: ring,
+      scale: 3,
+      alpha: 0,
+      duration: 600,
+      ease: 'Cubic.easeOut',
+      onComplete: () => ring.destroy(),
+    });
+
+    // Inner pulse
+    const innerRing = this.scene.add.circle(x, y, size / 2, color, 0);
+    innerRing.setStrokeStyle(3, color, 1);
+
+    this.scene.tweens.add({
+      targets: innerRing,
+      scale: 2.5,
+      alpha: 0,
+      duration: 500,
+      delay: 100,
+      ease: 'Cubic.easeOut',
+      onComplete: () => innerRing.destroy(),
+    });
+  }
+
+  // NEW: Streak flame for combo/streak effects
+  public streakFlame(x: number, y: number, streakCount: number): void {
+    // Color intensity based on streak
+    const colors = [0xff8800, 0xff4400, 0xff0000, 0xff00ff];
+    const colorIndex = Math.min(streakCount - 1, colors.length - 1);
+    const flameColor = colors[colorIndex] ?? 0xff8800;
+
+    // Create flame particles
+    for (let i = 0; i < 20; i++) {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.8; // Upward cone
+      const speed = 80 + Math.random() * 120;
+
+      const particle = this.scene.add.circle(x, y, 3 + Math.random() * 4, flameColor, 0.9);
+
+      this.scene.tweens.add({
+        targets: particle,
+        x: x + Math.cos(angle) * speed,
+        y: y + Math.sin(angle) * speed,
+        alpha: 0,
+        scale: 0.3,
+        duration: 500 + Math.random() * 300,
+        ease: 'Cubic.easeOut',
+        onComplete: () => particle.destroy(),
+      });
+    }
+
+    // Add streak number text
+    const streakText = this.scene.add.text(x, y - 30, `${streakCount}x STREAK!`, {
+      fontFamily: 'Arial Black',
+      fontSize: '20px',
+      fontStyle: 'bold',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 4,
+    });
+    streakText.setOrigin(0.5, 0.5);
+
+    this.scene.tweens.add({
+      targets: streakText,
+      y: y - 80,
+      alpha: 0,
+      scale: 1.5,
+      duration: 800,
+      ease: 'Back.easeOut',
+      onComplete: () => streakText.destroy(),
+    });
+  }
+
   // New: Coin collect effect
   public coinCollect(x: number, y: number): void {
     // Spawn coin image if available

@@ -5,8 +5,13 @@ import { MenuScene } from './scenes/MenuScene';
 import { LevelSelectScene } from './scenes/LevelSelectScene';
 import { GameScene } from './scenes/GameScene';
 import { MechanicalGameScene } from './scenes/MechanicalGameScene';
+import { CascadeScene } from './scenes/CascadeScene';
+import { TimeAttackScene } from './scenes/TimeAttackScene';
 import { TutorialScene } from './scenes/TutorialScene';
 import { SettingsScene } from './scenes/SettingsScene';
+import { ZenModeScene } from './scenes/ZenModeScene';
+import { VersusScene } from './scenes/VersusScene';
+import { DailyChallengeScene } from './scenes/DailyChallengeScene';
 
 // Configure game with all scenes
 const config: Phaser.Types.Core.GameConfig = {
@@ -17,8 +22,13 @@ const config: Phaser.Types.Core.GameConfig = {
     LevelSelectScene,
     GameScene,
     MechanicalGameScene,
+    CascadeScene,
+    TimeAttackScene,
     TutorialScene,
     SettingsScene,
+    ZenModeScene,
+    VersusScene,
+    DailyChallengeScene,
   ],
 };
 

@@ -6,6 +6,7 @@ import {
   TILE_SIZE,
   TILE_SPACING,
   GAME_BALANCE,
+  EFFECTS,
 } from '../config/gameConfig';
 import { getLevelById, getNextLevel } from '../config/levels';
 import { getSymbolByDisplay } from '../config/symbols';
@@ -16,6 +17,7 @@ import { HUD } from '../ui/HUD';
 import { isPalindrome } from '../utils/palindrome';
 import { audio } from '../utils/audio';
 import { ParticleEffects } from '../ui/ParticleEffects';
+import { ScreenEffects } from '../ui/ScreenEffects';
 import { PowerUpBar } from '../ui/PowerUpBar';
 import type { PowerUpType } from '../game/PowerUps';
 import {
@@ -47,6 +49,7 @@ export class GameScene extends Phaser.Scene {
   private isAnimating = false;
   private tilesContainer: Phaser.GameObjects.Container | null = null;
   private particles: ParticleEffects | null = null;
+  private screenEffects: ScreenEffects | null = null;
   private tokenDisplay: Phaser.GameObjects.Text | null = null;
   private freezeIndicator: Phaser.GameObjects.Text | null = null;
 
@@ -76,6 +79,9 @@ export class GameScene extends Phaser.Scene {
 
     // Create particle effects
     this.particles = new ParticleEffects(this);
+
+    // Create screen effects
+    this.screenEffects = new ScreenEffects(this);
 
     // Create puzzle manager
     this.puzzleManager = new PuzzleManager(this.levelConfig);
@@ -193,6 +199,9 @@ export class GameScene extends Phaser.Scene {
   private addExtraTime(): void {
     if (this.puzzleManager !== null && this.levelConfig?.timeLimit !== null) {
       this.puzzleManager.addTime(15);
+
+      // Flash time bonus animation
+      this.hud?.flashTimeBonus(15);
     }
   }
 
@@ -471,6 +480,9 @@ export class GameScene extends Phaser.Scene {
       this.isAnimating = true;
       audio.playSwap();
 
+      // Small shake for swap
+      this.screenEffects?.shake(EFFECTS.shake.small.intensity, EFFECTS.shake.small.duration);
+
       const tile1 = this.tiles[pos1];
       const tile2 = this.tiles[pos2];
 
@@ -519,6 +531,10 @@ export class GameScene extends Phaser.Scene {
 
     if (success) {
       audio.playRotate();
+
+      // Medium shake for rotate
+      this.screenEffects?.shake(EFFECTS.shake.medium.intensity, EFFECTS.shake.medium.duration);
+
       this.rebuildTiles();
       this.updateAfterOperation();
     }
@@ -534,6 +550,10 @@ export class GameScene extends Phaser.Scene {
 
     if (success) {
       audio.playMirror();
+
+      // Large shake for mirror (dramatic operation)
+      this.screenEffects?.shake(EFFECTS.shake.large.intensity, EFFECTS.shake.large.duration);
+
       this.rebuildTiles();
       this.updateAfterOperation();
     }
@@ -645,16 +665,59 @@ export class GameScene extends Phaser.Scene {
         tile.hidePalindromeHighlight();
       }
     }
+
+    // Dramatic effects when palindrome is detected
+    if (isPalin && this.tiles.length > 2) {
+      // Slow motion moment
+      this.screenEffects?.slowMotion(
+        EFFECTS.slowMotion.palindromeDetect.factor,
+        EFFECTS.slowMotion.palindromeDetect.duration
+      );
+
+      // Flash
+      this.screenEffects?.flash(
+        EFFECTS.flash.palindrome.color,
+        EFFECTS.flash.palindrome.alpha,
+        EFFECTS.flash.palindrome.duration
+      );
+
+      // Pulse rings on all tiles
+      if (this.particles) {
+        for (const tile of this.tiles) {
+          const worldPos = this.tilesContainer?.getWorldTransformMatrix().transformPoint(tile.x, tile.y);
+          if (worldPos) {
+            const containerY = this.tilesContainer?.y ?? GAME_HEIGHT / 2 - 40;
+            this.particles.pulseRing(worldPos.x, containerY, 0xffd700, 35);
+          }
+        }
+      }
+    }
   }
 
   private onTimeExpired(): void {
     audio.playFailure();
+
+    // Red flash for failure
+    this.screenEffects?.flash(
+      EFFECTS.flash.failure.color,
+      EFFECTS.flash.failure.alpha,
+      EFFECTS.flash.failure.duration
+    );
+
     this.hud?.showTimeUp();
     this.showFailureModal('Time\'s up!');
   }
 
   private onOutOfMoves(): void {
     audio.playFailure();
+
+    // Red flash for failure
+    this.screenEffects?.flash(
+      EFFECTS.flash.failure.color,
+      EFFECTS.flash.failure.alpha,
+      EFFECTS.flash.failure.duration
+    );
+
     this.showFailureModal('Out of moves!');
   }
 
@@ -664,9 +727,30 @@ export class GameScene extends Phaser.Scene {
     const result = this.puzzleManager.getResult();
     audio.playSuccess();
 
+    // SUCCESS SCREEN EFFECTS!
+    // Big shake
+    this.screenEffects?.shake(EFFECTS.shake.large.intensity, EFFECTS.shake.large.duration);
+
+    // Success flash
+    this.screenEffects?.flash(
+      EFFECTS.flash.success.color,
+      EFFECTS.flash.success.alpha,
+      EFFECTS.flash.success.duration
+    );
+
+    // Slow motion for dramatic effect
+    this.screenEffects?.slowMotion(
+      EFFECTS.slowMotion.levelComplete.factor,
+      EFFECTS.slowMotion.levelComplete.duration
+    );
+
+    // Zoom pulse
+    this.screenEffects?.zoomPulse(EFFECTS.zoom.success.intensity, EFFECTS.zoom.success.duration);
+
     // Celebration particles!
     if (this.particles !== null) {
-      this.particles.celebrationBurst(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+      // Use new confetti explosion
+      this.particles.confettiExplosion(GAME_WIDTH / 2, GAME_HEIGHT / 2, 100);
       this.particles.confettiRain(2000);
 
       // Rainbow effect on tiles

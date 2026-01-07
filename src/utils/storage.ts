@@ -17,6 +17,22 @@ export interface ExtendedGameState extends GameState {
   fastCompletions: number;
   daysPlayed: string[];
   lastPlayDate: string;
+  cascadeHighScore: number;
+  cascadeBestChain: number;
+  // Daily Challenge tracking
+  dailyChallengeCompletedDates: string[];
+  dailyChallengeStreak: number;
+  dailyChallengeBestScore: number;
+  // Time Attack tracking
+  timeAttackHighScore?: number;
+  timeAttackPuzzlesSolved?: number;
+  timeAttackBestStreak?: number;
+  dailyChallengeAttemptedToday: boolean;
+  // Zen Mode tracking
+  zenModePuzzlesSolved?: number;
+  zenModeUnderParCount?: number;
+  // Versus Mode tracking
+  versusGamesPlayed: number;
 }
 
 const DEFAULT_GAME_STATE: ExtendedGameState = {
@@ -35,6 +51,13 @@ const DEFAULT_GAME_STATE: ExtendedGameState = {
   fastCompletions: 0,
   daysPlayed: [],
   lastPlayDate: '',
+  cascadeHighScore: 0,
+  cascadeBestChain: 0,
+  dailyChallengeCompletedDates: [],
+  dailyChallengeStreak: 0,
+  dailyChallengeBestScore: 0,
+  dailyChallengeAttemptedToday: false,
+  versusGamesPlayed: 0,
 };
 
 const DEFAULT_SETTINGS: GameSettings = {
@@ -387,4 +410,73 @@ export const updateBadgeProgress = (type: string, value: number): void => {
   const progress = loadBadgeProgress();
   progress.progress[type] = Math.max(progress.progress[type] ?? 0, value);
   saveBadgeProgress(progress);
+};
+
+/**
+ * Check if daily challenge has been attempted today
+ */
+export const hasDailyChallengeBeenAttemptedToday = (): boolean => {
+  const state = loadGameState();
+  const today = new Date().toISOString().split('T')[0];
+  return state.dailyChallengeCompletedDates.includes(today ?? '');
+};
+
+/**
+ * Mark daily challenge as completed for today
+ */
+export const completeDailyChallenge = (score: number): void => {
+  const state = loadGameState();
+  const today = new Date().toISOString().split('T')[0] ?? '';
+
+  if (!state.dailyChallengeCompletedDates.includes(today)) {
+    state.dailyChallengeCompletedDates.push(today);
+
+    // Calculate streak
+    const sortedDates = [...state.dailyChallengeCompletedDates].sort().reverse();
+    let streak = 0;
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < sortedDates.length; i++) {
+      const expectedDate = new Date(todayDate);
+      expectedDate.setDate(todayDate.getDate() - i);
+
+      const checkDateStr = expectedDate.toISOString().split('T')[0];
+      const actualDateStr = sortedDates[i];
+
+      if (checkDateStr === actualDateStr) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    state.dailyChallengeStreak = streak;
+  }
+
+  // Update best score
+  if (score > state.dailyChallengeBestScore) {
+    state.dailyChallengeBestScore = score;
+  }
+
+  state.dailyChallengeAttemptedToday = true;
+  saveGameState(state);
+};
+
+/**
+ * Get daily challenge stats
+ */
+export const getDailyChallengeStats = (): {
+  completedDates: string[];
+  streak: number;
+  bestScore: number;
+  attemptedToday: boolean;
+} => {
+  const state = loadGameState();
+  return {
+    completedDates: state.dailyChallengeCompletedDates,
+    streak: state.dailyChallengeStreak,
+    bestScore: state.dailyChallengeBestScore,
+    attemptedToday: hasDailyChallengeBeenAttemptedToday(),
+  };
 };

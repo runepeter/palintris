@@ -6,7 +6,10 @@ export class HUD extends Phaser.GameObjects.Container {
   private levelText: Phaser.GameObjects.Text;
   private operationsText: Phaser.GameObjects.Text;
   private timerText: Phaser.GameObjects.Text | null = null;
+  private timerGlow: Phaser.GameObjects.Graphics | null = null;
   private scoreText: Phaser.GameObjects.Text;
+  private pulseTween: Phaser.Tweens.Tween | null = null;
+  private shakeTween: Phaser.Tweens.Tween | null = null;
 
   constructor(scene: Phaser.Scene, y: number, levelConfig: LevelConfig) {
     super(scene, GAME_WIDTH / 2, y);
@@ -48,6 +51,10 @@ export class HUD extends Phaser.GameObjects.Container {
 
     // Timer (if applicable)
     if (levelConfig.timeLimit !== null) {
+      // Timer glow background
+      this.timerGlow = scene.add.graphics();
+      this.add(this.timerGlow);
+
       this.timerText = scene.add.text(
         GAME_WIDTH / 2 - 140,
         0,
@@ -55,6 +62,7 @@ export class HUD extends Phaser.GameObjects.Container {
         {
           fontFamily: 'Arial',
           fontSize: '16px',
+          fontStyle: 'bold',
           color: '#00ff88',
         }
       );
@@ -102,22 +110,111 @@ export class HUD extends Phaser.GameObjects.Container {
 
     this.timerText.setText(this.formatTime(seconds));
 
-    if (seconds <= 10) {
-      this.timerText.setColor('#ff4444');
-      // Pulse effect
-      if (seconds <= 5) {
+    // Stop existing animations
+    if (this.pulseTween) {
+      this.pulseTween.stop();
+      this.pulseTween = null;
+    }
+    if (this.shakeTween) {
+      this.shakeTween.stop();
+      this.shakeTween = null;
+    }
+
+    // Reset scale
+    this.timerText.setScale(1);
+
+    if (seconds <= 5) {
+      // CRITICAL: Red pulsing + shake
+      this.timerText.setColor('#ff0000');
+      this.timerText.setFontStyle('bold');
+
+      // Draw pulsing red glow
+      if (this.timerGlow) {
+        this.timerGlow.clear();
+        this.timerGlow.fillStyle(0xff0000, 0.3);
+        this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 35);
+      }
+
+      // Continuous pulse
+      this.pulseTween = this.scene.tweens.add({
+        targets: this.timerText,
+        scaleX: 1.3,
+        scaleY: 1.3,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
+      // Shake effect
+      const originalX = this.timerText.x;
+      this.shakeTween = this.scene.tweens.add({
+        targets: this.timerText,
+        x: originalX - 3,
+        duration: 50,
+        yoyo: true,
+        repeat: -1,
+      });
+
+      // Pulse the glow
+      if (this.timerGlow) {
         this.scene.tweens.add({
-          targets: this.timerText,
-          scaleX: 1.2,
-          scaleY: 1.2,
-          duration: 200,
+          targets: this.timerGlow,
+          alpha: 0.6,
+          duration: 300,
           yoyo: true,
+          repeat: -1,
         });
       }
+
+    } else if (seconds <= 10) {
+      // WARNING: Red pulse (no shake yet)
+      this.timerText.setColor('#ff3366');
+      this.timerText.setFontStyle('bold');
+
+      // Draw orange glow
+      if (this.timerGlow) {
+        this.timerGlow.clear();
+        this.timerGlow.fillStyle(0xff6600, 0.25);
+        this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 30);
+
+        this.scene.tweens.add({
+          targets: this.timerGlow,
+          alpha: 0.5,
+          duration: 500,
+          yoyo: true,
+          repeat: -1,
+        });
+      }
+
+      // Gentle pulse
+      this.pulseTween = this.scene.tweens.add({
+        targets: this.timerText,
+        scaleX: 1.15,
+        scaleY: 1.15,
+        duration: 500,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+
     } else if (seconds <= 30) {
+      // CAUTION: Yellow
       this.timerText.setColor('#ffaa00');
+
+      // Clear glow
+      if (this.timerGlow) {
+        this.timerGlow.clear();
+      }
+
     } else {
+      // SAFE: Green
       this.timerText.setColor('#00ff88');
+
+      // Clear glow
+      if (this.timerGlow) {
+        this.timerGlow.clear();
+      }
     }
   }
 
@@ -128,6 +225,14 @@ export class HUD extends Phaser.GameObjects.Container {
   public showTimeUp(): void {
     if (this.timerText === null) return;
 
+    // Stop all timer animations
+    if (this.pulseTween) {
+      this.pulseTween.stop();
+    }
+    if (this.shakeTween) {
+      this.shakeTween.stop();
+    }
+
     this.timerText.setText('TIME UP!');
     this.timerText.setColor('#ff0000');
     this.scene.tweens.add({
@@ -137,6 +242,61 @@ export class HUD extends Phaser.GameObjects.Container {
       duration: 300,
       yoyo: true,
       repeat: 2,
+    });
+  }
+
+  public flashTimeBonus(bonusSeconds: number): void {
+    if (this.timerText === null || this.timerGlow === null) return;
+
+    // Flash green for time bonus
+    this.timerGlow.clear();
+    this.timerGlow.fillStyle(0x00ff88, 0.6);
+    this.timerGlow.fillCircle(GAME_WIDTH / 2 - 140, 0, 40);
+
+    // Bonus text
+    const bonusText = this.scene.add.text(
+      GAME_WIDTH / 2 - 140,
+      -30,
+      `+${bonusSeconds}s`,
+      {
+        fontFamily: 'Arial Black',
+        fontSize: '18px',
+        fontStyle: 'bold',
+        color: '#00ff88',
+        stroke: '#000000',
+        strokeThickness: 3,
+      }
+    );
+    bonusText.setOrigin(0.5, 0.5);
+    this.add(bonusText);
+
+    // Animate bonus text
+    this.scene.tweens.add({
+      targets: bonusText,
+      y: -60,
+      alpha: 0,
+      scale: 1.5,
+      duration: 800,
+      ease: 'Back.easeOut',
+      onComplete: () => bonusText.destroy(),
+    });
+
+    // Flash and fade glow
+    this.scene.tweens.add({
+      targets: this.timerGlow,
+      alpha: 0,
+      duration: 800,
+      ease: 'Cubic.easeOut',
+    });
+
+    // Pulse timer text
+    this.scene.tweens.add({
+      targets: this.timerText,
+      scaleX: 1.3,
+      scaleY: 1.3,
+      duration: 150,
+      yoyo: true,
+      ease: 'Back.easeOut',
     });
   }
 }

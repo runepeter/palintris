@@ -92,17 +92,18 @@ export const LEVELS: LevelConfig[] = [
   },
 
   // ========== EASY LEVELS (6-15) ==========
+  // Gradual time pressure introduction: 120s → 45s
   {
     id: 6,
     name: 'Quick Fix',
-    description: 'One swap to make MADAM.',
+    description: 'One swap to make MADAM. First level with a time limit!',
     sequence: ['M', 'D', 'A', 'A', 'M'], // Target: MADAM
     targetPalindrome: null,
     allowedOperations: ['swap'],
     maxOperations: 3,
     symbolCategory: 'letters',
-    timeLimit: 60,
-    bonusObjectives: [underTime(15), underOperations(1)],
+    timeLimit: 120, // Gentle intro to time pressure
+    bonusObjectives: [underTime(30), underOperations(1)],
     difficulty: 'easy',
   },
   {
@@ -114,8 +115,8 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap'],
     maxOperations: 3,
     symbolCategory: 'shapes',
-    timeLimit: 45,
-    bonusObjectives: [underTime(20)],
+    timeLimit: 100, // Still comfortable
+    bonusObjectives: [underTime(40)],
     difficulty: 'easy',
   },
   {
@@ -127,7 +128,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap', 'rotate'],
     maxOperations: 4,
     symbolCategory: 'colors',
-    timeLimit: 60,
+    timeLimit: 90, // Getting tighter
     bonusObjectives: [underOperations(2)],
     difficulty: 'easy',
   },
@@ -140,7 +141,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap'],
     maxOperations: 2,
     symbolCategory: 'numbers',
-    timeLimit: 45,
+    timeLimit: 75, // Building pressure
     bonusObjectives: [perfectBonus],
     difficulty: 'easy',
   },
@@ -153,8 +154,8 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap'],
     maxOperations: 4,
     symbolCategory: 'letters',
-    timeLimit: 60,
-    bonusObjectives: [underOperations(2), underTime(30)],
+    timeLimit: 70,
+    bonusObjectives: [underOperations(2), underTime(35)],
     difficulty: 'easy',
   },
   {
@@ -166,7 +167,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['rotate', 'swap'],
     maxOperations: 3,
     symbolCategory: 'letters',
-    timeLimit: 60,
+    timeLimit: 65, // Continued ramp
     bonusObjectives: [perfectBonus],
     difficulty: 'easy',
   },
@@ -179,7 +180,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap'],
     maxOperations: 3,
     symbolCategory: 'mixed',
-    timeLimit: 45,
+    timeLimit: 60, // Standard challenge
     bonusObjectives: [underOperations(2)],
     difficulty: 'easy',
   },
@@ -192,7 +193,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap', 'rotate'],
     maxOperations: 4,
     symbolCategory: 'letters',
-    timeLimit: 60,
+    timeLimit: 55, // Getting serious
     bonusObjectives: [underOperations(2)],
     difficulty: 'easy',
   },
@@ -205,8 +206,8 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap', 'rotate'],
     maxOperations: 5,
     symbolCategory: 'shapes',
-    timeLimit: 75,
-    bonusObjectives: [underOperations(3), underTime(45)],
+    timeLimit: 50, // Tight but fair
+    bonusObjectives: [underOperations(3), underTime(25)],
     difficulty: 'easy',
   },
   {
@@ -218,7 +219,7 @@ export const LEVELS: LevelConfig[] = [
     allowedOperations: ['swap', 'rotate'],
     maxOperations: 3,
     symbolCategory: 'numbers',
-    timeLimit: 60,
+    timeLimit: 45, // Full challenge mode
     bonusObjectives: [perfectBonus, underTime(20)],
     difficulty: 'easy',
   },
