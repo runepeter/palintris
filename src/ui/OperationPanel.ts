@@ -21,9 +21,9 @@ export class OperationPanel extends Phaser.GameObjects.Container {
   }
 
   private createPanel(allowedOperations: OperationType[]): void {
-    const buttonWidth = 80;
-    const buttonHeight = 60;
-    const spacing = 10;
+    const buttonWidth = 75;
+    const buttonHeight = 54;
+    const spacing = 8;
     const totalWidth = allowedOperations.length * (buttonWidth + spacing) - spacing;
     let startX = -totalWidth / 2 + buttonWidth / 2;
 
@@ -46,21 +46,21 @@ export class OperationPanel extends Phaser.GameObjects.Container {
 
     const bg = this.scene.add.graphics();
     bg.fillStyle(COLORS.primary, 1);
-    bg.fillRoundedRect(-width / 2, -height / 2, width, height, 8);
-    bg.lineStyle(2, COLORS.accent, 0.5);
-    bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 8);
+    bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+    bg.lineStyle(1, COLORS.secondary, 0.6);
+    bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
 
     const icon = this.scene.add.text(0, -8, operation.icon, {
       fontFamily: 'Arial',
-      fontSize: '24px',
-      color: '#ffffff',
+      fontSize: '20px',
+      color: '#f0f6fc',
     });
     icon.setOrigin(0.5, 0.5);
 
-    const label = this.scene.add.text(0, 18, operation.name, {
+    const label = this.scene.add.text(0, 16, operation.name, {
       fontFamily: 'Arial',
-      fontSize: '12px',
-      color: '#aaaaaa',
+      fontSize: '10px',
+      color: '#8b949e',
     });
     label.setOrigin(0.5, 0.5);
 
@@ -68,15 +68,17 @@ export class OperationPanel extends Phaser.GameObjects.Container {
     container.setSize(width, height);
     container.setInteractive({ useHandCursor: true });
     container.setData('bg', bg);
+    container.setData('icon', icon);
+    container.setData('label', label);
     container.setData('operation', operation.type);
 
     container.on('pointerover', () => {
       if (this.selectedOperation !== operation.type) {
         bg.clear();
         bg.fillStyle(COLORS.secondary, 1);
-        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 8);
-        bg.lineStyle(2, COLORS.accent, 0.8);
-        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 8);
+        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+        bg.lineStyle(1, COLORS.accent, 0.5);
+        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
       }
     });
 
@@ -84,9 +86,9 @@ export class OperationPanel extends Phaser.GameObjects.Container {
       if (this.selectedOperation !== operation.type) {
         bg.clear();
         bg.fillStyle(COLORS.primary, 1);
-        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 8);
-        bg.lineStyle(2, COLORS.accent, 0.5);
-        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 8);
+        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+        bg.lineStyle(1, COLORS.secondary, 0.6);
+        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
       }
     });
 
@@ -99,16 +101,23 @@ export class OperationPanel extends Phaser.GameObjects.Container {
   }
 
   public selectOperation(opType: OperationType): void {
+    const width = 75;
+    const height = 54;
+
     // Deselect previous
     if (this.selectedOperation !== null) {
       const prevButton = this.buttons.get(this.selectedOperation);
       if (prevButton !== undefined) {
         const bg = prevButton.getData('bg') as Phaser.GameObjects.Graphics;
+        const icon = prevButton.getData('icon') as Phaser.GameObjects.Text;
+        const label = prevButton.getData('label') as Phaser.GameObjects.Text;
         bg.clear();
         bg.fillStyle(COLORS.primary, 1);
-        bg.fillRoundedRect(-40, -30, 80, 60, 8);
-        bg.lineStyle(2, COLORS.accent, 0.5);
-        bg.strokeRoundedRect(-40, -30, 80, 60, 8);
+        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+        bg.lineStyle(1, COLORS.secondary, 0.6);
+        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
+        icon.setColor('#f0f6fc');
+        label.setColor('#8b949e');
       }
     }
 
@@ -117,11 +126,15 @@ export class OperationPanel extends Phaser.GameObjects.Container {
     const button = this.buttons.get(opType);
     if (button !== undefined) {
       const bg = button.getData('bg') as Phaser.GameObjects.Graphics;
+      const icon = button.getData('icon') as Phaser.GameObjects.Text;
+      const label = button.getData('label') as Phaser.GameObjects.Text;
       bg.clear();
-      bg.fillStyle(COLORS.accent, 1);
-      bg.fillRoundedRect(-40, -30, 80, 60, 8);
-      bg.lineStyle(3, 0xffffff, 1);
-      bg.strokeRoundedRect(-40, -30, 80, 60, 8);
+      bg.fillStyle(COLORS.accent, 0.2);
+      bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+      bg.lineStyle(2, COLORS.accent, 1);
+      bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
+      icon.setColor('#58a6ff');
+      label.setColor('#58a6ff');
     }
 
     this.onOperationSelect?.(opType);
@@ -132,15 +145,22 @@ export class OperationPanel extends Phaser.GameObjects.Container {
   }
 
   public clearSelection(): void {
+    const width = 75;
+    const height = 54;
+
     if (this.selectedOperation !== null) {
       const button = this.buttons.get(this.selectedOperation);
       if (button !== undefined) {
         const bg = button.getData('bg') as Phaser.GameObjects.Graphics;
+        const icon = button.getData('icon') as Phaser.GameObjects.Text;
+        const label = button.getData('label') as Phaser.GameObjects.Text;
         bg.clear();
         bg.fillStyle(COLORS.primary, 1);
-        bg.fillRoundedRect(-40, -30, 80, 60, 8);
-        bg.lineStyle(2, COLORS.accent, 0.5);
-        bg.strokeRoundedRect(-40, -30, 80, 60, 8);
+        bg.fillRoundedRect(-width / 2, -height / 2, width, height, 6);
+        bg.lineStyle(1, COLORS.secondary, 0.6);
+        bg.strokeRoundedRect(-width / 2, -height / 2, width, height, 6);
+        icon.setColor('#f0f6fc');
+        label.setColor('#8b949e');
       }
     }
     this.selectedOperation = null;
