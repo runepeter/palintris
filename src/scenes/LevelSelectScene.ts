@@ -1,18 +1,21 @@
 import Phaser from 'phaser';
 import { COLORS, GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig';
-import { LEVELS } from '../config/levels';
-import { MECHANICAL_LEVELS, getMechanicalLevelById } from '../config/mechanicalLevels';
+import {
+  UNIFIED_LEVELS,
+  getUnifiedLevelById,
+  isLevelUnlocked,
+  getLevelDifficulty,
+  isTimeAttackUnlocked,
+  isDailyChallengeUnlocked,
+} from '../config/unifiedLevels';
 import { loadGameState } from '../utils/storage';
 import type { Difficulty } from '../types';
-
-type LevelMode = 'classic' | 'mechanical';
 
 export class LevelSelectScene extends Phaser.Scene {
   private currentPage = 0;
   private readonly levelsPerPage = 10;
   private pageContainer: Phaser.GameObjects.Container | null = null;
-  private currentMode: LevelMode = 'classic';
-  private tabContainer: Phaser.GameObjects.Container | null = null;
+  private modeButtonsContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
     super({ key: 'LevelSelectScene' });
@@ -33,8 +36,8 @@ export class LevelSelectScene extends Phaser.Scene {
     // Back button
     this.createBackButton();
 
-    // Mode tabs
-    this.createModeTabs();
+    // Special mode buttons (Time Attack, Daily Challenge)
+    this.createModeButtons(gameState.levelsCompleted);
 
     // Level grid
     this.pageContainer = this.add.container(0, 0);
@@ -44,64 +47,91 @@ export class LevelSelectScene extends Phaser.Scene {
     this.createNavigation();
   }
 
-  private createModeTabs(): void {
-    this.tabContainer = this.add.container(GAME_WIDTH / 2, 70);
+  private createModeButtons(completedLevels: number[]): void {
+    this.modeButtonsContainer = this.add.container(GAME_WIDTH / 2, 70);
 
-    // Classic tab
-    const classicTab = this.createTab(-80, 'Classic', this.currentMode === 'classic', () => {
-      this.currentMode = 'classic';
-      this.currentPage = 0;
-      this.updateTabs();
-      const gameState = loadGameState();
-      this.renderLevelPage(gameState.levelsCompleted);
-      this.createNavigation();
-    });
+    const timeAttackUnlocked = isTimeAttackUnlocked(completedLevels);
+    const dailyChallengeUnlocked = isDailyChallengeUnlocked(completedLevels);
 
-    // Mechanical tab
-    const mechanicalTab = this.createTab(80, 'Mechanical', this.currentMode === 'mechanical', () => {
-      this.currentMode = 'mechanical';
-      this.currentPage = 0;
-      this.updateTabs();
-      const gameState = loadGameState();
-      this.renderLevelPage(gameState.levelsCompleted);
-      this.createNavigation();
-    });
+    // Time Attack button
+    const timeAttackBtn = this.createModeButton(
+      -100,
+      '⏱️ Time Attack',
+      timeAttackUnlocked,
+      () => {
+        if (timeAttackUnlocked) {
+          this.scene.start('TimeAttackScene');
+        }
+      },
+      'Unlock at Level 15'
+    );
 
-    this.tabContainer.add([classicTab, mechanicalTab]);
+    // Daily Challenge button
+    const dailyChallengeBtn = this.createModeButton(
+      100,
+      '📅 Daily Challenge',
+      dailyChallengeUnlocked,
+      () => {
+        if (dailyChallengeUnlocked) {
+          this.scene.start('DailyChallengeScene');
+        }
+      },
+      'Unlock at Level 45'
+    );
+
+    this.modeButtonsContainer.add([timeAttackBtn, dailyChallengeBtn]);
   }
 
-  private createTab(x: number, text: string, isActive: boolean, onClick: () => void): Phaser.GameObjects.Container {
-    const tab = this.add.container(x, 0);
+  private createModeButton(
+    x: number,
+    text: string,
+    unlocked: boolean,
+    onClick: () => void,
+    lockText: string
+  ): Phaser.GameObjects.Container {
+    const container = this.add.container(x, 0);
 
     const bg = this.add.graphics();
-    bg.fillStyle(isActive ? 0x44aa88 : 0x2a2a4a, 1);
-    bg.fillRoundedRect(-70, -18, 140, 36, 8);
-    if (isActive) {
+    bg.fillStyle(unlocked ? 0x44aa88 : 0x2a2a4a, 1);
+    bg.fillRoundedRect(-85, -18, 170, 36, 8);
+    if (unlocked) {
       bg.lineStyle(2, 0x66ddaa, 1);
-      bg.strokeRoundedRect(-70, -18, 140, 36, 8);
+      bg.strokeRoundedRect(-85, -18, 170, 36, 8);
     }
 
-    const label = this.add.text(0, 0, text, {
+    const label = this.add.text(0, 0, unlocked ? text : `🔒 ${lockText}`, {
       fontFamily: 'Arial',
-      fontSize: '16px',
-      fontStyle: isActive ? 'bold' : 'normal',
-      color: isActive ? '#ffffff' : '#888888',
+      fontSize: '14px',
+      fontStyle: unlocked ? 'bold' : 'normal',
+      color: unlocked ? '#ffffff' : '#666666',
     });
     label.setOrigin(0.5, 0.5);
 
-    tab.add([bg, label]);
-    tab.setSize(140, 36);
-    tab.setInteractive({ useHandCursor: true });
-    tab.on('pointerdown', onClick);
+    container.add([bg, label]);
+    container.setSize(170, 36);
 
-    return tab;
-  }
-
-  private updateTabs(): void {
-    if (this.tabContainer !== null) {
-      this.tabContainer.destroy();
+    if (unlocked) {
+      container.setInteractive({ useHandCursor: true });
+      container.on('pointerover', () => {
+        this.tweens.add({
+          targets: container,
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 100,
+        });
+      });
+      container.on('pointerout', () => {
+        this.tweens.add({
+          targets: container,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 100,
+        });
+      });
+      container.on('pointerdown', onClick);
     }
-    this.createModeTabs();
+
+    return container;
   }
 
   private renderLevelPage(completedLevels: number[]): void {
@@ -109,9 +139,8 @@ export class LevelSelectScene extends Phaser.Scene {
 
     this.pageContainer.removeAll(true);
 
-    const levels = this.currentMode === 'classic' ? LEVELS : MECHANICAL_LEVELS;
     const startIndex = this.currentPage * this.levelsPerPage;
-    const endIndex = Math.min(startIndex + this.levelsPerPage, levels.length);
+    const endIndex = Math.min(startIndex + this.levelsPerPage, UNIFIED_LEVELS.length);
 
     const gridCols = 5;
     const tileSize = 80;
@@ -120,7 +149,7 @@ export class LevelSelectScene extends Phaser.Scene {
     const startY = 120;
 
     for (let i = startIndex; i < endIndex; i++) {
-      const level = levels[i];
+      const level = UNIFIED_LEVELS[i];
       if (level === undefined) continue;
 
       const col = (i - startIndex) % gridCols;
@@ -129,16 +158,14 @@ export class LevelSelectScene extends Phaser.Scene {
       const y = startY + row * (tileSize + spacing + 20);
 
       const isCompleted = completedLevels.includes(level.id);
-      // For mechanical levels, unlock based on previous mechanical level or all classic completed
-      const isUnlocked = this.currentMode === 'classic'
-        ? level.id === 1 || completedLevels.includes(level.id - 1) || isCompleted
-        : i === 0 || completedLevels.includes(levels[i - 1]?.id ?? 0) || isCompleted || completedLevels.length >= 15;
+      const unlocked = isLevelUnlocked(level.id, completedLevels);
+      const difficulty = getLevelDifficulty(level);
 
-      this.createLevelTile(x, y, level.id, level.difficulty, isCompleted, isUnlocked);
+      this.createLevelTile(x, y, level.id, difficulty, isCompleted, unlocked, level.isMilestone, level.type, level.milestoneIcon);
     }
 
     // Page indicator
-    const totalPages = Math.ceil(levels.length / this.levelsPerPage);
+    const totalPages = Math.ceil(UNIFIED_LEVELS.length / this.levelsPerPage);
     const pageText = this.add.text(
       GAME_WIDTH / 2,
       GAME_HEIGHT - 80,
@@ -152,14 +179,11 @@ export class LevelSelectScene extends Phaser.Scene {
     pageText.setOrigin(0.5, 0.5);
     this.pageContainer.add(pageText);
 
-    // Mode description
-    const modeDesc = this.currentMode === 'mechanical'
-      ? 'Use gears, pipes & buttons to create palindromes!'
-      : 'Swap, rotate & mirror symbols to create palindromes!';
+    // Description
     const descText = this.add.text(
       GAME_WIDTH / 2,
       GAME_HEIGHT - 55,
-      modeDesc,
+      'Progress through levels to unlock special game modes!',
       {
         fontFamily: 'Arial',
         fontSize: '12px',
@@ -176,43 +200,70 @@ export class LevelSelectScene extends Phaser.Scene {
     levelId: number,
     difficulty: Difficulty,
     isCompleted: boolean,
-    isUnlocked: boolean
+    isUnlocked: boolean,
+    isMilestone: boolean,
+    levelType: string,
+    milestoneIcon?: string
   ): void {
     if (this.pageContainer === null) return;
 
     const container = this.add.container(x, y);
 
     const bg = this.add.graphics();
-    const bgColor = isUnlocked
+    let bgColor = isUnlocked
       ? isCompleted
         ? COLORS.success
         : this.getDifficultyColor(difficulty)
       : 0x444444;
+
+    // Special color for mechanical milestones
+    if (isMilestone && levelType === 'mechanical' && isUnlocked) {
+      bgColor = 0x8844aa; // Purple for mechanical
+    }
+
     const alpha = isUnlocked ? 1 : 0.5;
 
     bg.fillStyle(bgColor, alpha);
     bg.fillRoundedRect(-40, -40, 80, 80, 8);
 
-    if (isCompleted) {
+    // Milestone border
+    if (isMilestone && isUnlocked) {
+      bg.lineStyle(3, 0xffd700, 1); // Gold border for milestones
+      bg.strokeRoundedRect(-40, -40, 80, 80, 8);
+    } else if (isCompleted) {
       bg.lineStyle(3, 0xffffff, 0.8);
       bg.strokeRoundedRect(-40, -40, 80, 80, 8);
     }
 
-    const levelText = this.add.text(0, -5, levelId.toString(), {
+    // Level number
+    const levelText = this.add.text(0, isMilestone ? -10 : -5, levelId.toString(), {
       fontFamily: 'Arial',
-      fontSize: '28px',
+      fontSize: isMilestone ? '24px' : '28px',
       fontStyle: 'bold',
       color: isUnlocked ? '#ffffff' : '#888888',
     });
     levelText.setOrigin(0.5, 0.5);
 
-    // Difficulty label
-    const diffLabel = this.add.text(0, 25, difficulty.charAt(0).toUpperCase(), {
-      fontFamily: 'Arial',
-      fontSize: '12px',
-      color: isUnlocked ? '#ffffff' : '#666666',
-    });
-    diffLabel.setOrigin(0.5, 0.5);
+    // Milestone icon
+    if (isMilestone && milestoneIcon) {
+      const iconText = this.add.text(0, 15, milestoneIcon, {
+        fontFamily: 'Arial',
+        fontSize: '20px',
+      });
+      iconText.setOrigin(0.5, 0.5);
+      container.add(iconText);
+    }
+
+    // Difficulty label (only for non-milestone or if not showing icon)
+    if (!isMilestone) {
+      const diffLabel = this.add.text(0, 25, difficulty.charAt(0).toUpperCase(), {
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        color: isUnlocked ? '#ffffff' : '#666666',
+      });
+      diffLabel.setOrigin(0.5, 0.5);
+      container.add(diffLabel);
+    }
 
     // Star for completed
     if (isCompleted) {
@@ -236,7 +287,7 @@ export class LevelSelectScene extends Phaser.Scene {
       container.add(lock);
     }
 
-    container.add([bg, levelText, diffLabel]);
+    container.add([bg, levelText]);
     container.setSize(80, 80);
 
     if (isUnlocked) {
@@ -261,13 +312,13 @@ export class LevelSelectScene extends Phaser.Scene {
       });
 
       container.on('pointerdown', () => {
-        if (this.currentMode === 'mechanical') {
-          const mechanicalLevel = getMechanicalLevelById(levelId);
-          if (mechanicalLevel !== undefined) {
-            this.scene.start('MechanicalGameScene', { levelConfig: mechanicalLevel });
-          }
-        } else {
-          this.scene.start('GameScene', { levelId });
+        const level = getUnifiedLevelById(levelId);
+        if (!level) return;
+
+        if (level.type === 'mechanical' && level.mechanicalConfig) {
+          this.scene.start('MechanicalGameScene', { levelConfig: level.mechanicalConfig });
+        } else if (level.classicConfig) {
+          this.scene.start('GameScene', { levelId: level.classicConfig.id });
         }
       });
     }
@@ -314,8 +365,7 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private createNavigation(): void {
-    const levels = this.currentMode === 'classic' ? LEVELS : MECHANICAL_LEVELS;
-    const totalPages = Math.ceil(levels.length / this.levelsPerPage);
+    const totalPages = Math.ceil(UNIFIED_LEVELS.length / this.levelsPerPage);
 
     // Previous button
     if (this.currentPage > 0) {

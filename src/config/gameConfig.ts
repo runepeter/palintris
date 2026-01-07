@@ -144,14 +144,14 @@ export const SCORING = {
   operationBonus: 100,      // Per unused operation
   timeBonus: 10,            // Per second remaining
   perfectBonus: 500,        // No mistakes
-  streakMultiplier: 0.1,    // 10% per level in streak
+  streakMultiplier: 0.15,   // 15% per level in streak (increased from 10%)
   skipPenalty: 0.5,         // 50% score reduction when using skip
   difficultyMultiplier: {
-    tutorial: 0.5,
-    easy: 1.0,
-    medium: 1.5,
-    hard: 2.0,
-    expert: 3.0,
+    tutorial: 0.75,         // Increased from 0.5 - still rewarding for beginners
+    easy: 1.25,             // Increased from 1.0 - better early progression
+    medium: 1.75,           // Increased from 1.5 - noticeable jump
+    hard: 2.5,              // Increased from 2.0 - real challenge rewards
+    expert: 4.0,            // Increased from 3.0 - big payoff for mastery
   },
 } as const;
 
@@ -179,4 +179,31 @@ export const GAME_BALANCE = {
   hintCost: 10,             // Tokens for a hint
   extraMoveCost: 20,        // Tokens for extra move
   extraTimeCost: 15,        // Tokens for extra time
+} as const;
+
+// Visual effects configuration
+export const EFFECTS = {
+  // Camera shake effects
+  shake: {
+    small: { intensity: 0.002, duration: 100 },    // Subtle shake for swaps
+    medium: { intensity: 0.005, duration: 150 },   // Medium shake for rotates
+    large: { intensity: 0.01, duration: 200 },     // Big shake for mirrors/success
+  },
+  // Flash overlay effects
+  flash: {
+    success: { color: 0x00ff88, alpha: 0.3, duration: 200 },
+    failure: { color: 0xff3366, alpha: 0.4, duration: 300 },
+    palindrome: { color: 0xffd700, alpha: 0.25, duration: 150 },
+    powerup: { color: 0xff00ff, alpha: 0.35, duration: 180 },
+  },
+  // Slow motion timings
+  slowMotion: {
+    palindromeDetect: { factor: 0.3, duration: 400 },
+    levelComplete: { factor: 0.5, duration: 300 },
+  },
+  // Zoom effects
+  zoom: {
+    success: { intensity: 1.08, duration: 400 },
+    failure: { intensity: 0.95, duration: 300 },
+  },
 } as const;

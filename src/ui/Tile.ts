@@ -4,6 +4,7 @@ import type { Symbol } from '../types';
 
 export class Tile extends Phaser.GameObjects.Container {
   private bg: Phaser.GameObjects.Graphics;
+  private innerGlow: Phaser.GameObjects.Graphics;
   private symbolSprite: Phaser.GameObjects.Image | null = null;
   private symbolText: Phaser.GameObjects.Text;
   private symbol: Symbol;
@@ -12,6 +13,8 @@ export class Tile extends Phaser.GameObjects.Container {
   private isHighlighted = false;
   private isPalindromeHighlight = false;
   private glowGraphics: Phaser.GameObjects.Graphics | null = null;
+  private hoverGlow: Phaser.GameObjects.Graphics | null = null;
+  private idleAnimation: Phaser.Tweens.Tween | null = null;
 
   constructor(
     scene: Phaser.Scene,
@@ -25,7 +28,10 @@ export class Tile extends Phaser.GameObjects.Container {
     this.symbol = symbol;
     this.index = index;
 
-    // Background
+    // Inner glow layer (for depth)
+    this.innerGlow = scene.add.graphics();
+
+    // Background with gradient
     this.bg = scene.add.graphics();
     this.drawBackground();
 
@@ -45,13 +51,13 @@ export class Tile extends Phaser.GameObjects.Container {
           strokeThickness: 4,
         });
         this.symbolText.setOrigin(0.5, 0.5);
-        this.add([this.bg, this.symbolSprite, this.symbolText]);
+        this.add([this.innerGlow, this.bg, this.symbolSprite, this.symbolText]);
       } else {
         // For shapes and colors, just show the sprite
         this.symbolText = scene.add.text(0, 0, '', {
           fontSize: '1px',
         });
-        this.add([this.bg, this.symbolSprite]);
+        this.add([this.innerGlow, this.bg, this.symbolSprite]);
       }
     } else {
       // Fallback to text-only display
@@ -62,41 +68,61 @@ export class Tile extends Phaser.GameObjects.Container {
         color: `#${symbol.color.toString(16).padStart(6, '0')}`,
       });
       this.symbolText.setOrigin(0.5, 0.5);
-      this.add([this.bg, this.symbolText]);
+      this.add([this.innerGlow, this.bg, this.symbolText]);
     }
 
     this.setSize(TILE_SIZE, TILE_SIZE);
     this.setInteractive({ useHandCursor: true });
+
+    // Hover effects
+    this.on('pointerover', () => this.onHoverStart());
+    this.on('pointerout', () => this.onHoverEnd());
+
+    // Start idle breathing animation
+    this.startIdleAnimation();
 
     scene.add.existing(this);
   }
 
   private drawBackground(): void {
     this.bg.clear();
+    this.innerGlow.clear();
 
     let bgColor: number = COLORS.tile.default;
+    let bgColorLight: number = COLORS.tile.default;
     let borderColor: number = 0x555555;
     let borderWidth = 2;
     let alpha = 0.3;
+    let glowColor: number = bgColor;
 
     if (this.isPalindromeHighlight) {
       bgColor = COLORS.tile.palindrome;
+      bgColorLight = COLORS.successLight;
       borderColor = 0xffd700;
       borderWidth = 4;
       alpha = 0.5;
+      glowColor = 0xffd700;
     } else if (this.isSelected) {
       bgColor = COLORS.tile.selected;
+      bgColorLight = COLORS.accent;
       borderColor = 0xffffff;
       borderWidth = 4;
       alpha = 0.6;
+      glowColor = COLORS.accent;
     } else if (this.isHighlighted) {
       bgColor = COLORS.tile.highlight;
+      bgColorLight = COLORS.accentSecondary;
       borderColor = 0xaaaaaa;
       borderWidth = 3;
       alpha = 0.4;
+      glowColor = COLORS.accentSecondary;
+    } else {
+      // Default colors with slight variation for depth
+      bgColorLight = COLORS.secondary;
     }
 
-    // Draw subtle background
+    // Draw gradient background (approximated with two layers)
+    // Bottom layer (darker)
     this.bg.fillStyle(bgColor, alpha);
     this.bg.fillRoundedRect(
       -TILE_SIZE / 2,
@@ -106,6 +132,27 @@ export class Tile extends Phaser.GameObjects.Container {
       TILE_BORDER_RADIUS
     );
 
+    // Top layer gradient effect (lighter at top)
+    this.bg.fillStyle(bgColorLight, alpha * 0.3);
+    this.bg.fillRoundedRect(
+      -TILE_SIZE / 2,
+      -TILE_SIZE / 2,
+      TILE_SIZE,
+      TILE_SIZE / 2,
+      { tl: TILE_BORDER_RADIUS, tr: TILE_BORDER_RADIUS, bl: 0, br: 0 }
+    );
+
+    // Inner glow for depth
+    this.innerGlow.fillStyle(glowColor, 0.15);
+    this.innerGlow.fillRoundedRect(
+      -TILE_SIZE / 2 + 3,
+      -TILE_SIZE / 2 + 3,
+      TILE_SIZE - 6,
+      TILE_SIZE - 6,
+      TILE_BORDER_RADIUS - 2
+    );
+
+    // Border with gradient effect
     this.bg.lineStyle(borderWidth, borderColor, 0.8);
     this.bg.strokeRoundedRect(
       -TILE_SIZE / 2,
@@ -114,6 +161,22 @@ export class Tile extends Phaser.GameObjects.Container {
       TILE_SIZE,
       TILE_BORDER_RADIUS
     );
+
+    // Inner highlight on top edge
+    if (this.isSelected || this.isPalindromeHighlight) {
+      this.bg.lineStyle(1, 0xffffff, 0.3);
+      this.bg.beginPath();
+      this.bg.arc(
+        -TILE_SIZE / 2 + TILE_BORDER_RADIUS,
+        -TILE_SIZE / 2 + TILE_BORDER_RADIUS,
+        TILE_BORDER_RADIUS - 2,
+        Phaser.Math.DegToRad(180),
+        Phaser.Math.DegToRad(270),
+        false
+      );
+      this.bg.lineTo(TILE_SIZE / 2 - TILE_BORDER_RADIUS, -TILE_SIZE / 2 + 2);
+      this.bg.strokePath();
+    }
   }
 
   public getSymbol(): Symbol {
@@ -159,25 +222,117 @@ export class Tile extends Phaser.GameObjects.Container {
     }
   }
 
+  private onHoverStart(): void {
+    if (!this.hoverGlow) {
+      this.hoverGlow = this.scene.add.graphics();
+      this.addAt(this.hoverGlow, 0); // Behind everything
+    }
+
+    // Draw glowing hover effect
+    this.hoverGlow.clear();
+    this.hoverGlow.fillStyle(COLORS.accent, 0.2);
+    this.hoverGlow.fillRoundedRect(
+      -TILE_SIZE / 2 - 4,
+      -TILE_SIZE / 2 - 4,
+      TILE_SIZE + 8,
+      TILE_SIZE + 8,
+      TILE_BORDER_RADIUS + 2
+    );
+
+    // Pulse the hover glow
+    this.scene.tweens.add({
+      targets: this.hoverGlow,
+      alpha: 0.6,
+      duration: 200,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // Slight lift
+    this.scene.tweens.add({
+      targets: this,
+      y: this.y - 2,
+      scaleX: 1.05,
+      scaleY: 1.05,
+      duration: 150,
+      ease: 'Cubic.easeOut',
+    });
+  }
+
+  private onHoverEnd(): void {
+    if (this.hoverGlow) {
+      this.scene.tweens.killTweensOf(this.hoverGlow);
+      this.hoverGlow.destroy();
+      this.hoverGlow = null;
+    }
+
+    // Return to original position
+    const originalY = this.y + 2;
+    this.scene.tweens.add({
+      targets: this,
+      y: originalY,
+      scaleX: 1,
+      scaleY: 1,
+      duration: 150,
+      ease: 'Cubic.easeOut',
+    });
+  }
+
+  private startIdleAnimation(): void {
+    // Gentle breathing/pulsing animation
+    this.idleAnimation = this.scene.tweens.add({
+      targets: this,
+      alpha: 0.92,
+      duration: 2000 + Math.random() * 1000, // Randomize slightly for organic feel
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
+  private stopIdleAnimation(): void {
+    if (this.idleAnimation) {
+      this.idleAnimation.stop();
+      this.idleAnimation = null;
+      this.alpha = 1;
+    }
+  }
+
   public select(): void {
     if (this.isSelected) return;
     this.isSelected = true;
     this.drawBackground();
 
-    // Pop animation
+    // Stop idle animation during selection
+    this.stopIdleAnimation();
+
+    // Bouncy pop animation with rotation
     this.scene.tweens.add({
       targets: this,
-      scaleX: 1.15,
-      scaleY: 1.15,
-      duration: 100,
-      yoyo: true,
+      scaleX: 1.2,
+      scaleY: 1.2,
+      angle: this.angle + 5,
+      duration: 150,
       ease: 'Back.easeOut',
+      onComplete: () => {
+        this.scene.tweens.add({
+          targets: this,
+          scaleX: 1,
+          scaleY: 1,
+          angle: 0,
+          duration: 150,
+          ease: 'Elastic.easeOut',
+        });
+      },
     });
   }
 
   public deselect(): void {
     this.isSelected = false;
     this.drawBackground();
+
+    // Restart idle animation
+    this.startIdleAnimation();
   }
 
   public highlight(): void {
@@ -232,12 +387,34 @@ export class Tile extends Phaser.GameObjects.Container {
   }
 
   public animateSwapTo(targetX: number, onComplete?: () => void): void {
+    // Bouncy swap with arc motion
+    const currentY = this.y;
     this.scene.tweens.add({
       targets: this,
       x: targetX,
+      y: currentY - 15, // Arc upward
+      duration: ANIMATION_DURATION.swap / 2,
+      ease: 'Cubic.easeOut',
+      onComplete: () => {
+        this.scene.tweens.add({
+          targets: this,
+          y: currentY,
+          duration: ANIMATION_DURATION.swap / 2,
+          ease: 'Bounce.easeOut',
+          onComplete,
+        });
+      },
+    });
+
+    // Add rotation for extra juice
+    this.scene.tweens.add({
+      targets: this,
+      angle: this.angle + 360,
       duration: ANIMATION_DURATION.swap,
-      ease: 'Back.easeInOut',
-      onComplete,
+      ease: 'Cubic.easeInOut',
+      onComplete: () => {
+        this.angle = 0; // Reset to 0
+      },
     });
   }
 

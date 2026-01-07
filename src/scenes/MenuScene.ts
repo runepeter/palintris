@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig';
-import { loadGameState } from '../utils/storage';
+import { loadGameState, hasDailyChallengeBeenAttemptedToday } from '../utils/storage';
 import { getTotalLevels } from '../config/levels';
 import { audio } from '../utils/audio';
 
@@ -129,16 +129,64 @@ export class MenuScene extends Phaser.Scene {
     scoreContainer.add(scoreText);
 
     // Menu buttons
-    const buttonY = 380;
-    const buttonSpacing = 75;
+    const buttonY = 340;
+    const buttonSpacing = 58;
 
     this.createButton(GAME_WIDTH / 2, buttonY, 'PLAY', 0x44cc88, () => {
       this.scene.start('LevelSelectScene');
     });
 
-    this.createButton(
+    // Daily Challenge button with special styling
+    const hasPlayedToday = hasDailyChallengeBeenAttemptedToday();
+    this.createDailyChallengeButton(
       GAME_WIDTH / 2,
       buttonY + buttonSpacing,
+      hasPlayedToday
+    );
+
+    this.createButton(
+      GAME_WIDTH / 2,
+      buttonY + buttonSpacing * 2,
+      'CASCADE MODE',
+      0xff8800,
+      () => {
+        this.scene.start('CascadeScene');
+      }
+    );
+
+    this.createButton(
+      GAME_WIDTH / 2,
+      buttonY + buttonSpacing * 3,
+      'TIME ATTACK',
+      0xff00ff,
+      () => {
+        this.scene.start('TimeAttackScene');
+      }
+    );
+
+    this.createButton(
+      GAME_WIDTH / 2,
+      buttonY + buttonSpacing * 4,
+      'ZEN MODE',
+      0x88aacc,
+      () => {
+        this.scene.start('ZenModeScene');
+      }
+    );
+
+    this.createButton(
+      GAME_WIDTH / 2,
+      buttonY + buttonSpacing * 5,
+      'VERSUS MODE',
+      0x00ffff,
+      () => {
+        this.scene.start('VersusScene');
+      }
+    );
+
+    this.createButton(
+      GAME_WIDTH / 2,
+      buttonY + buttonSpacing * 6,
       'HOW TO PLAY',
       0x4488ff,
       () => {
@@ -148,7 +196,7 @@ export class MenuScene extends Phaser.Scene {
 
     this.createButton(
       GAME_WIDTH / 2,
-      buttonY + buttonSpacing * 2,
+      buttonY + buttonSpacing * 7,
       'SETTINGS',
       0x8855cc,
       () => {
@@ -180,6 +228,106 @@ export class MenuScene extends Phaser.Scene {
       }
     );
     assetCredits.setOrigin(0.5, 0.5);
+  }
+
+  private createDailyChallengeButton(
+    x: number,
+    y: number,
+    hasPlayedToday: boolean
+  ): void {
+    const button = this.add.container(x, y);
+
+    const accentColor = 0xffd700; // Gold color for daily challenge
+    const bg = this.add.graphics();
+    bg.fillStyle(0x2a2a4a, 1);
+    bg.fillRoundedRect(-130, -28, 260, 56, 12);
+    bg.lineStyle(3, accentColor, 0.8);
+    bg.strokeRoundedRect(-130, -28, 260, 56, 12);
+
+    // Add special indicator
+    const indicator = this.add.text(-110, 0, '⭐', {
+      fontSize: '20px',
+    });
+    indicator.setOrigin(0.5, 0.5);
+
+    const label = this.add.text(10, 0, 'DAILY CHALLENGE', {
+      fontFamily: 'Arial Black, Arial',
+      fontSize: '20px',
+      color: hasPlayedToday ? '#888888' : '#ffd700',
+    });
+    label.setOrigin(0.5, 0.5);
+
+    // Status badge
+    let statusBadge: Phaser.GameObjects.Text | null = null;
+    if (hasPlayedToday) {
+      statusBadge = this.add.text(110, 0, '✓', {
+        fontSize: '18px',
+        color: '#00ff88',
+      });
+      statusBadge.setOrigin(0.5, 0.5);
+    } else {
+      statusBadge = this.add.text(110, 0, 'NEW', {
+        fontSize: '12px',
+        color: '#ff00ff',
+        fontStyle: 'bold',
+      });
+      statusBadge.setOrigin(0.5, 0.5);
+
+      // Pulse animation for NEW badge
+      this.tweens.add({
+        targets: statusBadge,
+        scaleX: 1.2,
+        scaleY: 1.2,
+        duration: 600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+
+    button.add([bg, indicator, label]);
+    if (statusBadge) {
+      button.add(statusBadge);
+    }
+
+    button.setSize(260, 56);
+    button.setInteractive({ useHandCursor: true });
+
+    button.on('pointerover', () => {
+      bg.clear();
+      bg.fillStyle(accentColor, 0.3);
+      bg.fillRoundedRect(-130, -28, 260, 56, 12);
+      bg.lineStyle(3, accentColor, 1);
+      bg.strokeRoundedRect(-130, -28, 260, 56, 12);
+      label.setColor('#ffffff');
+      this.tweens.add({
+        targets: button,
+        scaleX: 1.05,
+        scaleY: 1.05,
+        duration: 100,
+        ease: 'Back.easeOut',
+      });
+    });
+
+    button.on('pointerout', () => {
+      bg.clear();
+      bg.fillStyle(0x2a2a4a, 1);
+      bg.fillRoundedRect(-130, -28, 260, 56, 12);
+      bg.lineStyle(3, accentColor, 0.8);
+      bg.strokeRoundedRect(-130, -28, 260, 56, 12);
+      label.setColor(hasPlayedToday ? '#888888' : '#ffd700');
+      this.tweens.add({
+        targets: button,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 100,
+      });
+    });
+
+    button.on('pointerdown', () => {
+      audio.playClick();
+      this.scene.start('DailyChallengeScene');
+    });
   }
 
   private createButton(
