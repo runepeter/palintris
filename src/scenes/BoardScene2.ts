@@ -96,6 +96,7 @@ export class BoardScene2 extends Phaser.Scene {
   private originY = 0;
   private tiles = new Map<number, TileView>();
   private mirrorGfx!: Phaser.GameObjects.Graphics;
+  private gapGfx!: Phaser.GameObjects.Graphics;
   private hud!: Phaser.GameObjects.Container;
   private hand!: Phaser.GameObjects.Container;
   private menu!: SegmentMenu;
@@ -187,6 +188,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.machine = new GestureMachine(env);
     this.keyboard = new KeyboardController(env);
     this.mirrorGfx = this.add.graphics().setDepth(1);
+    this.gapGfx = this.add.graphics().setDepth(4);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, worldAccent(level.world), HUD_HEIGHT);
@@ -262,6 +264,12 @@ export class BoardScene2 extends Phaser.Scene {
     this.syncGestureVisuals();
   }
 
+  /** Tilstandene der et gap er det eneste meningsfulle målet på brettet. */
+  private wildActive(): boolean {
+    const name = this.machine.state.name;
+    return name === 'dragWild' || name === 'wildArmed';
+  }
+
   private resolveTarget(x: number, y: number): Target {
     const action = this.menu.hitAction(x, y);
     if (action !== null) return { kind: 'menu', action };
@@ -269,13 +277,14 @@ export class BoardScene2 extends Phaser.Scene {
     if (this.near(this.zoneCache.remove, x, y)) return { kind: 'hand', item: 'remove' };
     const lx = (x - this.originX) / this.layout.scale;
     const ly = (y - this.originY) / this.layout.scale;
-    const index = hitTile(this.layout, lx, ly);
-    if (index !== null) return { kind: 'tile', index };
-    const name = this.machine.state.name;
-    if (name === 'dragWild' || name === 'wildArmed') {
+    // Brikketreff er ubrukt under joker-drag, og mellomrommene mellom to brikker er bare GAP
+    // brede. Testes gapet først, blir hele hitGap-radien slippsone i stedet.
+    if (this.wildActive()) {
       const at = hitGap(this.layout, lx, ly);
       if (at !== null) return { kind: 'gap', at };
     }
+    const index = hitTile(this.layout, lx, ly);
+    if (index !== null) return { kind: 'tile', index };
     return { kind: 'none' };
   }
 
@@ -339,6 +348,7 @@ export class BoardScene2 extends Phaser.Scene {
 
     this.syncDrag(s);
     this.syncWildGhost(s);
+    this.drawGaps(s);
     this.armedRing?.setVisible(s.name === 'wildArmed');
     if (s.name === 'menu') {
       const p = this.segmentAnchor(s.from, s.to);
@@ -378,6 +388,27 @@ export class BoardScene2 extends Phaser.Scene {
     const p = this.screenPoint(slot.x, slot.y);
     this.pendingTweens++;
     this.tweens.add({ targets: v, x: p.x, y: p.y, duration: this.d.snap, ease: EASING.pop, onComplete: () => this.tweenDone() });
+  }
+
+  /**
+   * Slippsonene for jokeren. Uten dem har spilleren ingen anelse om hvor mellomrommene er;
+   * i hårnål gjelder det også mellomrommet over folden. Tømmes så snart tilstanden forlates.
+   */
+  private drawGaps(s: GestureState): void {
+    this.gapGfx.clear();
+    if (s.name !== 'dragWild' && s.name !== 'wildArmed') return;
+    // wildArmed har ingen peker nede; activePointer holder siste kjente posisjon.
+    const px = s.name === 'dragWild' ? s.x : this.input.activePointer.x;
+    const py = s.name === 'dragWild' ? s.y : this.input.activePointer.y;
+    const nearest = hitGap(this.layout, (px - this.originX) / this.layout.scale, (py - this.originY) / this.layout.scale);
+    const w = this.layout.gap * this.layout.scale + SPACE.sm;
+    const h = this.layout.tile * this.layout.scale * 0.8;
+    const accent = worldAccent(this.level.world);
+    for (const g of this.layout.gaps) {
+      const p = this.screenPoint(g.x, g.y);
+      this.gapGfx.fillStyle(accent, g.at === nearest ? 0.8 : 0.35);
+      this.gapGfx.fillRoundedRect(p.x - w / 2, p.y - h / 2, w, h, w / 2);
+    }
   }
 
   private syncWildGhost(s: GestureState): void {
