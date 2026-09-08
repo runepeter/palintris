@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
+  worker: { format: 'es' },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // Produksjonsbundlen dro med seg 10 MB kart som ingen leser.
+    sourcemap: mode !== 'production',
     minify: 'esbuild',
     target: 'ES2020',
   },
@@ -12,4 +14,4 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-});
+}));

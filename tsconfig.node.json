@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["scripts", "src/core", "src/content"],
+  "exclude": ["src/core/solver.worker.ts"]
+}

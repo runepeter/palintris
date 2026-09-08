@@ -1,0 +1,8844 @@
+{
+  "contentVersion": 1,
+  "levels": [
+    {
+      "id": "w1-01",
+      "recipeId": "w1",
+      "seed": 3897393498,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-02",
+      "recipeId": "w1",
+      "seed": 3880615879,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 1,
+      "targetExact": true,
+      "budget": 5,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-03",
+      "recipeId": "w1",
+      "seed": 3863838260,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-04",
+      "recipeId": "w1",
+      "seed": 3847060641,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 1,
+      "targetExact": true,
+      "budget": 5,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        }
+      ]
+    },
+    {
+      "id": "w1-05",
+      "recipeId": "w1",
+      "seed": 3830283022,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w1-06",
+      "recipeId": "w1",
+      "seed": 3813505403,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w1-07",
+      "recipeId": "w1",
+      "seed": 3796727784,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        }
+      ]
+    },
+    {
+      "id": "w1-08",
+      "recipeId": "w1",
+      "seed": 3779950165,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        }
+      ]
+    },
+    {
+      "id": "w1-09",
+      "recipeId": "w1",
+      "seed": 3763172546,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-10",
+      "recipeId": "w1",
+      "seed": 1665823076,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-11",
+      "recipeId": "w1",
+      "seed": 1682600695,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w1-12",
+      "recipeId": "w1",
+      "seed": 1699378314,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w1-13",
+      "recipeId": "w1",
+      "seed": 1716155933,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w1-14",
+      "recipeId": "w1",
+      "seed": 1598712600,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w1-15",
+      "recipeId": "w1",
+      "seed": 1615490219,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w2-01",
+      "recipeId": "w2",
+      "seed": 4191948625,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w2-02",
+      "recipeId": "w2",
+      "seed": 4141615768,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 4,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w2-03",
+      "recipeId": "w2",
+      "seed": 4158393387,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 3,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w2-04",
+      "recipeId": "w2",
+      "seed": 4242281482,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 1,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-05",
+      "recipeId": "w2",
+      "seed": 4259059101,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 3,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-06",
+      "recipeId": "w2",
+      "seed": 4208726244,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 4,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-07",
+      "recipeId": "w2",
+      "seed": 4225503863,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        }
+      ]
+    },
+    {
+      "id": "w2-08",
+      "recipeId": "w2",
+      "seed": 4040950054,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        }
+      ]
+    },
+    {
+      "id": "w2-09",
+      "recipeId": "w2",
+      "seed": 4057727673,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        }
+      ]
+    },
+    {
+      "id": "w2-10",
+      "recipeId": "w2",
+      "seed": 2128551751,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w2-11",
+      "recipeId": "w2",
+      "seed": 2111774132,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-12",
+      "recipeId": "w2",
+      "seed": 2162106989,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-13",
+      "recipeId": "w2",
+      "seed": 2145329370,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        }
+      ]
+    },
+    {
+      "id": "w2-14",
+      "recipeId": "w2",
+      "seed": 2061441275,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 3,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w2-15",
+      "recipeId": "w2",
+      "seed": 2044663656,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w3-01",
+      "recipeId": "w3",
+      "seed": 2239613648,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 3
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w3-02",
+      "recipeId": "w3",
+      "seed": 2289946505,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w3-03",
+      "recipeId": "w3",
+      "seed": 2273168886,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 4
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 3,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 3,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w3-04",
+      "recipeId": "w3",
+      "seed": 2323501743,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 3
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 6,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w3-05",
+      "recipeId": "w3",
+      "seed": 2306724124,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w3-06",
+      "recipeId": "w3",
+      "seed": 2357056981,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 3
+        }
+      ]
+    },
+    {
+      "id": "w3-07",
+      "recipeId": "w3",
+      "seed": 2340279362,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 6,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w3-08",
+      "recipeId": "w3",
+      "seed": 2390612219,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 2,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w3-09",
+      "recipeId": "w3",
+      "seed": 2373834600,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        }
+      ]
+    },
+    {
+      "id": "w3-10",
+      "recipeId": "w3",
+      "seed": 544927034,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 3
+        }
+      ]
+    },
+    {
+      "id": "w3-11",
+      "recipeId": "w3",
+      "seed": 561704653,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 3,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w3-12",
+      "recipeId": "w3",
+      "seed": 511371796,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 4
+        }
+      ]
+    },
+    {
+      "id": "w3-13",
+      "recipeId": "w3",
+      "seed": 528149415,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w3-14",
+      "recipeId": "w3",
+      "seed": 477816558,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w3-15",
+      "recipeId": "w3",
+      "seed": 494594177,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-01",
+      "recipeId": "w4",
+      "seed": 2853652551,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": true,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w4-02",
+      "recipeId": "w4",
+      "seed": 2870430170,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-03",
+      "recipeId": "w4",
+      "seed": 2887207789,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w4-04",
+      "recipeId": "w4",
+      "seed": 2769764456,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-05",
+      "recipeId": "w4",
+      "seed": 2786542075,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 4
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 2,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 4
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-06",
+      "recipeId": "w4",
+      "seed": 2803319694,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 9
+        }
+      ]
+    },
+    {
+      "id": "w4-07",
+      "recipeId": "w4",
+      "seed": 2820097313,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 2,
+      "targetExact": true,
+      "budget": 6,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 7
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        }
+      ]
+    },
+    {
+      "id": "w4-08",
+      "recipeId": "w4",
+      "seed": 2702653980,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-09",
+      "recipeId": "w4",
+      "seed": 2719431599,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 7
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 9,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        }
+      ]
+    },
+    {
+      "id": "w4-10",
+      "recipeId": "w4",
+      "seed": 2937687741,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 3
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w4-11",
+      "recipeId": "w4",
+      "seed": 2920910122,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 7
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        }
+      ]
+    },
+    {
+      "id": "w4-12",
+      "recipeId": "w4",
+      "seed": 2904132503,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 4
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 3,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        }
+      ]
+    },
+    {
+      "id": "w4-13",
+      "recipeId": "w4",
+      "seed": 2887354884,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 8,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 8,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w4-14",
+      "recipeId": "w4",
+      "seed": 2870577265,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 3
+        }
+      ]
+    },
+    {
+      "id": "w4-15",
+      "recipeId": "w4",
+      "seed": 2853799646,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w5-01",
+      "recipeId": "w5",
+      "seed": 3602507166,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "remove",
+          "tileId": 7
+        },
+        {
+          "type": "insertWild",
+          "at": 4
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 4
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w5-02",
+      "recipeId": "w5",
+      "seed": 3585729547,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "remove",
+          "tileId": 7
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 4
+        },
+        {
+          "type": "insertWild",
+          "at": 0
+        }
+      ]
+    },
+    {
+      "id": "w5-03",
+      "recipeId": "w5",
+      "seed": 3568951928,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        }
+      ]
+    },
+    {
+      "id": "w5-04",
+      "recipeId": "w5",
+      "seed": 3686395261,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 7
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "insertWild",
+          "at": 0
+        }
+      ]
+    },
+    {
+      "id": "w5-05",
+      "recipeId": "w5",
+      "seed": 3669617642,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "remove",
+          "tileId": 7
+        },
+        {
+          "type": "insertWild",
+          "at": 3
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        }
+      ]
+    },
+    {
+      "id": "w5-06",
+      "recipeId": "w5",
+      "seed": 3652840023,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 8
+        },
+        {
+          "type": "insertWild",
+          "at": 5
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w5-07",
+      "recipeId": "w5",
+      "seed": 3636062404,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 7
+        },
+        {
+          "type": "insertWild",
+          "at": 4
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 8
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 7
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 7
+        }
+      ]
+    },
+    {
+      "id": "w5-08",
+      "recipeId": "w5",
+      "seed": 3485063833,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 9
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        },
+        {
+          "type": "insertWild",
+          "at": 1
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        }
+      ]
+    },
+    {
+      "id": "w5-09",
+      "recipeId": "w5",
+      "seed": 3468286214,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 9,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 8
+        },
+        {
+          "type": "insertWild",
+          "at": 1
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 8
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        }
+      ]
+    },
+    {
+      "id": "w5-10",
+      "recipeId": "w5",
+      "seed": 3518471976,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 8
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 3
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 5
+        }
+      ]
+    },
+    {
+      "id": "w5-11",
+      "recipeId": "w5",
+      "seed": 3535249595,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 10
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 9,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 4
+        }
+      ]
+    },
+    {
+      "id": "w5-12",
+      "recipeId": "w5",
+      "seed": 3552027214,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 2
+        },
+        {
+          "type": "insertWild",
+          "at": 8
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 8,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w5-13",
+      "recipeId": "w5",
+      "seed": 3568804833,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 8,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 6
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        }
+      ]
+    },
+    {
+      "id": "w5-14",
+      "recipeId": "w5",
+      "seed": 3585582452,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 6
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 5
+        }
+      ]
+    },
+    {
+      "id": "w5-15",
+      "recipeId": "w5",
+      "seed": 3602360071,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 9
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w6-01",
+      "recipeId": "w6",
+      "seed": 564551157,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 12
+        },
+        {
+          "type": "rotate",
+          "from": 11,
+          "to": 12,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 12,
+          "dir": "right"
+        },
+        {
+          "type": "insertWild",
+          "at": 1
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 12
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        }
+      ]
+    },
+    {
+      "id": "w6-02",
+      "recipeId": "w6",
+      "seed": 514218300,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "E",
+          "locked": true,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "insertWild",
+          "at": 8
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 3
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 9
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        }
+      ]
+    },
+    {
+      "id": "w6-03",
+      "recipeId": "w6",
+      "seed": 530995919,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "F",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 11,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 9,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 10,
+          "b": 11
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 12
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 8,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 8
+        },
+        {
+          "type": "mirror",
+          "from": 9,
+          "to": 13
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        }
+      ]
+    },
+    {
+      "id": "w6-04",
+      "recipeId": "w6",
+      "seed": 480663062,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 11
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 9,
+          "dir": "right"
+        },
+        {
+          "type": "insertWild",
+          "at": 9
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w6-05",
+      "recipeId": "w6",
+      "seed": 497440681,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "F",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 11
+        },
+        {
+          "type": "mirror",
+          "from": 9,
+          "to": 12
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 10,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 12,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 11,
+          "b": 12
+        },
+        {
+          "type": "insertWild",
+          "at": 9
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        }
+      ]
+    },
+    {
+      "id": "w6-06",
+      "recipeId": "w6",
+      "seed": 447107824,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "insertWild",
+          "at": 3
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "swap",
+          "a": 11,
+          "b": 12
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 11,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w6-07",
+      "recipeId": "w6",
+      "seed": 463885443,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 12
+        },
+        {
+          "type": "mirror",
+          "from": 7,
+          "to": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 10
+        },
+        {
+          "type": "rotate",
+          "from": 10,
+          "to": 11,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 11,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 9,
+          "to": 11
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 9,
+          "dir": "left"
+        }
+      ]
+    },
+    {
+      "id": "w6-08",
+      "recipeId": "w6",
+      "seed": 681994490,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 7
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 10
+        },
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 11
+        },
+        {
+          "type": "remove",
+          "tileId": 11
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 9
+        },
+        {
+          "type": "mirror",
+          "from": 7,
+          "to": 10
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 9,
+          "dir": "right"
+        }
+      ]
+    },
+    {
+      "id": "w6-09",
+      "recipeId": "w6",
+      "seed": 698772109,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 10,
+          "to": 11,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 6
+        },
+        {
+          "type": "mirror",
+          "from": 7,
+          "to": 11
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 10
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        }
+      ]
+    },
+    {
+      "id": "w6-10",
+      "recipeId": "w6",
+      "seed": 648586347,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 10
+        },
+        {
+          "type": "mirror",
+          "from": 2,
+          "to": 8
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 8,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "remove",
+          "tileId": 12
+        },
+        {
+          "type": "insertWild",
+          "at": 8
+        }
+      ]
+    },
+    {
+      "id": "w6-11",
+      "recipeId": "w6",
+      "seed": 631808728,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 7,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 7
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 7
+        },
+        {
+          "type": "remove",
+          "tileId": 11
+        },
+        {
+          "type": "mirror",
+          "from": 8,
+          "to": 10
+        }
+      ]
+    },
+    {
+      "id": "w6-12",
+      "recipeId": "w6",
+      "seed": 682141585,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 6
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 9,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 0
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 8,
+          "dir": "right"
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        }
+      ]
+    },
+    {
+      "id": "w6-13",
+      "recipeId": "w6",
+      "seed": 665363966,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "C",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 7
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "insertWild",
+          "at": 12
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        }
+      ]
+    },
+    {
+      "id": "w6-14",
+      "recipeId": "w6",
+      "seed": 715696823,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 9,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 11
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 13,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 10
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 9,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "rotate",
+          "from": 11,
+          "to": 12,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
+        }
+      ]
+    },
+    {
+      "id": "w6-15",
+      "recipeId": "w6",
+      "seed": 698919204,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 1,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "remove",
+          "tileId": 13
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "swap",
+          "a": 9,
+          "b": 10
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 9
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        }
+      ]
+    }
+  ]
+}

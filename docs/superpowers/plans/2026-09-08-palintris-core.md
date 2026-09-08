@@ -181,8 +181,10 @@ describe('isPalindrome', () => {
     ['ABA', true],
     ['ABBA', true],
     ['ABC', false],
-    ['A*C', true],
-    ['*BC*', true],
+    ['*BA', true],
+    ['AB*A', true],
+    ['A*C', false],
+    ['*BC*', false],
     ['aba', true],
     ['abc', false],
   ])('%s -> %s', (s, expected) => {
@@ -203,7 +205,7 @@ describe('mismatchCount', () => {
   it('teller par som ikke matcher', () => {
     expect(mismatchCount(tilesFromString('ABCD'))).toBe(2);
     expect(mismatchCount(tilesFromString('ABCBA'))).toBe(0);
-    expect(mismatchCount(tilesFromString('AB*CX'))).toBe(1);
+    expect(mismatchCount(tilesFromString('AB*BX'))).toBe(1);
   });
 });
 ```
@@ -2065,11 +2067,11 @@ describe('makeLevel', () => {
     expect(res).toEqual({ status: 'solved', moves: level.target });
   });
 
-  it('introOf rotate gir brett som ikke kan løses uten rotate innen budsjett', () => {
+  it('introOf rotate gir brett som ikke kan løses uten rotate innen mål', () => {
     const level = makeLevel(rotateWorld, { id: 'w2-01', contentVersion: 1, introOf: 'rotate', attempts: 200 });
     expect(level).not.toBeNull();
     if (level === null) return;
-    const res = solve({ rules: rulesFor({ allowedOps: ['swap'] }), tiles: level.tiles, hand: level.hand, maxMoves: level.budget, limits: { states: 100000 } });
+    const res = solve({ rules: rulesFor({ allowedOps: ['swap'] }), tiles: level.tiles, hand: level.hand, maxMoves: level.target, limits: { states: 100000 } });
     expect(res.status).toBe('unreachableWithinBudget');
   });
 
@@ -2155,8 +2157,7 @@ const passesIntro = (
   c: Candidate,
   recipe: Recipe,
   target: number,
-  targetExact: boolean,
-  budget: number
+  targetExact: boolean
 ): boolean => {
   if (introOf === 'locked') {
     if (!targetExact || !c.tiles.some((t) => t.locked)) return false;
@@ -2170,12 +2171,14 @@ const passesIntro = (
     });
     return res.status === 'solved';
   }
+  // Mekanikken må trengs for å nå mål (tre stjerner). Innen hele budsjettet er kravet
+  // ikke oppfyllbart: swap alene når enhver permutasjon på korte brett innen mål + slakk.
   const without = recipe.allowedOps.filter((op) => op !== introOf);
   const res = solve({
     rules: makeRules(without),
     tiles: c.tiles,
     hand: c.hand,
-    maxMoves: budget,
+    maxMoves: target,
     limits: { states: recipe.solverStates },
   });
   return res.status === 'unreachableWithinBudget';
@@ -2221,7 +2224,7 @@ export const makeLevel = (recipe: Recipe, opts: MakeLevelOptions): Level | null 
       continue;
     }
     const budget = target + recipe.slack;
-    if (opts.introOf !== undefined && !passesIntro(opts.introOf, c, recipe, target, targetExact, budget)) continue;
+    if (opts.introOf !== undefined && !passesIntro(opts.introOf, c, recipe, target, targetExact)) continue;
 
     return {
       id: opts.id,
@@ -2830,12 +2833,22 @@ export const INTRO_LEVELS: Readonly<Record<string, IntroOf>> = {
 ```ts
 import { writeFileSync } from 'node:fs';
 import { CONTENT_VERSION, INTRO_LEVELS, WORLD_RECIPES } from '../src/content/recipes';
-import type { Level, Recipe } from '../src/core/level';
+import type { IntroOf, Level, Recipe } from '../src/core/level';
 import { makeLevel } from '../src/core/level';
 import { levelId, LEVELS_PER_WORLD } from '../src/core/progression';
 import { symbolKey } from '../src/core/tiles';
 
 const levels: Level[] = [];
+
+/** Intro-nivåer holdes så korte som mulig: prøv lengdene fra oppskriftens minimum og oppover. */
+const makeIntroLevel = (recipe: Recipe, id: string, keys: readonly string[], introOf: IntroOf): Level | null => {
+  for (let len = recipe.lengthRange[0]; len <= recipe.lengthRange[1]; len++) {
+    const pinned: Recipe = { ...recipe, lengthRange: [len, len] };
+    const level = makeLevel(pinned, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, introOf, attempts: 400 });
+    if (level !== null) return level;
+  }
+  return null;
+};
 
 WORLD_RECIPES.forEach((recipe, wi) => {
   const world = wi + 1;
@@ -2843,9 +2856,9 @@ WORLD_RECIPES.forEach((recipe, wi) => {
   for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
     const id = levelId(world, n);
     const introOf = INTRO_LEVELS[id];
-    const effective: Recipe =
-      introOf === undefined ? recipe : { ...recipe, lengthRange: [recipe.lengthRange[0], recipe.lengthRange[0]] };
-    const level = makeLevel(effective, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, introOf, attempts: 400 });
+    const level = introOf === undefined
+      ? makeLevel(recipe, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, attempts: 400 })
+      : makeIntroLevel(recipe, id, keys, introOf);
     if (level === null) {
       console.error(`Kunne ikke generere ${id}`);
       process.exit(1);
@@ -2967,7 +2980,8 @@ git commit -m "feat(content): world recipes, offline campaign builder and frozen
 
 ## Ferdig-kriterier for plan 1
 
-- `npm test`, `npm run typecheck` og `npm run lint` er grønne på branch `redesign`.
+- `npm test`, `npm run typecheck` og `npm run lint:core` er grønne på branch `redesign`.
+- Alle kampanjenivåer har `targetExact: true`.
 - `src/core` har ingen import fra Phaser eller `src/scenes`, `src/ui`, `src/game`. Sjekk: `grep -rn "from 'phaser'" src/core` gir ingen treff.
 - `src/content/campaign.v1.json` finnes med 90 nivåer og er committet.
 - Tag `v1-legacy` peker på gammel main.
@@ -2976,3 +2990,23 @@ git commit -m "feat(content): world recipes, offline campaign builder and frozen
 
 - Brett, gester, layout, tema, scener: plan 2.
 - Daily-ID og ISO-uke-filter, Blitz-regler, signaturnivåer, sletting av gamle scener og assets, CI, ESLint flat config: plan 3.
+
+## Etterslep fra plan 1 (til plan 2 og 3)
+
+Fra sluttreview og per-task-reviews, ført her fordi SDD-arbeidsområdet slettes ved ferdigstilling.
+
+**Plan 2 (brett og interaksjon)**
+- `SolverClient.cancelAll` gir `unknown` både ved erstattet forespørsel og ved nådd tilstandsgrense. UI må ikke vise et erstattet svar som «mål ukjent»; vurder egen `cancelled`-status.
+- Chunk-størrelse 2000 i worker gir opptil ~300 ms avbruddslatens på 13-brikkers brett; skaler ned for lange brett.
+- `solver.worker.ts` typesjekkes mot DOM, ikke WebWorker-lib; rett når worker instansieres.
+- `Level.solution` er en eksistensgaranti, ikke et hint. w2-01 løses med bare swap. Brikker slås opp på `id`, aldri indeks, og `solution` vises aldri som fasit.
+- Bekreft klientens `states`-budsjett: 50 000 gir 60–210 ms på de lengste brettene.
+- Vanskelighet kommer primært fra lengde, ikke trekk: kampanjens mål er 1–4. Vurder større `scrambleRange` eller begrenset swap i balansering.
+
+**Plan 3 (moduser, lagring, opprydding)**
+- Parkert: `loadSave` validerer bare at `stars`/`daily`/`blitz` er objekter. Legg inn skjemavalidering når skjemaet utvides.
+- Feil `saveVersion` sammen med legacy-nøkkel gir migrasjon, ikke default. Avklar og test.
+- `recordStars` adopterer `contentVersion` også når den er eldre.
+- `npm run lint` feiler på legacy-filer (48 feil). Ryddes når gamle scener slettes; deretter kan `lint:core` fjernes.
+- `parseLevelId` antar ensifret verden; `isWorldUnlocked` guarder ikke `world < 1`.
+- `makeTargetPalindrome` guarder ikke `wild + locked > length` selv; `generateCandidate` gjør det.

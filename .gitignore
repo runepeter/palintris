@@ -26,3 +26,8 @@ npm-debug.log*
 # Vercel
 .vercel
 .claude/worktrees/
+
+# Playwright
+playwright-report/
+test-results/
+.playwright-mcp/

@@ -75,7 +75,7 @@ apply(rules: Rules, state: BoardState, cmd: Command): Result<BoardState, RejectR
   - Løser med fast `limits.states` (ingen ms) beregner `mål`. `solved` med `moves` utenfor oppskriftens intervall `[minMoves, maxMoves]` forkastes. `unknown` godtas kun når løsningslengden ligger i intervallet; da er `mål` = løsningslengde.
   - Kampanje: brett med samme symbolstreng som et tidligere godtatt brett i samme verden forkastes, i fast nivårekkefølge.
   - Daily: brettet for dag N sammenlignes med brettene for tidligere dager i samme ISO-uke, som hver genereres deterministisk fra egen dato. Rekkefølgen er dermed fast og uavhengig av hva klienten har spilt.
-  - Introduksjonsnivå for en operasjon: løser med `allowedOps` uten operasjonen må gi `unreachableWithinBudget`. Introduksjonsnivå for låser: løser må gi `solved` både med og uten låsene, og `moves` med låser må være strengt større enn uten. Gir noen av søkene `unknown`, forkastes kandidaten.
+  - Introduksjonsnivå for en operasjon: løser med `allowedOps` uten operasjonen og `maxMoves = mål` må gi `unreachableWithinBudget`, altså at mekanikken trengs for å nå mål og tre stjerner. Innen hele budsjettet er kravet ikke oppfyllbart, fordi swap alene når enhver permutasjon på korte brett innen mål + 4. Introduksjonsnivå for låser: løser må gi `solved` både med og uten låsene, og `moves` med låser må være strengt større enn uten. Gir noen av søkene `unknown`, forkastes kandidaten.
 - Generatoren er deterministisk fra seed og `contentVersion`. Samme seed og versjon gir samme brett og samme `mål` på alle enheter.
 
 ### Mål, budsjett og stjerner
@@ -133,6 +133,8 @@ apply(rules: Rules, state: BoardState, cmd: Command): Result<BoardState, RejectR
   6. Mestring: alt, lengde 10–14, slakk 4.
 - Hver verden har en oppskrift: lengdeintervall, alfabetstørrelse, tillatte operasjoner, `[minMoves, maxMoves]`, slakk, hånd-innhold, andel låste.
 - Kampanjebrett fryses: `scripts/build-campaign.ts` genererer alle 90 brett fra oppskrift og seed, beregner `mål` med løser, og skriver `src/content/campaign.v{N}.json`. Klienten leser JSON og kjører aldri generatoren for kampanjen. `contentVersion` bumpes når brett endres.
+- Kampanjens `mål` er alltid eksakt: kandidater der løseren gir `unknown` forkastes, og offline-bygget bruker en løsergrense stor nok til å avgjøre alle brett. Reserveverdien «løsningslengde» gjelder bare fri spilling og Daily.
+- Vanskelighetskurve: `minMoves` for nivå n i en verden stiger lineært fra `movesRange[0]` (nivå 1) til `movesRange[1]` (nivå 15), avrundet. `movesRange[1]` er også øvre grense for `mål`.
 - 3–5 signaturnivåer per verden håndlages i samme JSON-format og valideres av samme skript.
 - Opplåsing: neste nivå ved løst. Neste verden når 12 av 15 er løst. Stjerner er ikke en port.
 - Fri spilling: knapp per verden, uendelige brett fra oppskriften generert i klient, uten stjerner. Løser med små `states`-grenser gir `mål` eller viser «mål ukjent».
