@@ -18,6 +18,12 @@ const FREE_RAMPS = [4, 1] as const;
 const FREE_ID = /^free-w(\d+)-(\d+)$/;
 /** Generatoren kan bomme på en oppskrift; noen forsøk per trinn holder i praksis. */
 const TRIES_PER_RAMP = 4;
+/**
+ * Som daglig og blitz: ingen reell trekkgrense. HUD-en viser ikke budsjett i fri
+ * spilling, og et skjult budsjett ville stanset brettet uten forvarsel. Stjernene
+ * regnes fortsatt mot målet.
+ */
+export const FREE_BUDGET = 999;
 
 export const freeLevelId = (world: number, n: number): string => `free-w${world}-${n}`;
 
@@ -69,10 +75,10 @@ export class FreeMode implements BoardMode {
           rules: rulesFor(level),
           target: level.target,
           targetExact: level.targetExact,
-          budget: level.budget,
+          budget: FREE_BUDGET,
           contentVersion: this.contentVersion,
           timed: false,
-          showBudget: true,
+          showBudget: false,
         };
         this.loaded.set(levelId, mode);
         return mode;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { WORLD_COUNT } from '../../core/progression';
 import { createRng } from '../../core/rng';
-import { freeLevelId, FreeMode, parseFreeLevelId } from '../modes/free';
+import { FREE_BUDGET, freeLevelId, FreeMode, parseFreeLevelId } from '../modes/free';
 import type { BoardMode } from '../modes/types';
 
 describe('freeLevelId', () => {
@@ -18,7 +18,7 @@ describe('freeLevelId', () => {
 });
 
 describe('FreeMode', () => {
-  it('laster et brett med budsjettvisning og uten tidtaking', () => {
+  it('laster et brett uten budsjettvisning og uten tidtaking', () => {
     const mode = new FreeMode(1, createRng(42));
     const lvl = mode.load('free-w1-1');
     expect(lvl).not.toBeNull();
@@ -27,8 +27,8 @@ describe('FreeMode', () => {
     expect(lvl.world).toBe(1);
     expect(lvl.n).toBe(1);
     expect(lvl.timed).toBe(false);
-    expect(lvl.showBudget).toBe(true);
-    expect(lvl.budget).toBe(lvl.target + 4);
+    expect(lvl.showBudget).toBe(false);
+    expect(lvl.budget).toBe(FREE_BUDGET);
     expect(lvl.rules.allowedOps.has('swap')).toBe(true);
     const asMode: BoardMode = mode;
     expect(asMode.isUnlocked('free-w1-1')).toBe(true);
@@ -50,8 +50,9 @@ describe('FreeMode', () => {
     expect(out.nextUnlocked).toBe(true);
     expect(out.worldJustUnlocked).toBeNull();
 
-    const overBudget = mode.onSolved('free-w1-4', lvl.budget + 1);
-    expect(overBudget.stars).toBe(0);
+    // Budsjettet er ikke en reell grense lenger; ett trekk over målet gir to stjerner.
+    const overTarget = mode.onSolved('free-w1-4', lvl.target + 1);
+    expect(overTarget.stars).toBe(2);
   });
 
   it('onSolved uten lastet brett gir 0 stjerner', () => {

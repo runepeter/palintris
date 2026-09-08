@@ -13,6 +13,22 @@ export interface TileFlags {
   cursor: boolean;
 }
 
+/**
+ * Én diagonal av stripemønsteret, klippet mot kvadratet [-h, h]². Linjen går fra
+ * (-h + d, h) til (h + d, -h), så y holder seg innenfor av seg selv og bare x må klippes.
+ * Uten klippingen stakk strekene halvannen brikkebredde ut i bakgrunnen.
+ */
+const drawStripe = (g: Phaser.GameObjects.Graphics, d: number, h: number): void => {
+  const span = 2 * h;
+  const t0 = Math.max(0, -d / span);
+  const t1 = Math.min(1, (span - d) / span);
+  if (t0 >= t1) return;
+  const at = (t: number): { x: number; y: number } => ({ x: -h + d + span * t, y: h - span * t });
+  const a = at(t0);
+  const b = at(t1);
+  g.lineBetween(a.x, a.y, b.x, b.y);
+};
+
 const drawPattern = (g: Phaser.GameObjects.Graphics, pattern: TilePattern, size: number): void => {
   const h = size / 2;
   const step = size / 5;
@@ -23,7 +39,7 @@ const drawPattern = (g: Phaser.GameObjects.Graphics, pattern: TilePattern, size:
       for (let y = -h + step; y < h; y += step) for (let x = -h + step; x < h; x += step) g.fillCircle(x, y, size * 0.04);
       break;
     case 'stripes':
-      for (let d = -size; d < size; d += step) g.lineBetween(-h + d, h, h + d, -h);
+      for (let d = -size; d < size; d += step) drawStripe(g, d, h);
       break;
     case 'rings':
       for (let r = step; r < h; r += step) g.strokeCircle(0, 0, r);
