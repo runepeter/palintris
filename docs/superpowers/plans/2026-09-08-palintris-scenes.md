@@ -388,7 +388,7 @@ export class KeyboardController {
       this.state = { cursor, selected: null, segment: null };
       return [{ type: 'swap', a: sel, b: cursor }];
     }
-    this.state = { ...this.state, cursor };
+    this.state = { ...this.state, cursor, segment: null };
     return [];
   }
 
