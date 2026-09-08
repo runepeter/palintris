@@ -2833,12 +2833,22 @@ export const INTRO_LEVELS: Readonly<Record<string, IntroOf>> = {
 ```ts
 import { writeFileSync } from 'node:fs';
 import { CONTENT_VERSION, INTRO_LEVELS, WORLD_RECIPES } from '../src/content/recipes';
-import type { Level, Recipe } from '../src/core/level';
+import type { IntroOf, Level, Recipe } from '../src/core/level';
 import { makeLevel } from '../src/core/level';
 import { levelId, LEVELS_PER_WORLD } from '../src/core/progression';
 import { symbolKey } from '../src/core/tiles';
 
 const levels: Level[] = [];
+
+/** Intro-nivåer holdes så korte som mulig: prøv lengdene fra oppskriftens minimum og oppover. */
+const makeIntroLevel = (recipe: Recipe, id: string, keys: readonly string[], introOf: IntroOf): Level | null => {
+  for (let len = recipe.lengthRange[0]; len <= recipe.lengthRange[1]; len++) {
+    const pinned: Recipe = { ...recipe, lengthRange: [len, len] };
+    const level = makeLevel(pinned, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, introOf, attempts: 400 });
+    if (level !== null) return level;
+  }
+  return null;
+};
 
 WORLD_RECIPES.forEach((recipe, wi) => {
   const world = wi + 1;
@@ -2846,9 +2856,9 @@ WORLD_RECIPES.forEach((recipe, wi) => {
   for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
     const id = levelId(world, n);
     const introOf = INTRO_LEVELS[id];
-    const effective: Recipe =
-      introOf === undefined ? recipe : { ...recipe, lengthRange: [recipe.lengthRange[0], recipe.lengthRange[0]] };
-    const level = makeLevel(effective, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, introOf, attempts: 400 });
+    const level = introOf === undefined
+      ? makeLevel(recipe, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, attempts: 400 })
+      : makeIntroLevel(recipe, id, keys, introOf);
     if (level === null) {
       console.error(`Kunne ikke generere ${id}`);
       process.exit(1);
