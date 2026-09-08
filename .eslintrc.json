@@ -4,7 +4,7 @@
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
-    "project": ["./tsconfig.json", "./tsconfig.node.json"]
+    "project": ["./tsconfig.json", "./tsconfig.node.json", "./e2e/tsconfig.json"]
   },
   "plugins": ["@typescript-eslint"],
   "extends": [
@@ -38,16 +38,5 @@
   "env": {
     "browser": true,
     "es2020": true
-  },
-  "ignorePatterns": [
-    "src/scenes/CascadeScene.ts",
-    "src/scenes/DailyChallengeScene.ts",
-    "src/scenes/GameScene.ts",
-    "src/scenes/LevelSelectScene.ts",
-    "src/scenes/MechanicalGameScene.ts",
-    "src/scenes/MenuScene.ts",
-    "src/scenes/TimeAttackScene.ts",
-    "src/scenes/VersusScene.ts",
-    "src/scenes/ZenModeScene.ts"
-  ]
+  }
 }

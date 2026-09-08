@@ -2,12 +2,12 @@ import Phaser from 'phaser';
 import { COLORS, cssColor, DURATION, EASING, FONTS, RADIUS } from '../theme/theme';
 
 export const SCENE = {
-  boot: 'Boot2',
-  menu: 'Menu2',
-  worldMap: 'WorldMap2',
-  board: 'Board2',
-  result: 'Result2',
-  settings: 'Settings2',
+  boot: 'Boot',
+  menu: 'Menu',
+  worldMap: 'WorldMap',
+  board: 'Board',
+  result: 'Result',
+  settings: 'Settings',
 } as const;
 
 export interface LabelOpts {

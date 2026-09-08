@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import { BoardScene2 } from './scenes/BoardScene2';
-import { BootScene2 } from './scenes/BootScene2';
-import { MenuScene2 } from './scenes/MenuScene2';
-import { ResultScene2 } from './scenes/ResultScene2';
-import { SettingsScene2 } from './scenes/SettingsScene2';
-import { WorldMapScene2 } from './scenes/WorldMapScene2';
+import { BoardScene } from './scenes/BoardScene';
+import { BootScene } from './scenes/BootScene';
+import { MenuScene } from './scenes/MenuScene';
+import { ResultScene } from './scenes/ResultScene';
+import { SettingsScene } from './scenes/SettingsScene';
+import { WorldMapScene } from './scenes/WorldMapScene';
 import { COLORS, cssColor } from './theme/theme';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -18,7 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: '100%',
   },
   input: { mouse: true, touch: true },
-  scene: [BootScene2, MenuScene2, WorldMapScene2, BoardScene2, ResultScene2, SettingsScene2],
+  scene: [BootScene, MenuScene, WorldMapScene, BoardScene, ResultScene, SettingsScene],
 };
 
 new Phaser.Game(config);

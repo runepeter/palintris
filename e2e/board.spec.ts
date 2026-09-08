@@ -32,11 +32,37 @@ const campaign = JSON.parse(readFileSync('src/content/campaign.v1.json', 'utf8')
 const level = campaign.levels.find((l) => l.id === LEVEL_ID);
 if (level === undefined) throw new Error(`fant ikke ${LEVEL_ID}`);
 
-const hook = (page: Page) => ({
-  slot: (i: number) => page.evaluate((idx) => window.__palintris!.screenLayout().slots[idx]!, i),
-  view: () => page.evaluate(() => window.__palintris!.view()),
-  menu: () => page.evaluate(() => window.__palintris!.menu()),
-  zones: () => page.evaluate(() => window.__palintris!.zones()),
+interface Hook {
+  slot(i: number): Promise<{ x: number; y: number; index: number }>;
+  view(): Promise<{ tiles: { id: number }[]; solved: boolean; movesUsed: number; stars: number }>;
+  menu(): Promise<ReadonlyArray<{ x: number; y: number; action: string }> | null>;
+  zones(): Promise<{ wild: { x: number; y: number }; remove: { x: number; y: number }; undo: { x: number; y: number }; reset: { x: number; y: number } }>;
+  waitIdle(): Promise<unknown>;
+}
+
+const hook = (page: Page): Hook => ({
+  slot: (i: number) =>
+    page.evaluate((idx) => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      const slot = window.__palintris.screenLayout().slots[idx];
+      if (slot === undefined) throw new Error(`slot ${idx} finnes ikke`);
+      return slot;
+    }, i),
+  view: () =>
+    page.evaluate(() => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      return window.__palintris.view();
+    }),
+  menu: () =>
+    page.evaluate(() => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      return window.__palintris.menu();
+    }),
+  zones: () =>
+    page.evaluate(() => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      return window.__palintris.zones();
+    }),
   waitIdle: () => page.waitForFunction(() => window.__palintris !== undefined && !window.__palintris.busy()),
 });
 
@@ -67,9 +93,10 @@ const perform = async (page: Page, cmd: Cmd): Promise<void> => {
     await tap(page, await h.slot(cmd.from));
     await tap(page, await h.slot(cmd.to));
     const menu = await h.menu();
-    expect(menu).not.toBeNull();
+    if (menu === null) throw new Error('segmentmeny åpnet ikke');
     const action = cmd.type === 'mirror' ? 'mirror' : cmd.dir === 'left' ? 'rotateLeft' : 'rotateRight';
-    const btn = menu!.find((m) => m.action === action)!;
+    const btn = menu.find((m) => m.action === action);
+    if (btn === undefined) throw new Error(`meny mangler handling ${action}`);
     await tap(page, btn);
     return;
   }
@@ -86,7 +113,8 @@ test('løser et hårnålnivå med drag og trykk, angrer underveis, får stjerner
   expect(start.solved).toBe(false);
 
   const [first, ...rest] = level.solution;
-  await perform(page, first!);
+  if (first === undefined) throw new Error(`${LEVEL_ID} har ingen løsningssteg`);
+  await perform(page, first);
   await h.waitIdle();
   expect((await h.view()).movesUsed).toBe(1);
 
@@ -94,7 +122,7 @@ test('løser et hårnålnivå med drag og trykk, angrer underveis, får stjerner
   await h.waitIdle();
   expect((await h.view()).movesUsed).toBe(0);
 
-  await perform(page, first!);
+  await perform(page, first);
   for (const cmd of rest) await perform(page, cmd);
   await page.waitForFunction(() => window.__palintris?.view().solved === true, undefined, { timeout: 15_000 });
   const done = await h.view();
