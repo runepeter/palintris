@@ -68,15 +68,20 @@ const gapsFor = (kind: LayoutKind, slots: readonly TileSlot[], pitch: number): G
 
 /**
  * Regner brikkeposisjoner i layoutets eget rom. Bredder under MIN_WIDTH regnes som
- * MIN_WIDTH og får scale < 1, som scenen bruker til å skalere hele brettet.
+ * MIN_WIDTH og får scale < 1, som scenen bruker til å skalere hele brettet. Brikken
+ * klemmes også av høyden; blir den for lav for TILE_MIN, tar scale resten.
  */
 export const computeLayout = (input: { count: number; width: number; height: number }): BoardLayout => {
   const { count, height } = input;
   const width = Math.max(input.width, MIN_WIDTH);
-  const scale = input.width / width;
   const kind = layoutKind(count);
   const cols = columnsFor(count);
-  const tile = tileSize(width, cols);
+  const rows = kind === 'row' ? 1 : 2;
+  const byWidth = tileSize(width, cols);
+  const byHeight = (height - 2 * MARGIN - GAP * (rows - 1)) / rows;
+  const tile = clamp(Math.min(byWidth, byHeight), TILE_MIN, TILE_MAX);
+  const neededH = rows * tile + GAP * (rows - 1) + 2 * MARGIN;
+  const scale = Math.min(input.width / width, neededH > height ? height / neededH : 1);
   const pitch = tile + GAP;
   const totalW = cols * tile + (cols - 1) * GAP;
   const x0 = (width - totalW) / 2 + tile / 2;

@@ -81,6 +81,18 @@ describe('skalering', () => {
     expect(l.scale).toBeCloseTo(320 / 360, 5);
     expect(lay(7, 390).scale).toBe(1);
   });
+
+  it('lav boks klemmer brikken etter høyde uten å skalere', () => {
+    const l = computeLayout({ count: 8, width: 390, height: 120 });
+    expect(l.tile).toBeCloseTo(50, 5);
+    expect(l.scale).toBe(1);
+  });
+
+  it('for lav boks stopper på minstestørrelsen og skalerer resten ned', () => {
+    const l = computeLayout({ count: 8, width: 390, height: 60 });
+    expect(l.tile).toBe(TILE_MIN);
+    expect(l.scale).toBeCloseTo(60 / 108, 5);
+  });
 });
 
 describe('gaps', () => {
