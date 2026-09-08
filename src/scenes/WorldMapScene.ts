@@ -54,6 +54,8 @@ export class WorldMapScene extends Phaser.Scene {
     const stars = s.store.stars();
     const width = contentWidth(this);
     const left = contentLeft(this);
+    const mapLeft = left + SPACE.lg;
+    const mapWidth = width - SPACE.lg * 2;
     const cx = screenWidth(this) / 2;
     const accent = worldAccent(this.world);
     const compact = screenHeight(this) < 560;
@@ -84,7 +86,7 @@ export class WorldMapScene extends Phaser.Scene {
     }
     const gridTop = compact ? 84 : 174;
     const gridBottom = screenHeight(this) - (compact ? 110 : 140);
-    const cellW = width / COLS;
+    const cellW = mapWidth / COLS;
     const cellH = Math.min(cellW, (gridBottom - gridTop) / ROWS);
     const gridHeight = cellH * ROWS;
     const gridStartY = gridTop + Math.max(0, (gridBottom - gridTop - gridHeight) / 2);
@@ -94,7 +96,7 @@ export class WorldMapScene extends Phaser.Scene {
     const positions = Array.from({ length: LEVELS_PER_WORLD }, (_, i) => {
       const row = Math.floor(i / COLS);
       const col = row % 2 === 0 ? i % COLS : COLS - 1 - i % COLS;
-      return { x: left + cellW * (col + 0.5), y: gridStartY + cellH * (row + 0.5) + (rhythm[col] ?? 0) * (compact ? 0.5 : 1) };
+      return { x: mapLeft + cellW * (col + 0.5), y: gridStartY + cellH * (row + 0.5) + (rhythm[col] ?? 0) * (compact ? 0.5 : 1) };
     });
     const path = this.add.graphics();
     for (let i = 0; i < positions.length - 1; i++) {

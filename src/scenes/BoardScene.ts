@@ -1169,7 +1169,7 @@ export class BoardScene extends Phaser.Scene {
       if (tile !== undefined) this.tiles.get(tile.id)?.pulse(this.accent(), reduced);
     }
     const cx = contentLeft(this) + contentWidth(this) / 2;
-    const y = Math.max(HUD_HEIGHT + SPACE.xl, this.originY - SPACE.lg);
+    const y = Math.max(HUD_HEIGHT + SPACE.xl * 2, this.originY - SPACE.lg);
     const flow = this.flow > 1 ? ` · Flyt ×${this.flow}` : '';
     this.effects.reward(cx, y, `Harmoni +${this.lastGain}${flow}`, this.accent());
     if (!reduced) this.effects.burst(cx, y + SPACE.lg, this.accent());

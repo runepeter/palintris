@@ -83,7 +83,7 @@ export class BlitzResultScene extends Phaser.Scene {
       onClick: () => this.scene.start(SCENE.board, { mode: 'blitz' }),
     });
     makeButton(this, {
-      x: buttonsX, y: buttonsTop + 68, width: BUTTON_W, height: 40, label: 'Til menyen', labelSize: 13, accent: COLORS.line,
+      x: buttonsX, y: buttonsTop + 70, width: BUTTON_W, height: 44, label: 'Til menyen', labelSize: 13, accent: COLORS.line,
       onClick: () => this.scene.start(SCENE.menu),
     });
   }

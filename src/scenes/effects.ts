@@ -50,7 +50,9 @@ export class Effects {
 
   /** Teksten bærer informasjonen også med redusert bevegelse; bevegelsen er pynt. */
   reward(x: number, y: number, label: string, color: number): void {
-    const text = makeLabel(this.scene, x, y, label, { size: 18, color, font: 'body', bold: true }).setDepth(850);
+    const text = makeLabel(this.scene, x, y, label, { size: 18, color, font: 'body', bold: true })
+      .setStroke(cssColor(COLORS.shadow), 5)
+      .setDepth(850);
     if (this.reduced) {
       this.scene.time.delayedCall(500, () => text.destroy());
       return;

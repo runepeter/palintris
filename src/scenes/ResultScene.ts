@@ -88,9 +88,11 @@ export class ResultScene extends Phaser.Scene {
     makeLabel(this, summaryX, landscape ? 42 : h * 0.105, this.resultEyebrow(world), {
       size: 10, color: COLORS.star, font: 'body', bold: true,
     }).setLetterSpacing(2.2);
-    makeLabel(this, summaryX, landscape ? 78 : h * 0.165, presentation.title, {
+    const title = makeLabel(this, summaryX, landscape ? 78 : h * 0.165, presentation.title, {
       size: landscape ? 30 : Math.min(38, w * 0.095), color: COLORS.ink, bold: true,
     }).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
+    const titleWidth = landscape ? Math.min(320, w / 2 - 36) : w - 40;
+    title.setScale(Math.min(1, titleWidth / title.width));
     this.buildRatingSeal(summaryX, summaryY, accent, d, effects, animate);
     this.celebrated = true;
     makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  mål ${this.target}`, {
@@ -130,12 +132,12 @@ export class ResultScene extends Phaser.Scene {
     const secondaryY = buttonsTop + 70;
     if (!isFree) {
       makeButton(this, {
-        x: buttonsX - 70, y: secondaryY, width: 132, height: 40, label: 'Spill igjen', labelSize: 13, accent: COLORS.line,
+        x: buttonsX - 70, y: secondaryY, width: 132, height: 44, label: 'Spill igjen', labelSize: 13, accent: COLORS.line,
         onClick: () => this.scene.start(SCENE.board, { mode: this.mode, levelId: this.levelId }),
       });
     }
     makeButton(this, {
-      x: isFree ? buttonsX : buttonsX + 70, y: secondaryY, width: 132, height: 40, label: toWorldMap ? 'Verdenskart' : 'Meny',
+      x: isFree ? buttonsX : buttonsX + 70, y: secondaryY, width: 132, height: 44, label: toWorldMap ? 'Verdenskart' : 'Meny',
       labelSize: 13, accent: COLORS.line,
       onClick: () => {
         if (toWorldMap) this.scene.start(SCENE.worldMap, { world });
@@ -161,7 +163,7 @@ export class ResultScene extends Phaser.Scene {
     const share = sharedAttempt(services(this).store.data.daily.attempts, this.levelId);
     const text = share === undefined ? null : dailyShareText(share);
     makeButton(this, {
-      x: cx - 70, y: top + 70, width: 132, height: 40,
+      x: cx - 70, y: top + 70, width: 132, height: 44,
       label: this.copied === 'ok' ? 'Kopiert' : 'Del', labelSize: 13, accent: COLORS.line, enabled: text !== null,
       onClick: () => {
         if (text === null) return;
@@ -175,7 +177,7 @@ export class ResultScene extends Phaser.Scene {
       makeLabel(this, cx, top + (landscape ? 105 : 126), 'Kunne ikke kopiere', { size: 12, color: COLORS.danger, font: 'body' });
     }
     makeButton(this, {
-      x: cx + 70, y: top + 70, width: 132, height: 40, label: 'Daglig', labelSize: 13, accent: COLORS.line,
+      x: cx + 70, y: top + 70, width: 132, height: 44, label: 'Daglig', labelSize: 13, accent: COLORS.line,
       onClick: () => this.scene.start(SCENE.daily),
     });
   }
