@@ -77,7 +77,6 @@ export class FreeMode implements BoardMode {
           targetExact: level.targetExact,
           budget: FREE_BUDGET,
           contentVersion: this.contentVersion,
-          timed: false,
           showBudget: false,
         };
         this.loaded.set(levelId, mode);

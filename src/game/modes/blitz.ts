@@ -40,7 +40,6 @@ export class BlitzMode implements BoardMode {
       targetExact: level.targetExact,
       budget: BLITZ_BUDGET,
       contentVersion: level.contentVersion,
-      timed: false,
       showBudget: false,
     };
     this.seen.set(level.id, mode);

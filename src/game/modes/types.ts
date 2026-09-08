@@ -14,8 +14,6 @@ export interface ModeLevel {
   readonly targetExact: boolean;
   readonly budget: number;
   readonly contentVersion: number;
-  /** Sant når tiden er en del av resultatet, så brettet viser en klokke. */
-  readonly timed: boolean;
   /** Usant når budsjettet bare er en teknisk øvre grense og ikke skal vises. */
   readonly showBudget: boolean;
 }

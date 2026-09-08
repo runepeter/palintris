@@ -102,8 +102,15 @@ export class WorldMapScene extends Phaser.Scene {
     c.setSize(size, size);
     if (!unlocked) return;
     c.setInteractive({ useHandCursor: true });
-    c.on('pointerover', () => this.tweens.add({ targets: c, scale: 1.05, duration: DURATION.snap, ease: EASING.pop }));
-    c.on('pointerout', () => this.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop }));
+    // Rask inn/ut-hovring kunne stable opp konkurrerende skaleringstweens; drep forrige først.
+    c.on('pointerover', () => {
+      this.tweens.killTweensOf(c);
+      this.tweens.add({ targets: c, scale: 1.05, duration: DURATION.snap, ease: EASING.pop });
+    });
+    c.on('pointerout', () => {
+      this.tweens.killTweensOf(c);
+      this.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop });
+    });
     c.on('pointerup', () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: id }));
   }
 }

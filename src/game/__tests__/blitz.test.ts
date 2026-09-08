@@ -132,7 +132,6 @@ describe('BlitzMode', () => {
     expect(mode.solved).toBe(0);
 
     const lvl = mode.load('next');
-    expect(lvl.timed).toBe(false);
     expect(lvl.showBudget).toBe(false);
     expect(lvl.budget).toBe(999);
     const asMode: BoardMode = mode;

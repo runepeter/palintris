@@ -194,7 +194,6 @@ describe('DailyMode', () => {
     const lvl = mode.load(mode.todayId());
     expect(lvl).not.toBeNull();
     if (lvl === null) return;
-    expect(lvl.timed).toBe(true);
     expect(lvl.showBudget).toBe(false);
     expect(lvl.budget).toBe(DAILY_BUDGET);
     expect(lvl.id).toBe(mode.todayId());

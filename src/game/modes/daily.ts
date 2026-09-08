@@ -46,7 +46,6 @@ export class DailyMode implements BoardMode {
       targetExact: level.targetExact,
       budget: DAILY_BUDGET,
       contentVersion: parsed.contentVersion,
-      timed: true,
       showBudget: false,
     };
   }

@@ -6,7 +6,7 @@ et trekkbudsjett.
 
 ## Moduser
 
-- **Kampanje** – 90 håndbygde nivåer over 6 verdener. Hver verden introduserer en ny
+- **Kampanje** – 90 nivåer over 6 verdener, generert av `scripts/build-campaign.ts`. Hver verden introduserer en ny
   mekanikk: bytt naboer, roter et utsnitt, speil et utsnitt, låste brikker, joker og
   fjerning av brikker.
 - **Daglig** – ett felles brett per dag (UTC), med streak.

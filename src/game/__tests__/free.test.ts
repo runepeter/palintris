@@ -26,7 +26,6 @@ describe('FreeMode', () => {
     expect(lvl.id).toBe('free-w1-1');
     expect(lvl.world).toBe(1);
     expect(lvl.n).toBe(1);
-    expect(lvl.timed).toBe(false);
     expect(lvl.showBudget).toBe(false);
     expect(lvl.budget).toBe(FREE_BUDGET);
     expect(lvl.rules.allowedOps.has('swap')).toBe(true);
