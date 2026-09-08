@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { dismissIntroIfVisible, drag, hook, tap } from './helpers';
 
-const LEVEL_ID = 'w1-01';
+const LEVEL_ID = 'w1-02';
 
 test('blindvei ved tomt budsjett viser banner; angre fjerner den', async ({ page }) => {
   await page.goto(`/?level=${LEVEL_ID}`);
@@ -13,7 +13,7 @@ test('blindvei ved tomt budsjett viser banner; angre fjerner den', async ({ page
   const start = await h.view();
   expect(start.budgetLeft).toBeGreaterThan(0);
 
-  // w1-01 har to nabobrikker med samme symbol (B, B) på plass 0-1: å bytte dem fram og
+  // w1-02 har to nabobrikker med samme symbol (B, B) på plass 0-1: å bytte dem fram og
   // tilbake bruker opp budsjettet uten å endre om brettet er et palindrom. Løseren merker
   // brettet som blindvei så snart gjenværende budsjett er for lite til korteste løsning,
   // altså gjerne før budgetLeft faktisk når 0 — sløyfa stopper derfor på banneret.
