@@ -1,22 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-
-// Minimal local shape of window.__palintris (src/scenes/testHook.ts), kept
-// self-contained so e2e/tsconfig.json doesn't need to pull in src's ambient types.
-interface PalintrisHook {
-  readonly levelId: string;
-  view(): { tiles: { id: number }[]; solved: boolean; movesUsed: number; stars: number };
-  screenLayout(): { slots: ReadonlyArray<{ x: number; y: number; index: number }> };
-  menu(): ReadonlyArray<{ x: number; y: number; action: string }> | null;
-  zones(): { wild: { x: number; y: number }; remove: { x: number; y: number }; undo: { x: number; y: number }; reset: { x: number; y: number } };
-  busy(): boolean;
-}
-
-declare global {
-  interface Window {
-    __palintris?: PalintrisHook;
-  }
-}
+// TestHook is the real window.__palintris shape (src/scenes/testHook.ts); importing
+// it here (type-only, no Phaser/Vite pulled in) also brings in its declare global,
+// so this file's window.__palintris stays in sync instead of duplicating the shape.
+import type { TestHook } from '../src/scenes/hookTypes';
 
 type Cmd =
   | { type: 'swap'; a: number; b: number }
@@ -33,10 +20,10 @@ const level = campaign.levels.find((l) => l.id === LEVEL_ID);
 if (level === undefined) throw new Error(`fant ikke ${LEVEL_ID}`);
 
 interface Hook {
-  slot(i: number): Promise<{ x: number; y: number; index: number }>;
-  view(): Promise<{ tiles: { id: number }[]; solved: boolean; movesUsed: number; stars: number }>;
-  menu(): Promise<ReadonlyArray<{ x: number; y: number; action: string }> | null>;
-  zones(): Promise<{ wild: { x: number; y: number }; remove: { x: number; y: number }; undo: { x: number; y: number }; reset: { x: number; y: number } }>;
+  slot(i: number): Promise<ReturnType<TestHook['screenLayout']>['slots'][number]>;
+  view(): Promise<ReturnType<TestHook['view']>>;
+  menu(): Promise<ReturnType<TestHook['menu']>>;
+  zones(): Promise<ReturnType<TestHook['zones']>>;
   waitIdle(): Promise<unknown>;
 }
 

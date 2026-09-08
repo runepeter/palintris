@@ -63,9 +63,14 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
     // Phaser fyrer pointerup på knappen uansett hvor pointerdown skjedde. Uten armeringen
     // ville et drag som slippes over Angre eller Reset utføre kommandoen.
     let armed = false;
-    c.on('pointerover', () => scene.tweens.add({ targets: c, scale: 1.04, duration: DURATION.snap, ease: EASING.pop }));
+    // Rask inn/ut-hovring kunne stable opp konkurrerende skaleringstweens; drep forrige først.
+    c.on('pointerover', () => {
+      scene.tweens.killTweensOf(c);
+      scene.tweens.add({ targets: c, scale: 1.04, duration: DURATION.snap, ease: EASING.pop });
+    });
     c.on('pointerout', () => {
       armed = false;
+      scene.tweens.killTweensOf(c);
       scene.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop });
     });
     c.on('pointerdown', () => {

@@ -18,6 +18,15 @@ const NOTES = {
 // Rest marker
 const REST = 0;
 
+/** Skifter en frekvens `semitones` halvtoner opp/ned. Hvile (0) blir hvile, siden 0 * x = 0. */
+export const transposedFrequency = (base: number, semitones: number): number => base * Math.pow(2, semitones / 12);
+
+/** Valgfri per-avspilling-variasjon: transponering i halvtoner og fart som deler steg-tiden. */
+export interface MusicOpts {
+  readonly transpose?: number;
+  readonly tempoScale?: number;
+}
+
 // Pattern types for sequencer
 interface NoteEvent {
   note: number; // frequency or REST
@@ -39,6 +48,8 @@ interface Pattern {
 class ChiptuneEngine {
   private isPlaying = false;
   private currentPattern: Pattern | null = null;
+  private currentTrackName: string | null = null;
+  private currentOpts: Required<MusicOpts> = { transpose: 0, tempoScale: 1 };
   private stepIndex = 0;
   private stepInterval: ReturnType<typeof setInterval> | null = null;
   private activeOscillators: OscillatorNode[] = [];
@@ -122,19 +133,28 @@ class ChiptuneEngine {
     source.stop(now + duration);
   }
 
-  public play(patternName: string): void {
+  public play(patternName: string, opts: MusicOpts = {}): void {
     if (!this.musicEnabled()) return;
     if (this.getContext() === null) return;
 
     const pattern = PATTERNS[patternName];
     if (!pattern) return;
 
+    const resolved: Required<MusicOpts> = { transpose: opts.transpose ?? 0, tempoScale: opts.tempoScale ?? 1 };
+    // Samme spor med samme variasjon spilles allerede: en restart ville bare hakket sekvenseren.
+    if (this.isPlaying && this.currentTrackName === patternName &&
+      this.currentOpts.transpose === resolved.transpose && this.currentOpts.tempoScale === resolved.tempoScale) {
+      return;
+    }
+
     this.stop();
     this.currentPattern = pattern;
+    this.currentTrackName = patternName;
+    this.currentOpts = resolved;
     this.stepIndex = 0;
     this.isPlaying = true;
 
-    const stepDuration = 60 / pattern.tempo / 4; // 16th note duration in seconds
+    const stepDuration = 60 / pattern.tempo / 4 / resolved.tempoScale; // 16th note duration in seconds
 
     this.stepInterval = setInterval(() => {
       this.processStep(stepDuration);
@@ -147,10 +167,11 @@ class ChiptuneEngine {
     const pattern = this.currentPattern;
 
     // Find notes that start at this step
+    const transpose = this.currentOpts.transpose;
     let currentPos = 0;
     for (const event of pattern.pulse1) {
       if (currentPos === this.stepIndex) {
-        this.playNote(event.note, stepDuration * event.duration * 0.9, 'square', 0.08);
+        this.playNote(transposedFrequency(event.note, transpose), stepDuration * event.duration * 0.9, 'square', 0.08);
         break;
       }
       currentPos += event.duration;
@@ -160,7 +181,7 @@ class ChiptuneEngine {
     currentPos = 0;
     for (const event of pattern.pulse2) {
       if (currentPos === this.stepIndex) {
-        this.playNote(event.note, stepDuration * event.duration * 0.9, 'square', 0.06);
+        this.playNote(transposedFrequency(event.note, transpose), stepDuration * event.duration * 0.9, 'square', 0.06);
         break;
       }
       currentPos += event.duration;
@@ -170,7 +191,7 @@ class ChiptuneEngine {
     currentPos = 0;
     for (const event of pattern.triangle) {
       if (currentPos === this.stepIndex) {
-        this.playNote(event.note, stepDuration * event.duration * 0.95, 'triangle', 0.1);
+        this.playNote(transposedFrequency(event.note, transpose), stepDuration * event.duration * 0.95, 'triangle', 0.1);
         break;
       }
       currentPos += event.duration;
@@ -192,6 +213,7 @@ class ChiptuneEngine {
 
   public stop(): void {
     this.isPlaying = false;
+    this.currentTrackName = null;
     if (this.stepInterval) {
       clearInterval(this.stepInterval);
       this.stepInterval = null;
@@ -204,6 +226,10 @@ class ChiptuneEngine {
 
   public isCurrentlyPlaying(): boolean {
     return this.isPlaying;
+  }
+
+  public currentTrack(): string | null {
+    return this.isPlaying ? this.currentTrackName : null;
   }
 }
 
@@ -605,9 +631,9 @@ class AudioManager {
 
   // ========== MUSIC CONTROL ==========
 
-  public startMusic(track: 'menu' | 'gameplay'): void {
+  public startMusic(track: 'menu' | 'gameplay', opts?: MusicOpts): void {
     this.initContext();
-    this.chiptuneEngine.play(track);
+    this.chiptuneEngine.play(track, opts);
   }
 
   public stopMusic(): void {
@@ -616,6 +642,11 @@ class AudioManager {
 
   public isMusicPlaying(): boolean {
     return this.chiptuneEngine.isCurrentlyPlaying();
+  }
+
+  /** Sporet som spilles nå, eller null når musikk er av/stoppet. Brukt for å unngå unødig restart. */
+  public currentTrack(): string | null {
+    return this.chiptuneEngine.currentTrack();
   }
 
   // Play victory jingle (short, doesn't loop)

@@ -145,6 +145,8 @@ export class BoardScene extends Phaser.Scene {
   private aborted = false;
   private inputLocked = false;
   private pendingTweens = 0;
+  /** Utfasings-tweens for fjernede brikker; de har alt forlatt this.tiles, så onResize må spore dem separat. */
+  private fadingTiles = new Set<TileView>();
   private lastKind: LayoutKind | null = null;
   private lastSize: { w: number; h: number } | null = null;
   /** De viste HUD-linjene, så en klokke som tikker bare bygger HUD-en når teksten endrer seg. */
@@ -173,6 +175,13 @@ export class BoardScene extends Phaser.Scene {
       this.tweens.killTweensOf(v);
       v.setScale(1);
     }
+    // killTweensOf fyrer ikke onComplete, så de fadende brikkene rydder vi selv i stedet
+    // for å la dem henge igjen som usynlig etterslep etter at telleren nullstilles under.
+    for (const v of this.fadingTiles) {
+      this.tweens.killTweensOf(v);
+      v.destroy();
+    }
+    this.fadingTiles.clear();
     this.pendingTweens = 0;
     this.render(false);
     // Banner og meny er plassert mot den gamle bredden og må settes på nytt.
@@ -201,6 +210,7 @@ export class BoardScene extends Phaser.Scene {
     this.modeKind = data.mode;
     this.levelId = data.levelId ?? '';
     this.tiles = new Map();
+    this.fadingTiles = new Set();
     this.pendingTweens = 0;
     this.inputLocked = false;
     this.lastKind = null;
@@ -310,6 +320,25 @@ export class BoardScene extends Phaser.Scene {
     this.maybeShowIntro();
     this.render(false);
     installHook(this.makeHook());
+    this.startModeMusic();
+  }
+
+  /**
+   * Musikken varierer med verden i kampanje/fri spilling, så høyere verdener føles ekte
+   * raskere og lysere. play() lar den samme kombinasjonen fortsette uavbrutt: kalles
+   * derfor trygt på hvert brett, ikke bare når verdenen faktisk endrer seg.
+   */
+  private startModeMusic(): void {
+    if (this.modeKind === 'blitz') {
+      audio.startMusic('gameplay', { transpose: 0, tempoScale: 1.1 });
+      return;
+    }
+    if (this.modeKind === 'daily') {
+      audio.startMusic('gameplay', {});
+      return;
+    }
+    const world = this.level.world;
+    audio.startMusic('gameplay', { transpose: (world - 1) * 2, tempoScale: 1 + (world - 1) * 0.04 });
   }
 
   /**
@@ -947,6 +976,7 @@ export class BoardScene extends Phaser.Scene {
         continue;
       }
       this.pendingTweens++;
+      this.fadingTiles.add(v);
       this.tweens.add({
         targets: v,
         scale: 0,
@@ -954,6 +984,7 @@ export class BoardScene extends Phaser.Scene {
         duration: this.d.snap,
         ease: EASING.move,
         onComplete: () => {
+          this.fadingTiles.delete(v);
           this.tweenDone();
           v.destroy();
         },

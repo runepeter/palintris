@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { COLORS, SPACE, worldAccent } from '../theme/theme';
+import { services } from './services';
 import { makeButton, makeLabel, SCENE } from './ui';
 
 const BUTTON_W = 220;
@@ -21,6 +22,11 @@ export class MenuScene extends Phaser.Scene {
     this.build();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize));
+    // Kommer fra et brett der gameplay-sporet fortsatt spiller: bytt tilbake til menysporet.
+    // Uten lyd i gang ennå (autoplay-policy) venter vi til første trykk, som håndteres under.
+    if (services(this).settings().music && audio.isMusicPlaying() && audio.currentTrack() !== 'menu') {
+      audio.startMusic('menu');
+    }
     this.input.once('pointerdown', () => audio.startMusic('menu'));
   }
 
