@@ -61,6 +61,14 @@ describe('drag swap', () => {
     expect(m.handle(ev('up', hand('remove'), 100, 400, 100))).toEqual([{ type: 'hint', reason: 'handEmpty' }]);
   });
 
+  it('slipp på låst nabo gir hint i stedet for swap', () => {
+    const m = machine({ locked: [3] });
+    m.handle(ev('down', tile(2), 100, 100, 0));
+    m.handle(ev('move', tile(2), 100 + DRAG_THRESHOLD + 1, 100, 50));
+    expect(m.handle(ev('up', tile(3), 160, 100, 120))).toEqual([{ type: 'hint', reason: 'locked' }]);
+    expect(m.state.name).toBe('idle');
+  });
+
   it('låst brikke kan ikke startes', () => {
     const m = machine({ locked: [2] });
     expect(m.handle(ev('down', tile(2), 0, 0, 0))).toEqual([{ type: 'hint', reason: 'locked' }]);
@@ -132,6 +140,13 @@ describe('hold og segment', () => {
     expect(m.state.name).toBe('idle');
   });
 
+  it('ett trekk som både er hold og over terskel gir segment', () => {
+    const m = machine();
+    m.handle(ev('down', tile(2), 100, 100, 0));
+    m.handle(ev('move', tile(2), 100 + DRAG_THRESHOLD + 1, 100, HOLD_MS));
+    expect(m.state).toEqual({ name: 'segment', anchor: 2, end: 2 });
+  });
+
   it('bevegelse over terskel før hold gir drag, ikke segment', () => {
     const m = machine();
     m.handle(ev('down', tile(2), 100, 100, 0));
@@ -172,6 +187,15 @@ describe('trykkalternativ', () => {
     m.handle(ev('down', tile(5), 0, 0, 0));
     m.handle(ev('up', tile(5), 0, 0, 80));
     expect(m.handle(ev('down', tile(2), 0, 0, 200))).toEqual([{ type: 'hint', reason: 'segmentContainsLocked' }]);
+    expect(m.state.name).toBe('idle');
+  });
+
+  it('valgt brikke og trykk på låst nabo gir hint', () => {
+    const m = machine({ locked: [3] });
+    m.handle(ev('down', tile(2), 0, 0, 0));
+    m.handle(ev('up', tile(2), 0, 0, 80));
+    expect(m.state).toEqual({ name: 'selected', index: 2 });
+    expect(m.handle(ev('down', tile(3), 0, 0, 200))).toEqual([{ type: 'hint', reason: 'locked' }]);
     expect(m.state.name).toBe('idle');
   });
 

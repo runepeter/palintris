@@ -41,6 +41,7 @@ export interface GestureEnv {
   count(): number;
   isLocked(index: number): boolean;
   hasWild(): boolean;
+  /** Sann når hånden har en fjern-ladning. Lengdegrensen sjekkes av kjernen, ikke her. */
   canRemove(): boolean;
 }
 
@@ -142,7 +143,10 @@ export class GestureMachine {
     if (evt.type === 'up') {
       this.state = IDLE;
       const t = evt.target;
-      if (t.kind === 'tile' && adjacent(s.index, t.index)) return [{ type: 'swap', a: s.index, b: t.index }];
+      if (t.kind === 'tile' && adjacent(s.index, t.index)) {
+        if (this.env.isLocked(t.index)) return [hint('locked')];
+        return [{ type: 'swap', a: s.index, b: t.index }];
+      }
       if (t.kind === 'hand' && t.item === 'remove') {
         return this.env.canRemove() ? [{ type: 'remove', index: s.index }] : [hint('handEmpty')];
       }
