@@ -29,7 +29,7 @@ const HAND_HEIGHT = 120;
 const HUD_STRIPE = 4;
 const ZONE_HEIGHT = 56;
 const DASH = 8;
-/** Hånd-sonene og angre/reset treffes som sirkler; pitchen mellom dem er større enn dette. */
+/** Øvre grense for treffradien rundt hånd-sonene og angre/reset. Se near(). */
 const ZONE_HIT = 48;
 const BANNER_W = 360;
 const BANNER_H = 96;
@@ -102,6 +102,7 @@ export class BoardScene2 extends Phaser.Scene {
   private banner: Phaser.GameObjects.Container | null = null;
   private hint: Phaser.GameObjects.Text | null = null;
   private wildGhost: TileView | null = null;
+  private armedRing: Phaser.GameObjects.Graphics | null = null;
   /** Brikka som dras; snap-back trenger id, siden indeksene flytter seg under et trekk. */
   private dragId: number | null = null;
   private lastState: GestureState | null = null;
@@ -149,6 +150,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.banner = null;
     this.hint = null;
     this.wildGhost = null;
+    this.armedRing = null;
     this.dragId = null;
     this.lastState = null;
     this.keyboardActive = false;
@@ -187,7 +189,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.mirrorGfx = this.add.graphics().setDepth(1);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
-    this.menu = new SegmentMenu(this, worldAccent(level.world));
+    this.menu = new SegmentMenu(this, worldAccent(level.world), HUD_HEIGHT);
     this.render(false);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
@@ -221,8 +223,15 @@ export class BoardScene2 extends Phaser.Scene {
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => this.key(e));
   }
 
+  /**
+   * Sonene ligger på rad med pitch contentWidth/4. Radien må holde seg under halve pitchen,
+   * ellers overlapper nabosirklene på smale skjermer og Joker vinner på rekkefølge alene.
+   * Treffet begrenses også til hånd-stripa, så sirklene aldri skygger for brettet.
+   */
   private near(z: { x: number; y: number }, x: number, y: number): boolean {
-    return Math.hypot(x - z.x, y - z.y) <= ZONE_HIT;
+    if (y < this.scale.height - HAND_HEIGHT) return false;
+    const r = Math.min(ZONE_HIT, contentWidth(this) / 8 - 2);
+    return Math.hypot(x - z.x, y - z.y) <= r;
   }
 
   /** Blindveien slipper bare angre og reset gjennom; de knappene er egne interaktive objekter. */
@@ -232,9 +241,17 @@ export class BoardScene2 extends Phaser.Scene {
   }
 
   private pointer(type: 'down' | 'move' | 'up', p: Phaser.Input.Pointer): void {
-    if (this.inputLocked || this.view.solved) return;
-    if (this.blockedByBanner(p.x, p.y)) return;
+    const handOff = this.keyboardActive;
     this.keyboardActive = false;
+    // Pekeren tar over markeringen fra tastaturet, ellers blir tastaturets valg stående usynlig
+    // og gir et byttepar ingen ser. Motstykket er machine.reset() i key().
+    if (type === 'down') this.keyboard.state = { ...this.keyboard.state, selected: null, segment: null };
+    // Et nytt grep mens brikker fortsatt flyr ville tatt tak i en brikke som ikke er framme ennå.
+    const busy = this.inputLocked || (type === 'down' && this.pendingTweens > 0);
+    if (busy || this.view.solved || this.blockedByBanner(p.x, p.y)) {
+      if (handOff) this.syncGestureVisuals();
+      return;
+    }
     const target = this.resolveTarget(p.x, p.y);
     this.applyIntents(this.machine.handle({ type, x: p.x, y: p.y, t: this.time.now, target }));
     this.syncGestureVisuals();
@@ -322,6 +339,7 @@ export class BoardScene2 extends Phaser.Scene {
 
     this.syncDrag(s);
     this.syncWildGhost(s);
+    this.armedRing?.setVisible(s.name === 'wildArmed');
     if (s.name === 'menu') {
       const p = this.segmentAnchor(s.from, s.to);
       this.menu.show(p.x, p.y, s.to - s.from + 1 >= 3);
@@ -336,9 +354,17 @@ export class BoardScene2 extends Phaser.Scene {
       if (tile === undefined) return;
       const v = this.tiles.get(tile.id);
       if (v === undefined) return;
+      if (this.dragId !== tile.id) {
+        // Overtakelsen må rydde opp etter seg: killTweensOf kaller ikke onComplete,
+        // så telleren teller vi ned selv, ellers står busy() fast på true.
+        const killed = this.tweens.getTweensOf(v).length;
+        this.tweens.killTweensOf(v);
+        for (let i = 0; i < killed; i++) this.tweenDone();
+        v.setScale(1);
+        this.dragId = tile.id;
+      }
       v.setDepth(15);
       v.setPosition(s.x, s.y);
-      this.dragId = tile.id;
       return;
     }
     if (this.dragId === null) return;
@@ -384,6 +410,9 @@ export class BoardScene2 extends Phaser.Scene {
     const code = KEY_MAP[e.code];
     if (code === undefined) return;
     if (this.banner !== null && code !== 'KeyZ' && code !== 'KeyR') return;
+    // Tastaturet tar over: uten dette blir maskinen stående i selected med en indeks
+    // som ingen klemmer, og neste pekertrykk bytter feil par.
+    this.machine.reset();
     this.keyboardActive = true;
     const rest: Intent[] = [];
     for (const intent of this.keyboard.handle({ code, shift: e.shiftKey })) {
@@ -412,6 +441,8 @@ export class BoardScene2 extends Phaser.Scene {
     this.tweens.add({
       targets: text,
       alpha: 0,
+      // Full opasitet en stund først; en tekst som fader fra første frame rekker ikke å bli lest.
+      delay: this.d.normal,
       duration: this.d.calm,
       ease: EASING.fade,
       onComplete: () => {
@@ -517,6 +548,9 @@ export class BoardScene2 extends Phaser.Scene {
         }
       }
       v.setTile(tile, size, colorBlind);
+      // Draget eier posisjonen til brikka det holder. Løseren svarer midt i neste drag, og
+      // uten dette ville render tweenet brikka tilbake til sloten mens fingeren flytter den.
+      if (tile.id === this.dragId) return;
       if (animate && (v.x !== p.x || v.y !== p.y)) {
         this.pendingTweens++;
         this.tweens.add({
@@ -638,6 +672,13 @@ export class BoardScene2 extends Phaser.Scene {
     const zoneW = pitch - SPACE.md;
 
     this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
+    // Ladet joker har ingen spøkelse å vise, så sonen får en ring i stedet.
+    const ring = this.add.graphics();
+    ring.lineStyle(3, COLORS.ink, 1);
+    ring.strokeRoundedRect(centerOf(0) - zoneW / 2 - 4, cy - ZONE_HEIGHT / 2 - 4, zoneW + 8, ZONE_HEIGHT + 8, RADIUS.button);
+    ring.setVisible(this.machine.state.name === 'wildArmed');
+    this.hand.add(ring);
+    this.armedRing = ring;
     this.hand.add(this.makeZone(centerOf(1), cy, zoneW, `Fjern ×${this.view.hand.remove}`, this.view.hand.remove > 0));
     this.hand.add(
       makeButton(this, {

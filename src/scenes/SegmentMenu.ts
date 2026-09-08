@@ -29,7 +29,12 @@ interface MenuButton {
 export class SegmentMenu extends Phaser.GameObjects.Container {
   private readonly buttons: readonly MenuButton[];
 
-  constructor(scene: Phaser.Scene, accent: number) {
+  /** topEdge er nederste kant av HUD-en: menyen skal aldri legge seg oppå den. */
+  constructor(
+    scene: Phaser.Scene,
+    accent: number,
+    private readonly topEdge: number
+  ) {
     super(scene, 0, 0);
     this.buttons = BUTTONS.map((b, i) => {
       const dx = (i - 1) * PITCH;
@@ -50,9 +55,10 @@ export class SegmentMenu extends Phaser.GameObjects.Container {
   /** Klemmes innenfor skjermen, så ytterste knapp aldri havner utenfor kanten. */
   show(x: number, y: number, mirrorEnabled: boolean): void {
     const halfW = PITCH + R;
+    const minY = this.topEdge + R;
     const maxX = Math.max(halfW + EDGE, this.scene.scale.width - halfW - EDGE);
-    const maxY = Math.max(R + EDGE, this.scene.scale.height - R - EDGE);
-    this.setPosition(Phaser.Math.Clamp(x, halfW + EDGE, maxX), Phaser.Math.Clamp(y, R + EDGE, maxY));
+    const maxY = Math.max(minY, this.scene.scale.height - R - EDGE);
+    this.setPosition(Phaser.Math.Clamp(x, halfW + EDGE, maxX), Phaser.Math.Clamp(y, minY, maxY));
     for (const b of this.buttons) b.node.setAlpha(b.action === 'mirror' && !mirrorEnabled ? DIMMED : 1);
     this.setVisible(true);
   }
