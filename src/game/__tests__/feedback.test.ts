@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { tilesFromString } from '../../core/tiles';
-import { blitzUrgency, campaignSummary, moveFeedback, resultPresentation } from '../feedback';
+import { activeLevelInWorld, blitzUrgency, campaignSummary, moveFeedback, resultPresentation } from '../feedback';
 
 describe('game feedback', () => {
   it('teller speilpar og finner par som nettopp kom i harmoni', () => {
@@ -46,5 +46,11 @@ describe('game feedback', () => {
     expect(blitzUrgency(10_001)).toBe(false);
     expect(blitzUrgency(10_000)).toBe(true);
     expect(blitzUrgency(0)).toBe(true);
+  });
+
+  it('finner neste uløste, åpne speil i en verden', () => {
+    expect(activeLevelInWorld(1, {})).toBe(1);
+    expect(activeLevelInWorld(1, { 'w1-01': 3, 'w1-02': 1 })).toBe(3);
+    expect(activeLevelInWorld(1, Object.fromEntries(Array.from({ length: 15 }, (_, i) => [`w1-${String(i + 1).padStart(2, '0')}`, 1])))).toBeNull();
   });
 });

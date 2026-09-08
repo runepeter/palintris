@@ -1,5 +1,5 @@
 import { matches } from '../core/palindrome';
-import { LEVELS_PER_WORLD, parseLevelId, WORLD_COUNT, type StarMap } from '../core/progression';
+import { levelId, LEVELS_PER_WORLD, parseLevelId, WORLD_COUNT, type StarMap } from '../core/progression';
 import type { Stars } from '../core/scoring';
 import type { Tile } from '../core/tiles';
 
@@ -82,3 +82,10 @@ export const campaignSummary = (starMap: StarMap, blitzBest: number): CampaignSu
 };
 
 export const blitzUrgency = (remainingMs: number): boolean => remainingMs <= 10_000;
+
+export const activeLevelInWorld = (world: number, starMap: StarMap): number | null => {
+  for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
+    if ((starMap[levelId(world, n)] ?? 0) <= 0) return n;
+  }
+  return null;
+};
