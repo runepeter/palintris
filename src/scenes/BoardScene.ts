@@ -3,13 +3,15 @@ import { audio } from '../audio/sound';
 import type { BoardState } from '../core/board';
 import type { Command, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
-import { setDailyProgress } from '../core/storage';
+import { markIntroSeen, setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
 import { BlitzClock } from '../game/blitz';
 import { mmss } from '../game/daily';
 import type { GestureState, HintReason, Intent, Target } from '../game/gestures';
 import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
+import type { IntroSpec } from '../game/intro';
+import { introFor, introSatisfiedBy } from '../game/intro';
 import type { KeyCode } from '../game/keyboard';
 import { KeyboardController } from '../game/keyboard';
 import type { BoardLayout, LayoutKind } from '../game/layout';
@@ -20,6 +22,7 @@ import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import { Effects } from './effects';
+import { INTRO_HEIGHT, IntroOverlay } from './IntroOverlay';
 import { SegmentMenu } from './SegmentMenu';
 import { services, type Services } from './services';
 import { installHook, removeHook } from './testHook';
@@ -54,6 +57,10 @@ const HUD_TOP = 22;
 const HUD_CLOCK = 30;
 /** «Hopp over» er for lang for knappebredden på 390 px med standard teksthøyde. */
 const SKIP_LABEL = 15;
+/** Introen tar denne plassen fra brettflaten: panelet pluss luft over og under. */
+const INTRO_SPACE = INTRO_HEIGHT + SPACE.md * 2;
+/** Under denne bretthøyden gir brettet ingenting fra seg til introen. Se introSpace(). */
+const INTRO_MIN_BOARD = 220;
 
 /** Brikken bak joker-spøkelset. Ligger utenfor brettet, så id-en treffer aldri this.tiles. */
 const GHOST_TILE = makeTile(-1, WILD_SYMBOL, { wild: true });
@@ -156,6 +163,9 @@ export class BoardScene extends Phaser.Scene {
   private replaying = false;
   private clock = new BlitzClock();
   private blitzDone = false;
+  /** Introen for nivået, når det har en og den ikke er sett før. */
+  private intro: IntroOverlay | null = null;
+  private introSpec: IntroSpec | null = null;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
@@ -215,6 +225,8 @@ export class BoardScene extends Phaser.Scene {
     this.replaying = false;
     this.clock = new BlitzClock();
     this.blitzDone = false;
+    this.intro = null;
+    this.introSpec = null;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
@@ -295,6 +307,7 @@ export class BoardScene extends Phaser.Scene {
       this.startedAt = '';
       s.store.update((d) => setDailyProgress(d, undefined));
     }
+    this.maybeShowIntro();
     this.render(false);
     installHook(this.makeHook());
   }
@@ -324,6 +337,7 @@ export class BoardScene extends Phaser.Scene {
 
   /** Neste brett i samme scene: uten scene.start, som ville nullstilt klokken og modusen. */
   private loadBoard(level: ModeLevel): void {
+    this.destroyIntro();
     this.session.dispose();
     for (const v of this.tiles.values()) {
       this.tweens.killTweensOf(v);
@@ -387,7 +401,10 @@ export class BoardScene extends Phaser.Scene {
    */
   private dispatch(cmd: Command): Result<BoardState, SessionReject> {
     const r = this.session.dispatch(cmd);
-    if (r.ok) this.recordDaily(cmd);
+    if (r.ok) {
+      this.recordDaily(cmd);
+      this.checkIntro(cmd);
+    }
     return r;
   }
 
@@ -417,6 +434,7 @@ export class BoardScene extends Phaser.Scene {
     document.removeEventListener('visibilitychange', this.onVisibility);
     if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
+    this.destroyIntro();
     removeHook();
     this.session.dispose();
   }
@@ -447,6 +465,8 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private pointer(type: 'down' | 'move' | 'up', p: Phaser.Input.Pointer): void {
+    // Panelet spiser bare sitt eget trykk; et drag som alt er i gang må kunne slippes over det.
+    if (type === 'down' && this.intro?.hitPanel(p.x, p.y) === true) return;
     const handOff = this.keyboardActive;
     this.keyboardActive = false;
     // Pekeren tar over markeringen fra tastaturet, ellers blir tastaturets valg stående usynlig
@@ -802,12 +822,54 @@ export class BoardScene extends Phaser.Scene {
     this.scene.start(SCENE.blitzResult, services(this).modes.blitz.finish());
   }
 
+  /** Kun kampanjen underviser, og hver intro vises én gang per spiller. */
+  private maybeShowIntro(): void {
+    if (this.modeKind !== 'campaign') return;
+    const spec = introFor(this.levelId);
+    if (spec === null) return;
+    const s = services(this);
+    if (s.store.data.introsSeen.includes(spec.id)) return;
+    this.introSpec = spec;
+    this.intro = new IntroOverlay(this, spec, s.settings().reducedMotion, () => this.dismissIntro());
+  }
+
+  /**
+   * Plassen introen tar fra brettflaten. På lave skjermer gir brettet ingenting fra seg;
+   * da legger panelet seg over nedre del i stedet for å klemme brettet flatt.
+   */
+  private introSpace(): number {
+    if (this.intro === null) return 0;
+    const avail = this.scale.height - HUD_HEIGHT - HAND_HEIGHT;
+    return Math.min(INTRO_SPACE, Math.max(0, avail - INTRO_MIN_BOARD));
+  }
+
+  /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
+  private checkIntro(cmd: Command): void {
+    if (this.introSpec !== null && introSatisfiedBy(this.introSpec, cmd)) this.dismissIntro();
+  }
+
+  private dismissIntro(): void {
+    const spec = this.introSpec;
+    if (spec === null) return;
+    this.destroyIntro();
+    services(this).store.update((d) => markIntroSeen(d, spec.id));
+    // Brettflaten vokser igjen; onResize er nøyaktig den omleggingen, tween-opprydding inkludert.
+    this.onResize();
+  }
+
+  private destroyIntro(): void {
+    this.intro?.destroy();
+    this.intro = null;
+    this.introSpec = null;
+  }
+
   /** Brettområdet: mellom HUD og hånd, maks 480 bredt, sentrert. Kun geometri og speillinje. */
   private relayout(): void {
     const w = contentWidth(this);
     const left = contentLeft(this);
+    this.intro?.layout(w - SPACE.xl, this.scale.height - HAND_HEIGHT - SPACE.md);
     const boardTop = HUD_HEIGHT;
-    const boardHeight = this.scale.height - HUD_HEIGHT - HAND_HEIGHT;
+    const boardHeight = this.scale.height - HUD_HEIGHT - HAND_HEIGHT - this.introSpace();
     this.layout = computeLayout({ count: this.view.tiles.length, width: w, height: boardHeight });
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
@@ -1081,6 +1143,8 @@ export class BoardScene extends Phaser.Scene {
       state: () => this.machine.state,
       clockMs: () => (this.modeKind === 'blitz' ? this.clock.remainingMs : Math.round(this.elapsedMs)),
       bannerVisible: () => this.banner !== null,
+      introVisible: () => this.intro !== null,
+      dismissIntro: () => this.dismissIntro(),
     };
   }
 

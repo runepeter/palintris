@@ -23,6 +23,10 @@ export interface TestHook {
   /** Blitz: tid igjen. Daglig: tid brukt. Ellers 0. */
   clockMs(): number;
   bannerVisible(): boolean;
+  /** Sant mens kampanjeintroen står. Nivåer uten intro, og sette introer, gir usant. */
+  introVisible(): boolean;
+  /** Lukker introen som «Skjønner» ville gjort, og merker den som sett. */
+  dismissIntro(): void;
 }
 
 declare global {
