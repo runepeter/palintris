@@ -2,6 +2,7 @@ import type { MoveCommand, RejectReason, Result } from './commands';
 import { ok, reject } from './commands';
 import type { Rules } from './rules';
 import type { Snapshot, Tile } from './tiles';
+import { makeTile, WILD_SYMBOL } from './tiles';
 
 const inRange = (i: number, n: number): boolean => Number.isInteger(i) && i >= 0 && i < n;
 
@@ -72,6 +73,35 @@ const mirror = (snap: Snapshot, from: number, to: number): Result<Snapshot, Reje
   return ok(replaceSegment(snap, from, [...seg.value].reverse()));
 };
 
+const insertWild = (rules: Rules, snap: Snapshot, at: number): Result<Snapshot, RejectReason> => {
+  const n = snap.tiles.length;
+  if (!Number.isInteger(at) || at < 0 || at > n) return reject('outOfRange');
+  if (snap.hand.wild <= 0) return reject('handEmpty');
+  if (n >= rules.maxLength) return reject('maxLength');
+  const tiles = [...snap.tiles];
+  tiles.splice(at, 0, makeTile(snap.nextId, WILD_SYMBOL, { wild: true }));
+  return ok({
+    ...withTiles(snap, tiles),
+    hand: { ...snap.hand, wild: snap.hand.wild - 1 },
+    nextId: snap.nextId + 1,
+  });
+};
+
+const remove = (rules: Rules, snap: Snapshot, tileId: number): Result<Snapshot, RejectReason> => {
+  const idx = snap.tiles.findIndex((t) => t.id === tileId);
+  if (idx === -1) return reject('outOfRange');
+  const t = snap.tiles[idx];
+  if (t === undefined) return reject('outOfRange');
+  if (t.locked) return reject('locked');
+  if (snap.hand.remove <= 0) return reject('handEmpty');
+  if (snap.tiles.length <= rules.minLength) return reject('minLength');
+  const tiles = snap.tiles.filter((_, i) => i !== idx);
+  return ok({
+    ...withTiles(snap, tiles),
+    hand: { ...snap.hand, remove: snap.hand.remove - 1 },
+  });
+};
+
 export const applyMove = (
   rules: Rules,
   snap: Snapshot,
@@ -86,7 +116,8 @@ export const applyMove = (
     case 'mirror':
       return mirror(snap, cmd.from, cmd.to);
     case 'insertWild':
+      return insertWild(rules, snap, cmd.at);
     case 'remove':
-      return reject('notAllowed');
+      return remove(rules, snap, cmd.tileId);
   }
 };
