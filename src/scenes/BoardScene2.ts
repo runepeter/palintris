@@ -196,7 +196,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.machine = new GestureMachine(env);
     this.keyboard = new KeyboardController(env);
     this.mirrorGfx = this.add.graphics().setDepth(6);
-    this.gapGfx = this.add.graphics().setDepth(4);
+    this.gapGfx = this.add.graphics().setDepth(7);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, worldAccent(level.world), HUD_HEIGHT);
@@ -432,6 +432,8 @@ export class BoardScene2 extends Phaser.Scene {
   /**
    * Slippsonene for jokeren. Uten dem har spilleren ingen anelse om hvor mellomrommene er;
    * i hårnål gjelder det også mellomrommet over folden. Tømmes så snart tilstanden forlates.
+   * Tegnes over brikkene (depth 7): mellomrommet er bare GAP bredt, så en markør under
+   * brikkene er praktisk talt usynlig. Derfor også lav alpha, som for speillinja.
    */
   private drawGaps(s: GestureState): void {
     this.gapGfx.clear();
