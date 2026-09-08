@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { StorageLike } from '../storage';
-import { defaultSave, LEGACY_SETTINGS_KEY, loadSave, persistSave, recordStars, SAVE_KEY, starMap } from '../storage';
+import {
+  defaultSave,
+  LEGACY_SETTINGS_KEY,
+  loadSave,
+  markIntroSeen,
+  parseSave,
+  persistSave,
+  recordStars,
+  SAVE_KEY,
+  setDailyProgress,
+  starMap,
+} from '../storage';
 
 const memStorage = (init: Record<string, string> = {}): StorageLike & { data: Map<string, string> } => {
   const data = new Map(Object.entries(init));
@@ -75,5 +86,48 @@ describe('persistSave', () => {
       },
     };
     expect(() => persistSave(broken, defaultSave())).not.toThrow();
+  });
+});
+
+describe('parseSave', () => {
+  it('godtar gyldig data og fyller manglende valgfrie felt', () => {
+    const d = parseSave({
+      saveVersion: 1,
+      stars: { 'w1-01': { stars: 2, contentVersion: 1 } },
+      daily: { attempts: [], streak: 0 },
+      blitz: { best: 3 },
+      settings: { sound: true, music: false, reducedMotion: false, colorBlind: true },
+    });
+    expect(d).not.toBeNull();
+    expect(d?.introsSeen).toEqual([]);
+    expect(d?.contentVersion).toBe(1);
+    expect(d?.daily.inProgress).toBeUndefined();
+  });
+  it('avviser feil form på stars', () => {
+    expect(parseSave({ saveVersion: 1, stars: { 'w1-01': 'oops' } })).toBeNull();
+  });
+  it('avviser feil saveVersion', () => {
+    expect(parseSave({ saveVersion: 2 })).toBeNull();
+  });
+  it('loadSave gir default ved ugyldig form uten legacy', () => {
+    expect(loadSave(memStorage({ [SAVE_KEY]: JSON.stringify({ saveVersion: 1, stars: 5 }) }))).toEqual(defaultSave());
+  });
+});
+
+describe('intro og daily progress', () => {
+  it('markIntroSeen er idempotent', () => {
+    const d = markIntroSeen(markIntroSeen(defaultSave(), 'w2-01'), 'w2-01');
+    expect(d.introsSeen).toEqual(['w2-01']);
+  });
+  it('setDailyProgress setter og fjerner', () => {
+    const p = {
+      puzzleId: 'daily-2026-09-08-v1',
+      startedAt: '2026-09-08T10:00:00.000Z',
+      elapsedMs: 1200,
+      commands: [{ type: 'swap' as const, a: 0, b: 1 }],
+    };
+    const d = setDailyProgress(defaultSave(), p);
+    expect(d.daily.inProgress).toEqual(p);
+    expect(setDailyProgress(d, undefined).daily.inProgress).toBeUndefined();
   });
 });
