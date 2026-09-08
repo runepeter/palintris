@@ -2,6 +2,7 @@ import { screenWidth, screenHeight, PIXEL_RATIO } from './viewport';
 import Phaser from 'phaser';
 import type { BoardLayout } from '../game/layout';
 import { COLORS, cssColor, DURATION, durations, EASING, WORLD_ACCENTS } from '../theme/theme';
+import { makeLabel } from './ui';
 
 /** Fem effekter fra spec §4. Alle respekterer redusert bevegelse. */
 export class Effects {
@@ -45,6 +46,26 @@ export class Effects {
         onComplete: () => dot.destroy(),
       });
     }
+  }
+
+  /** Teksten bærer informasjonen også med redusert bevegelse; bevegelsen er pynt. */
+  reward(x: number, y: number, label: string, color: number): void {
+    const text = makeLabel(this.scene, x, y, label, { size: 18, color, font: 'body', bold: true }).setDepth(850);
+    if (this.reduced) {
+      this.scene.time.delayedCall(500, () => text.destroy());
+      return;
+    }
+    text.setScale(0.85);
+    this.scene.tweens.add({
+      targets: text,
+      y: y - 22,
+      scale: 1,
+      alpha: 0,
+      delay: this.d.snap,
+      duration: this.d.calm,
+      ease: EASING.move,
+      onComplete: () => text.destroy(),
+    });
   }
 
   confetti(x: number, y: number, count = 40): void {

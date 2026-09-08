@@ -7,6 +7,7 @@ import type { TestHook } from '../src/scenes/hookTypes';
 export interface Hook {
   slot(i: number): Promise<ReturnType<TestHook['screenLayout']>['slots'][number]>;
   view(): Promise<ReturnType<TestHook['view']>>;
+  feedback(): Promise<ReturnType<TestHook['feedback']>>;
   screenLayout(): Promise<ReturnType<TestHook['screenLayout']>>;
   menu(): Promise<ReturnType<TestHook['menu']>>;
   zones(): Promise<ReturnType<TestHook['zones']>>;
@@ -30,6 +31,11 @@ export const hook = (page: Page): Hook => ({
     page.evaluate(() => {
       if (window.__palintris === undefined) throw new Error('__palintris mangler');
       return window.__palintris.view();
+    }),
+  feedback: () =>
+    page.evaluate(() => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      return window.__palintris.feedback();
     }),
   screenLayout: () =>
     page.evaluate(() => {

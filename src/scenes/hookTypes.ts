@@ -16,6 +16,7 @@ export interface TestHook {
   readonly levelId: string;
   readonly mode: BoardMode['kind'];
   view(): SessionView;
+  feedback(): { readonly matched: number; readonly total: number; readonly gained: number; readonly flow: number };
   screenLayout(): {
     readonly slots: ReadonlyArray<ScreenPoint & { index: number }>;
     readonly gaps: ReadonlyArray<ScreenPoint & { at: number }>;

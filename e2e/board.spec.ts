@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { drag, hook, tap } from './helpers';
+import { dismissIntroIfVisible, drag, hook, tap } from './helpers';
 
 type Cmd =
   | { type: 'swap'; a: number; b: number }
@@ -66,4 +66,17 @@ test('løser et hårnålnivå med drag og trykk, angrer underveis, får stjerner
   const done = await h.view();
   expect(done.stars).toBeGreaterThanOrEqual(1);
   expect(done.movesUsed).toBe(level.solution.length);
+});
+
+test('første trekk fyller harmonimåleren og bygger flyt', async ({ page }) => {
+  await page.goto('/?level=w1-01');
+  const h = hook(page);
+  await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');
+  await dismissIntroIfVisible(page);
+  await h.waitIdle();
+  expect(await h.feedback()).toEqual({ matched: 0, total: 2, gained: 0, flow: 0 });
+
+  await drag(page, await h.slot(2), await h.slot(3));
+  await page.waitForFunction(() => window.__palintris?.feedback().matched === 2);
+  expect(await h.feedback()).toEqual({ matched: 2, total: 2, gained: 2, flow: 1 });
 });

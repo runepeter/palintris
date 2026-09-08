@@ -110,6 +110,23 @@ export class TileView extends Phaser.GameObjects.Container {
     this.redraw();
   }
 
+  pulse(accent: number, reducedMotion: boolean): void {
+    if (reducedMotion) return;
+    const halo = this.scene.add.graphics();
+    halo.lineStyle(5, accent, 0.9);
+    halo.strokeRoundedRect(-this.size / 2 - 6, -this.size / 2 - 6, this.size + 12, this.size + 12, RADIUS.tile + 5);
+    this.add(halo);
+    halo.setScale(0.82);
+    this.scene.tweens.add({
+      targets: halo,
+      scale: 1.18,
+      alpha: 0,
+      duration: 400,
+      ease: 'Sine.easeOut',
+      onComplete: () => halo.destroy(),
+    });
+  }
+
   private redraw(): void {
     const s = this.size;
     const r = RADIUS.tile * (s / 60);

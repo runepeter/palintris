@@ -9,6 +9,7 @@ import { markIntroSeen, setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
 import { BlitzClock } from '../game/blitz';
 import { mmss } from '../game/daily';
+import { harmonyProgress, moveFeedback } from '../game/feedback';
 import type { GestureState, HintReason, Intent, Target } from '../game/gestures';
 import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
@@ -44,6 +45,7 @@ interface HudLines {
   readonly top: string;
   readonly topSize: number;
   readonly bottom: string;
+  readonly harmony: string;
 }
 
 const HUD_HEIGHT = 96;
@@ -130,6 +132,7 @@ export class BoardScene extends Phaser.Scene {
   private originY = 0;
   private tiles = new Map<number, TileView>();
   private mirrorGfx!: Phaser.GameObjects.Graphics;
+  private portalGfx!: Phaser.GameObjects.Graphics;
   private gapGfx!: Phaser.GameObjects.Graphics;
   private hud!: Phaser.GameObjects.Container;
   private exitButton!: Phaser.GameObjects.Container;
@@ -158,6 +161,10 @@ export class BoardScene extends Phaser.Scene {
   private hudText: string | null = null;
   private handCache: { wild: number; remove: number; canUndo: boolean } | null = null;
   private view!: SessionView;
+  private harmony = { matched: 0, total: 0 };
+  private flow = 0;
+  private lastGain = 0;
+  private pendingCommand: Command | null = null;
   private d = durations(false);
   /** Sann mens fanen er skjult: begge klokkene står stille. */
   private paused = false;
@@ -223,6 +230,10 @@ export class BoardScene extends Phaser.Scene {
     this.lastKind = null;
     this.lastSize = null;
     this.hudText = null;
+    this.harmony = { matched: 0, total: 0 };
+    this.flow = 0;
+    this.lastGain = 0;
+    this.pendingCommand = null;
     this.handCache = null;
     this.banner = null;
     this.hint = null;
@@ -273,6 +284,10 @@ export class BoardScene extends Phaser.Scene {
     this.machine = new GestureMachine(env);
     this.keyboard = new KeyboardController(env);
     this.mirrorGfx = this.add.graphics().setDepth(6);
+    this.portalGfx = this.add.graphics().setDepth(1);
+    if (!s.settings().reducedMotion) {
+      this.tweens.add({ targets: this.portalGfx, alpha: 0.62, duration: 1600, yoyo: true, repeat: -1, ease: EASING.fade });
+    }
     this.gapGfx = this.add.graphics().setDepth(7);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.exitButton = makeButton(this, {
@@ -322,6 +337,9 @@ export class BoardScene extends Phaser.Scene {
       });
     this.session = newSession();
     this.view = this.session.view();
+    this.harmony = harmonyProgress(this.view.tiles);
+    this.flow = 0;
+    this.lastGain = 0;
     if (this.modeKind === 'daily' && !this.replayDaily()) {
       // Lagrede trekk passer ikke brettet lenger; da er dagen bedre tjent med blank start.
       this.session.dispose();
@@ -455,7 +473,9 @@ export class BoardScene extends Phaser.Scene {
    * og tiden lagres etter hvert trekk, og tiden starter ved det første.
    */
   private dispatch(cmd: Command): Result<BoardState, SessionReject> {
+    this.pendingCommand = cmd;
     const r = this.session.dispatch(cmd);
+    this.pendingCommand = null;
     if (r.ok) {
       this.recordDaily(cmd);
       this.checkIntro(cmd);
@@ -951,6 +971,7 @@ export class BoardScene extends Phaser.Scene {
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
     this.drawMirror();
+    this.drawPortal();
   }
 
   /**
@@ -959,7 +980,7 @@ export class BoardScene extends Phaser.Scene {
    */
   private refreshChrome(resized: boolean): void {
     const lines = this.hudLines();
-    const text = `${lines.top}|${lines.bottom}`;
+    const text = `${lines.top}|${lines.bottom}|${lines.harmony}`;
     if (resized || this.hudText !== text) {
       this.hudText = text;
       this.buildHud(lines);
@@ -1062,11 +1083,26 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private onViewChange(v: SessionView): void {
+    const previous = this.view;
+    const command = this.pendingCommand;
     this.view = v;
     // Avspilling tegner én gang til slutt; hver mellomtilstand ville gitt en animasjon.
     if (this.replaying) return;
+    let newMatchedIndexes: readonly number[] = [];
+    if (command !== null && command.type !== 'undo' && command.type !== 'reset' && v.movesUsed > previous.movesUsed) {
+      const feedback = moveFeedback(previous.tiles, v.tiles, this.flow);
+      this.harmony = feedback.harmony;
+      this.flow = feedback.flow;
+      this.lastGain = feedback.gained;
+      newMatchedIndexes = feedback.newMatchedIndexes;
+    } else {
+      this.harmony = harmonyProgress(v.tiles);
+      this.lastGain = 0;
+      if (command?.type === 'undo' || command?.type === 'reset') this.flow = 0;
+    }
     this.keyboard.clampCursor();
     this.render(true);
+    if (this.lastGain > 0) this.celebrateMove(newMatchedIndexes);
     if (v.solved) {
       this.onSolved();
       return;
@@ -1094,6 +1130,33 @@ export class BoardScene extends Phaser.Scene {
     this.mirrorGfx.lineBetween(a.x, a.y - ext, b.x, b.y + ext);
   }
 
+  private drawPortal(): void {
+    const w = Math.min(contentWidth(this) - SPACE.xl * 2, this.layout.width * this.layout.scale + SPACE.xl * 3);
+    const h = Math.min(screenHeight(this) - HUD_HEIGHT - HAND_HEIGHT - SPACE.xl, this.layout.height * this.layout.scale + SPACE.xl * 3);
+    const x = this.originX + (this.layout.width * this.layout.scale) / 2;
+    const y = this.originY + (this.layout.height * this.layout.scale) / 2;
+    this.portalGfx.clear();
+    this.portalGfx.fillStyle(COLORS.glow, 0.035);
+    this.portalGfx.fillEllipse(x, y, w, h);
+    this.portalGfx.lineStyle(12, this.accent(), 0.035);
+    this.portalGfx.strokeEllipse(x, y, w, h);
+    this.portalGfx.lineStyle(2, this.accent(), 0.18);
+    this.portalGfx.strokeEllipse(x, y, Math.max(20, w - 14), Math.max(20, h - 14));
+  }
+
+  private celebrateMove(indexes: readonly number[]): void {
+    const reduced = services(this).settings().reducedMotion;
+    for (const index of indexes) {
+      const tile = this.view.tiles[index];
+      if (tile !== undefined) this.tiles.get(tile.id)?.pulse(this.accent(), reduced);
+    }
+    const cx = contentLeft(this) + contentWidth(this) / 2;
+    const y = Math.max(HUD_HEIGHT + SPACE.xl, this.originY - SPACE.lg);
+    const flow = this.flow > 1 ? ` · Flyt ×${this.flow}` : '';
+    this.effects.reward(cx, y, `Harmoni +${this.lastGain}${flow}`, this.accent());
+    if (!reduced) this.effects.burst(cx, y + SPACE.lg, this.accent());
+  }
+
   /** Toppen er trekk-telleren, unntatt i blitz der klokken er det eneste som haster. */
   private hudLines(): HudLines {
     const moves = this.level.targetExact
@@ -1101,20 +1164,26 @@ export class BoardScene extends Phaser.Scene {
       : `Trekk ${this.view.movesUsed} · mål ukjent`;
     switch (this.modeKind) {
       case 'daily':
-        return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}` };
+        return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}`, harmony: this.harmonyText() };
       case 'blitz':
         return {
           top: mmss(this.clock.remainingMs),
           topSize: HUD_CLOCK,
           bottom: `Løst ${services(this).modes.blitz.solved} · ${moves}`,
+          harmony: this.harmonyText(),
         };
       case 'free':
-        return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}` };
+        return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}`, harmony: this.harmonyText() };
       case 'campaign': {
         const budget = this.level.showBudget ? ` · Budsjett ${this.view.budgetLeft}` : '';
-        return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}` };
+        return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}`, harmony: this.harmonyText() };
       }
     }
+  }
+
+  private harmonyText(): string {
+    const flow = this.flow > 1 ? ` · Flyt ×${this.flow}` : '';
+    return `Harmoni ${this.harmony.matched}/${this.harmony.total}${flow}`;
   }
 
   private buildHud(lines: HudLines): void {
@@ -1125,8 +1194,12 @@ export class BoardScene extends Phaser.Scene {
     const bg = this.add.graphics();
     bg.fillStyle(COLORS.panel, 0.94);
     bg.fillRect(0, 0, screenWidth(this), HUD_HEIGHT);
-    bg.fillStyle(this.accent(), 0.6);
-    bg.fillRect(left + 24, HUD_HEIGHT - HUD_STRIPE, w - 48, 1);
+    const progressWidth = w - 48;
+    const ratio = this.harmony.total === 0 ? 1 : this.harmony.matched / this.harmony.total;
+    bg.fillStyle(COLORS.line, 0.55);
+    bg.fillRoundedRect(left + 24, HUD_HEIGHT - HUD_STRIPE, progressWidth, HUD_STRIPE, HUD_STRIPE / 2);
+    bg.fillStyle(this.accent(), 0.95);
+    bg.fillRoundedRect(left + 24, HUD_HEIGHT - HUD_STRIPE, progressWidth * ratio, HUD_STRIPE, HUD_STRIPE / 2);
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
@@ -1140,6 +1213,7 @@ export class BoardScene extends Phaser.Scene {
         font: 'body',
       })
     );
+    this.hud.add(makeLabel(this, cx, HUD_HEIGHT - SPACE.md, lines.harmony, { size: 11, color: this.accent(), font: 'body', bold: true }));
   }
 
   private buildHand(): void {
@@ -1221,6 +1295,7 @@ export class BoardScene extends Phaser.Scene {
       levelId: this.levelId,
       mode: this.modeKind,
       view: () => this.view,
+      feedback: () => ({ ...this.harmony, gained: this.lastGain, flow: this.flow }),
       screenLayout: () => ({
         slots: this.layout.slots.map((s) => ({ index: s.index, ...this.screenPoint(s.x, s.y) })),
         gaps: this.layout.gaps.map((g) => ({ at: g.at, ...this.screenPoint(g.x, g.y) })),
