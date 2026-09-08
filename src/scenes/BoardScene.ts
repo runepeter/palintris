@@ -57,6 +57,8 @@ const HUD_TOP = 22;
 const HUD_CLOCK = 30;
 /** «Hopp over» er for lang for knappebredden på 390 px med standard teksthøyde. */
 const SKIP_LABEL = 15;
+/** Hvor ofte dagsframgangen skrives mens klokken går. Taket på tid tapt i en reload. */
+const DAILY_SAVE_MS = 1000;
 /** Luft over og under intropanelet. Brettflaten avgir panelhøyden pluss dette. */
 const INTRO_PAD = SPACE.md * 2;
 /** Bare et gulv mot ikke-positiv høyde; computeLayout skalerer brettet ned selv. */
@@ -161,6 +163,8 @@ export class BoardScene extends Phaser.Scene {
   private timerRunning = false;
   private startedAt = '';
   private commands: Command[] = [];
+  /** Tid siden forrige lagring av dagsframgangen; tiden mellom to trekk må også overleve en reload. */
+  private sinceDailySaveMs = 0;
   /** Sann mens lagrede kommandoer spilles av: ingen animasjon og ingen ny lagring. */
   private replaying = false;
   private clock = new BlitzClock();
@@ -232,6 +236,7 @@ export class BoardScene extends Phaser.Scene {
     this.timerRunning = false;
     this.startedAt = '';
     this.commands = [];
+    this.sinceDailySaveMs = 0;
     this.replaying = false;
     this.clock = new BlitzClock();
     this.blitzDone = false;
@@ -271,6 +276,8 @@ export class BoardScene extends Phaser.Scene {
     this.startBoard(level);
     if (this.modeKind === 'blitz') this.clock.start();
     this.paused = document.hidden;
+    // Starter omgangen på en skjult fane, ville klokken ellers tikket til fanen ble sett.
+    if (this.paused) this.clock.pause();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     document.addEventListener('visibilitychange', this.onVisibility);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
@@ -346,8 +353,14 @@ export class BoardScene extends Phaser.Scene {
    * kalleren kan forkaste framgangen i stedet for å spille videre på feil tilstand.
    */
   private replayDaily(): boolean {
-    const progress = services(this).store.data.daily.inProgress;
-    if (progress === undefined || progress.puzzleId !== this.levelId) return true;
+    const s = services(this);
+    const progress = s.store.data.daily.inProgress;
+    if (progress === undefined) return true;
+    // Framgang fra en tidligere dag hører ikke hjemme her og ville ellers ligget til neste trekk.
+    if (progress.puzzleId !== this.levelId) {
+      s.store.update((d) => setDailyProgress(d, undefined));
+      return true;
+    }
     this.replaying = true;
     let ok = true;
     for (const cmd of progress.commands) {
@@ -361,6 +374,8 @@ export class BoardScene extends Phaser.Scene {
     this.commands = [...progress.commands];
     this.elapsedMs = progress.elapsedMs;
     this.startedAt = progress.startedAt;
+    // Klokken gikk da spilleren forlot brettet, og skal gå igjen når det gjenopptas.
+    this.timerRunning = this.commands.length > 0;
     return true;
   }
 
@@ -403,6 +418,9 @@ export class BoardScene extends Phaser.Scene {
     if (this.modeKind === 'daily') {
       if (!this.timerRunning || this.paused) return;
       this.elapsedMs += delta;
+      // Uten dette ville tiden siden forrige trekk gått tapt i en reload, som da ble en gratis pause.
+      this.sinceDailySaveMs += delta;
+      if (this.sinceDailySaveMs >= DAILY_SAVE_MS) this.saveDailyProgress();
       this.refreshChrome(false);
       return;
     }
@@ -445,6 +463,12 @@ export class BoardScene extends Phaser.Scene {
       if (this.startedAt === '') this.startedAt = new Date().toISOString();
     }
     this.commands.push(cmd);
+    this.saveDailyProgress();
+  }
+
+  /** Skriver kommandologgen og tiden slik de står nå. Kalles etter hvert trekk og mens klokken går. */
+  private saveDailyProgress(): void {
+    this.sinceDailySaveMs = 0;
     const progress = {
       puzzleId: this.levelId,
       startedAt: this.startedAt,
@@ -830,7 +854,8 @@ export class BoardScene extends Phaser.Scene {
   private nextBlitzBoard(): void {
     if (this.blitzDone) return;
     this.loadBoard(services(this).modes.blitz.load(BLITZ_NEXT));
-    this.clock.resume();
+    // Er fanen skjult, tar onVisibility klokken igjen når spilleren kommer tilbake.
+    if (!this.paused) this.clock.resume();
   }
 
   /** «Hopp over» koster tid; er tiden dermed ute, avsluttes omgangen i stedet. */
