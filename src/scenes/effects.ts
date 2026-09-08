@@ -26,6 +26,26 @@ export class Effects {
     this.scene.tweens.add({ targets: g, alpha: 0, duration: this.d.normal, ease: EASING.fade, onComplete: () => g.destroy() });
   }
 
+  /** Liten salve ved brikka som nettopp flyttet seg. Én per trekk, derfor kort og billig. */
+  burst(x: number, y: number, color: number): void {
+    if (this.reduced) return;
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+      const dot = this.scene.add.circle(x, y, 3, color).setDepth(800);
+      const angle = (i / count) * Math.PI * 2;
+      const dist = 20 + Math.random() * 20;
+      this.scene.tweens.add({
+        targets: dot,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist,
+        alpha: 0,
+        duration: this.d.normal,
+        ease: EASING.move,
+        onComplete: () => dot.destroy(),
+      });
+    }
+  }
+
   confetti(x: number, y: number, count = 40): void {
     if (this.reduced) return;
     for (let i = 0; i < count; i++) {

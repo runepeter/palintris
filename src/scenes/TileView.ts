@@ -5,6 +5,8 @@ import { COLORS, cssColor, FONTS, RADIUS, symbolColor, symbolPattern, WORLD_ACCE
 
 export interface TileFlags {
   matched: boolean;
+  /** Par som ikke matcher ennå. Gir dempet kant, i motsetning til matched-ringen. */
+  unmatched: boolean;
   selected: boolean;
   segment: boolean;
   ghost: boolean;
@@ -49,7 +51,7 @@ export class TileView extends Phaser.GameObjects.Container {
   private tile: Tile;
   private size = 60;
   private colorBlind = false;
-  private current: TileFlags = { matched: false, selected: false, segment: false, ghost: false, cursor: false };
+  private current: TileFlags = { matched: false, unmatched: false, selected: false, segment: false, ghost: false, cursor: false };
   private readonly bg: Phaser.GameObjects.Graphics;
   private readonly pattern: Phaser.GameObjects.Graphics;
   private readonly ring: Phaser.GameObjects.Graphics;
@@ -136,6 +138,9 @@ export class TileView extends Phaser.GameObjects.Container {
     }
     if (f.matched) {
       this.ring.lineStyle(4, COLORS.success, 0.9);
+      this.ring.strokeRoundedRect(-s / 2 - 2, -s / 2 - 2, s + 4, s + 4, r + 2);
+    } else if (f.unmatched && !t.wild) {
+      this.ring.lineStyle(2, COLORS.ink, 0.12);
       this.ring.strokeRoundedRect(-s / 2 - 2, -s / 2 - 2, s + 4, s + 4, r + 2);
     }
     if (f.selected || f.cursor) {

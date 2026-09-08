@@ -187,7 +187,7 @@ export class BoardScene2 extends Phaser.Scene {
     };
     this.machine = new GestureMachine(env);
     this.keyboard = new KeyboardController(env);
-    this.mirrorGfx = this.add.graphics().setDepth(1);
+    this.mirrorGfx = this.add.graphics().setDepth(6);
     this.gapGfx = this.add.graphics().setDepth(4);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
@@ -288,6 +288,33 @@ export class BoardScene2 extends Phaser.Scene {
     return { kind: 'none' };
   }
 
+  /** Skjermpunktet intensjonen gjelder, lest før dispatch — etterpå er layoutet et annet. */
+  private intentPoint(intent: Intent): { x: number; y: number } | null {
+    const slot = (i: number): { x: number; y: number } | null => {
+      const s = this.layout.slots[i];
+      return s === undefined ? null : this.screenPoint(s.x, s.y);
+    };
+    const between = (i: number, j: number): { x: number; y: number } | null => {
+      const a = slot(i);
+      const b = slot(j);
+      return a === null || b === null ? null : { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    };
+    switch (intent.type) {
+      case 'swap':
+        return between(intent.a, intent.b);
+      case 'segment':
+        return between(intent.from, intent.to);
+      case 'remove':
+        return slot(intent.index);
+      case 'insertWild': {
+        const g = this.layout.gaps.find((q) => q.at === intent.at);
+        return g === undefined ? null : this.screenPoint(g.x, g.y);
+      }
+      case 'hint':
+        return null;
+    }
+  }
+
   private applyIntents(intents: readonly Intent[]): void {
     for (const intent of intents) {
       if (intent.type === 'hint') {
@@ -298,9 +325,10 @@ export class BoardScene2 extends Phaser.Scene {
       if (intent.type === 'segment') this.menu.hide();
       const cmd = intentToCommand(intent, this.view.tiles);
       if (cmd === null) continue;
+      const at = this.intentPoint(intent);
       const r = this.session.dispatch(cmd);
       if (!r.ok) {
-        this.showHint(r.reason);
+        this.showHint(r.reason, at ?? undefined);
         audio.playError();
         continue;
       }
@@ -308,6 +336,7 @@ export class BoardScene2 extends Phaser.Scene {
       else if (intent.type !== 'segment') audio.playSelect();
       else if (intent.action === 'mirror') audio.playMirror();
       else audio.playRotate();
+      if (at !== null) this.effects.burst(at.x, at.y, worldAccent(this.level.world));
       this.effects.nudge();
     }
   }
@@ -459,9 +488,12 @@ export class BoardScene2 extends Phaser.Scene {
     this.syncGestureVisuals();
   }
 
-  private showHint(reason: HintReason | SessionReject): void {
+  /** Med kjent posisjon vises årsaken like over brikka; ellers faller den tilbake til under HUD. */
+  private showHint(reason: HintReason | SessionReject, at?: { x: number; y: number }): void {
     this.hint?.destroy();
-    const text = makeLabel(this, contentLeft(this) + contentWidth(this) / 2, HUD_HEIGHT + SPACE.lg, HINT_TEXT[reason], {
+    const x = at?.x ?? contentLeft(this) + contentWidth(this) / 2;
+    const y = at === undefined ? HUD_HEIGHT + SPACE.lg : at.y - this.layout.tile * this.layout.scale * 0.9;
+    const text = makeLabel(this, x, y, HINT_TEXT[reason], {
       size: 16,
       color: COLORS.danger,
       font: 'body',
@@ -625,12 +657,13 @@ export class BoardScene2 extends Phaser.Scene {
       const b = this.view.tiles[n - 1 - i];
       if (a === undefined || b === undefined) continue;
       const m = matches(a, b);
-      this.tiles.get(a.id)?.setFlags({ matched: m });
-      this.tiles.get(b.id)?.setFlags({ matched: m });
+      this.tiles.get(a.id)?.setFlags({ matched: m, unmatched: !m });
+      this.tiles.get(b.id)?.setFlags({ matched: m, unmatched: !m });
     }
+    // Midtbrikka har ingen make og skal derfor verken ha matched-ring eller dempet kant.
     if (n % 2 === 1) {
       const mid = this.view.tiles[half];
-      if (mid !== undefined) this.tiles.get(mid.id)?.setFlags({ matched: true });
+      if (mid !== undefined) this.tiles.get(mid.id)?.setFlags({ matched: false, unmatched: false });
     }
 
     if (this.lastKind !== null && this.lastKind !== this.layout.kind) this.inputLocked = true;
@@ -658,9 +691,12 @@ export class BoardScene2 extends Phaser.Scene {
     const m = this.layout.mirror;
     const a = this.screenPoint(m.x1, m.y1);
     const b = this.screenPoint(m.x2, m.y2);
+    // I rad-layout ligger linja under midtbrikka eller i 4 px-gapet, så den må stikke ut
+    // over og under raden for å være synlig. Tegnes over brikkene, derfor lav alpha.
+    const ext = this.layout.kind === 'row' ? this.layout.tile * this.layout.scale * 0.35 : 0;
     this.mirrorGfx.clear();
-    this.mirrorGfx.lineStyle(3, worldAccent(this.level.world), 0.6);
-    this.mirrorGfx.lineBetween(a.x, a.y, b.x, b.y);
+    this.mirrorGfx.lineStyle(3, worldAccent(this.level.world), 0.45);
+    this.mirrorGfx.lineBetween(a.x, a.y - ext, b.x, b.y + ext);
   }
 
   private buildHud(): void {
@@ -674,21 +710,14 @@ export class BoardScene2 extends Phaser.Scene {
     bg.fillStyle(worldAccent(this.level.world), 1);
     bg.fillRect(0, HUD_HEIGHT - HUD_STRIPE, this.scale.width, HUD_STRIPE);
     this.hud.add(bg);
+    // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
+    const cx = left + w / 2;
+    this.hud.add(makeLabel(this, cx, y - SPACE.md, `Trekk ${this.view.movesUsed} / mål ${this.level.target}`, { size: 22, bold: true }));
     this.hud.add(
-      makeLabel(this, left + SPACE.lg, y, `Verden ${this.level.world} · Nivå ${this.level.n}`, {
-        size: 16,
+      makeLabel(this, cx, y + SPACE.lg, `Verden ${this.level.world} · Nivå ${this.level.n} · Budsjett ${this.view.budgetLeft}`, {
+        size: 14,
         color: COLORS.inkMuted,
         font: 'body',
-        align: 'left',
-      })
-    );
-    this.hud.add(makeLabel(this, left + w / 2, y, `Trekk ${this.view.movesUsed} / mål ${this.level.target}`, { size: 22, bold: true }));
-    this.hud.add(
-      makeLabel(this, left + w - SPACE.lg, y, `Budsjett ${this.view.budgetLeft}`, {
-        size: 16,
-        color: COLORS.inkMuted,
-        font: 'body',
-        align: 'right',
       })
     );
   }
