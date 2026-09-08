@@ -1,36 +1,21 @@
 import Phaser from 'phaser';
-import { phaserConfig } from './config/gameConfig';
-import { BootScene } from './scenes/BootScene';
-import { MenuScene } from './scenes/MenuScene';
-import { LevelSelectScene } from './scenes/LevelSelectScene';
-import { GameScene } from './scenes/GameScene';
-import { MechanicalGameScene } from './scenes/MechanicalGameScene';
-import { CascadeScene } from './scenes/CascadeScene';
-import { TimeAttackScene } from './scenes/TimeAttackScene';
-import { TutorialScene } from './scenes/TutorialScene';
-import { SettingsScene } from './scenes/SettingsScene';
-import { ZenModeScene } from './scenes/ZenModeScene';
-import { VersusScene } from './scenes/VersusScene';
-import { DailyChallengeScene } from './scenes/DailyChallengeScene';
+import { BootScene2 } from './scenes/BootScene2';
+import { MenuScene2 } from './scenes/MenuScene2';
+import { SettingsScene2 } from './scenes/SettingsScene2';
+import { COLORS, cssColor } from './theme/theme';
 
-// Configure game with all scenes
 const config: Phaser.Types.Core.GameConfig = {
-  ...phaserConfig,
-  scene: [
-    BootScene,
-    MenuScene,
-    LevelSelectScene,
-    GameScene,
-    MechanicalGameScene,
-    CascadeScene,
-    TimeAttackScene,
-    TutorialScene,
-    SettingsScene,
-    ZenModeScene,
-    VersusScene,
-    DailyChallengeScene,
-  ],
+  type: Phaser.AUTO,
+  parent: 'game-container',
+  backgroundColor: cssColor(COLORS.background),
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: '100%',
+    height: '100%',
+  },
+  input: { mouse: true, touch: true },
+  scene: [BootScene2, MenuScene2, SettingsScene2],
 };
 
-// Start the game
 new Phaser.Game(config);
