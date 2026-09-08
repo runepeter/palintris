@@ -1,63 +1,58 @@
 # Palintris
 
-A palindrome puzzle game built with Phaser 3 and TypeScript.
+Palindrom-puslespill bygget med Phaser 3, TypeScript og Vite. Hvert brett er en rekke
+symbolbrikker; målet er å gjøre rekken til et palindrom med færrest mulig trekk, innenfor
+et trekkbudsjett.
 
-## Gameplay
+## Moduser
 
-Transform sequences into palindromes using various operations:
+- **Kampanje** – 90 håndbygde nivåer over 6 verdener. Hver verden introduserer en ny
+  mekanikk: bytt naboer, roter et utsnitt, speil et utsnitt, låste brikker, joker og
+  fjerning av brikker.
+- **Daglig** – ett felles brett per dag (UTC), med streak.
+- **Blitz** – tidsbegrenset kø av brett uten trekkgrense.
+- **Fri spilling** – uendelig genererte brett per verden, for øving.
 
-- **Swap**: Exchange two adjacent symbols
-- **Rotate**: Shift a section of symbols left or right
-- **Mirror**: Reverse a section of symbols
-- **Insert**: Add a new symbol (unlocks in hard levels)
-- **Delete**: Remove a symbol (unlocks in hard levels)
-- **Replace**: Change a symbol to another (unlocks in expert levels)
-
-## Features
-
-- 50 handcrafted levels across 5 difficulty tiers
-- Multiple symbol categories: letters, numbers, shapes, colors
-- Time-based and operation-limited challenges
-- Score system with bonus objectives
-- Achievement system
-- Progress saving with localStorage
-
-## Development
+## Utvikling
 
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Type checking
-npm run typecheck
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+npm install       # installer avhengigheter
+npm run dev        # dev-server (Vite)
+npm test           # enhetstester (Vitest)
+npm run typecheck   # tsc --noEmit for app og node-config
+npm run lint        # ESLint over src, scripts og e2e
+npm run build        # tsc + vite build
+npm run e2e           # Playwright, ende-til-ende
+npm run build:campaign  # regenerer kampanjenivåene
 ```
 
-## Deployment
+## Struktur
 
-This project is configured for Vercel deployment. Push to your repository and connect to Vercel for automatic deployments.
+- `src/core` – ren spillogikk uten Phaser: brikker, trekk, regler, løser, poengsum,
+  lagring.
+- `src/content` – kampanjeoppskrifter og det bygde nivåsettet
+  (`campaign.v1.json`).
+- `src/game` – modusspesifikk logikk (kampanje, daglig, blitz, fri spilling),
+  gestikk-tolkning og brettsesjonen scenen kjører mot.
+- `src/theme` – farger, fonter og andre designtokens.
+- `src/audio` – lyd og musikk.
+- `src/scenes` – Phaser-scener (meny, brett, verdenskart, resultater, innstillinger).
+- `scripts` – frittstående verktøy, blant annet kampanjegeneratoren.
+- `e2e` – Playwright-spesifikasjoner som kjører mot en ekte dev-server.
 
-## Controls
+## Innhold
 
-- Click tiles to select them
-- Select operation from the bottom panel
-- Keyboard shortcuts:
-  - `1-6`: Select operations
-  - `Z`: Undo last move
-  - `R`: Reset level
-  - `ESC`: Clear selection
+Kampanjen ligger ferdig bygget i `src/content/campaign.v1.json` (`contentVersion: 1`).
+Filen genereres fra oppskriftene i `src/content/recipes.ts` via:
 
-## Tech Stack
+```bash
+npm run build:campaign
+```
 
-- Phaser 3 - Game framework
-- TypeScript - Type safety
-- Vite - Build tool
-- Vercel - Deployment
+En ny `contentVersion` bumpes i `recipes.ts` når nivåformatet eller genereringen
+endres, slik at gamle lagrede fremskritt ikke blandes med nytt innhold.
+
+## Deploy
+
+Prosjektet er satt opp for Vercel (`vercel.json`): `npm run build` bygger til `dist`,
+som serveres statisk.

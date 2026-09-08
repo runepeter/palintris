@@ -1,9 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-// TestHook is the real window.__palintris shape (src/scenes/testHook.ts); importing
-// it here (type-only, no Phaser/Vite pulled in) also brings in its declare global,
-// so this file's window.__palintris stays in sync instead of duplicating the shape.
-import type { TestHook } from '../src/scenes/hookTypes';
+import { drag, hook, tap } from './helpers';
 
 type Cmd =
   | { type: 'swap'; a: number; b: number }
@@ -18,52 +15,6 @@ const LEVEL_ID = 'w3-02';
 const campaign = JSON.parse(readFileSync('src/content/campaign.v1.json', 'utf8')) as { levels: Level[] };
 const level = campaign.levels.find((l) => l.id === LEVEL_ID);
 if (level === undefined) throw new Error(`fant ikke ${LEVEL_ID}`);
-
-interface Hook {
-  slot(i: number): Promise<ReturnType<TestHook['screenLayout']>['slots'][number]>;
-  view(): Promise<ReturnType<TestHook['view']>>;
-  menu(): Promise<ReturnType<TestHook['menu']>>;
-  zones(): Promise<ReturnType<TestHook['zones']>>;
-  waitIdle(): Promise<unknown>;
-}
-
-const hook = (page: Page): Hook => ({
-  slot: (i: number) =>
-    page.evaluate((idx) => {
-      if (window.__palintris === undefined) throw new Error('__palintris mangler');
-      const slot = window.__palintris.screenLayout().slots[idx];
-      if (slot === undefined) throw new Error(`slot ${idx} finnes ikke`);
-      return slot;
-    }, i),
-  view: () =>
-    page.evaluate(() => {
-      if (window.__palintris === undefined) throw new Error('__palintris mangler');
-      return window.__palintris.view();
-    }),
-  menu: () =>
-    page.evaluate(() => {
-      if (window.__palintris === undefined) throw new Error('__palintris mangler');
-      return window.__palintris.menu();
-    }),
-  zones: () =>
-    page.evaluate(() => {
-      if (window.__palintris === undefined) throw new Error('__palintris mangler');
-      return window.__palintris.zones();
-    }),
-  waitIdle: () => page.waitForFunction(() => window.__palintris !== undefined && !window.__palintris.busy()),
-});
-
-const drag = async (page: Page, from: { x: number; y: number }, to: { x: number; y: number }): Promise<void> => {
-  await page.mouse.move(from.x, from.y);
-  await page.mouse.down();
-  await page.mouse.move(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2, { steps: 4 });
-  await page.mouse.move(to.x, to.y, { steps: 4 });
-  await page.mouse.up();
-};
-
-const tap = async (page: Page, p: { x: number; y: number }): Promise<void> => {
-  await page.mouse.click(p.x, p.y);
-};
 
 const perform = async (page: Page, cmd: Cmd): Promise<void> => {
   const h = hook(page);
