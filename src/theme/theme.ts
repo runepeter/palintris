@@ -1,29 +1,33 @@
 /** Eneste kilde for farger, fonter, avstander og animasjonstider. Ingen hex i scener. */
 
 export const COLORS = {
-  background: 0xfff8ef,
-  panel: 0xffffff,
-  line: 0xe6ded2,
-  ink: 0x2b2b3a,
-  inkMuted: 0x7a7a8c,
-  tiles: [0xff6b6b, 0xffb347, 0xffe66d, 0x6bd6a1, 0x4fc3f7, 0xb388ff] as const,
-  wild: 0xffffff,
-  locked: 0xb9b3ad,
-  success: 0x3fbf7f,
-  danger: 0xe0555b,
-  star: 0xffd166,
+  background: 0x061920,
+  panel: 0x102d37,
+  line: 0x44616a,
+  ink: 0xfff2d6,
+  inkMuted: 0xa8c2c5,
+  tiles: [0xf25f70, 0xffa83f, 0xf5d65d, 0x49d49b, 0x57cafa, 0xba89f5] as const,
+  wild: 0xe8ddff,
+  locked: 0x526b73,
+  success: 0x7cecc5,
+  danger: 0xf28489,
+  star: 0xf3cd80,
+  gold: 0xc39b53,
+  shadow: 0x020d14,
+  glow: 0x6ddcda,
+  white: 0xffffff,
 } as const;
 
-/** Korall, solgul, turkis, lilla, lime, dyp blå. Indeks 0 er verden 1. */
-export const WORLD_ACCENTS: readonly number[] = [0xff6b6b, 0xffc857, 0x2ec4b6, 0x9b5de5, 0xa3e635, 0x1e5bd8];
+/** Gull, jade, turkis, ametyst, korall, safir. Indeks 0 er verden 1. */
+export const WORLD_ACCENTS: readonly number[] = [0xf3cd80, 0x7cecc5, 0x65d5ed, 0xba89f5, 0xf2a385, 0x99b8fa];
 
 export const FONTS = {
-  display: '"Fredoka", Arial, sans-serif',
+  display: '"Cinzel", Georgia, serif',
   body: '"Nunito", Arial, sans-serif',
 } as const;
 
 export const SPACE = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 } as const;
-export const RADIUS = { tile: 12, button: 14, panel: 20 } as const;
+export const RADIUS = { tile: 9, button: 10, panel: 16 } as const;
 
 export const DURATION = { snap: 120, normal: 220, calm: 400, ceremony: 800 } as const;
 

@@ -1,3 +1,4 @@
+import { screenWidth, screenHeight } from './viewport';
 import Phaser from 'phaser';
 import type { IntroSpec } from '../game/intro';
 import { COLORS, DURATION, EASING, RADIUS, SPACE } from '../theme/theme';
@@ -98,10 +99,10 @@ export class IntroOverlay extends Phaser.GameObjects.Container {
    * relayout, og bygger innholdet på nytt fordi både bredden og varianten kan ha endret seg.
    */
   layout(width: number, bottom: number): void {
-    const h = introHeight(this.host.scale.height);
+    const h = introHeight(screenHeight(this.host));
     this.panelWidth = width;
     this.panelHeight = h;
-    this.setPosition(this.host.scale.width / 2, bottom - h / 2);
+    this.setPosition(screenWidth(this.host) / 2, bottom - h / 2);
     this.panel.clear();
     this.panel.fillStyle(COLORS.panel, 1);
     this.panel.fillRoundedRect(-width / 2, -h / 2, width, h, RADIUS.panel);

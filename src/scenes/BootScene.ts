@@ -4,6 +4,7 @@ import { audio } from '../audio/sound';
 import { COLORS, cssColor, FONTS } from '../theme/theme';
 import { createServices, installServices } from './services';
 import { SCENE } from './ui';
+import { ART, registerJewelFrames } from './art';
 
 const FONT_TIMEOUT_MS = 2000;
 
@@ -19,7 +20,14 @@ export class BootScene extends Phaser.Scene {
     super(SCENE.boot);
   }
 
+  preload(): void {
+    this.load.image(ART.realm, 'assets/mirror-realm.webp');
+    this.load.image(ART.jewels, 'assets/jewel-tiles.webp');
+    this.load.image(ART.wild, 'assets/wild-jewel.webp');
+  }
+
   create(): void {
+    registerJewelFrames(this);
     this.cameras.main.setBackgroundColor(cssColor(COLORS.background));
     const s = createServices();
     installServices(this.game, s);

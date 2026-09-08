@@ -1,3 +1,5 @@
+import { screenWidth, screenHeight } from './viewport';
+import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import type { Settings } from '../core/storage';
 import { audio } from '../audio/sound';
@@ -32,8 +34,9 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private build(): void {
+    makeBackdrop(this);
     const s = services(this);
-    const cx = this.scale.width / 2;
+    const cx = screenWidth(this) / 2;
     makeLabel(this, cx, 60, 'Innstillinger', { size: 32, bold: true });
     ROWS.forEach((row, i) => {
       const y = 130 + i * (48 + SPACE.lg);
@@ -48,6 +51,6 @@ export class SettingsScene extends Phaser.Scene {
         },
       });
     });
-    makeButton(this, { x: cx, y: this.scale.height - 80, width: 180, height: 48, label: 'Tilbake', accent: worldAccent(1), onClick: () => this.scene.start(SCENE.menu) });
+    makeButton(this, { x: cx, y: screenHeight(this) - 80, width: 180, height: 48, label: 'Tilbake', accent: worldAccent(1), onClick: () => this.scene.start(SCENE.menu) });
   }
 }

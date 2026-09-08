@@ -1,3 +1,4 @@
+import { screenWidth, screenHeight, PIXEL_RATIO } from './viewport';
 import Phaser from 'phaser';
 import type { BoardLayout } from '../game/layout';
 import { COLORS, cssColor, DURATION, durations, EASING, WORLD_ACCENTS } from '../theme/theme';
@@ -22,7 +23,7 @@ export class Effects {
     if (this.reduced) return;
     const g = this.scene.add.graphics().setDepth(900);
     g.fillStyle(color, alpha);
-    g.fillRect(0, 0, this.scene.scale.width, this.scene.scale.height);
+    g.fillRect(0, 0, screenWidth(this.scene), screenHeight(this.scene));
     this.scene.tweens.add({ targets: g, alpha: 0, duration: this.d.normal, ease: EASING.fade, onComplete: () => g.destroy() });
   }
 
@@ -91,14 +92,14 @@ export class Effects {
 
   starFall(count: number): void {
     if (this.reduced) return;
-    const w = this.scene.scale.width;
+    const w = screenWidth(this.scene);
     for (let i = 0; i < count; i++) {
       const star = this.scene.add
-        .text(Math.random() * w, -20, '★', { fontSize: '24px', color: cssColor(COLORS.star) })
+        .text(Math.random() * w, -20, '★', { resolution: PIXEL_RATIO, fontSize: '24px', color: cssColor(COLORS.star) })
         .setDepth(800);
       this.scene.tweens.add({
         targets: star,
-        y: this.scene.scale.height + 30,
+        y: screenHeight(this.scene) + 30,
         angle: 180,
         duration: this.d.ceremony + Math.random() * this.d.ceremony,
         delay: Math.random() * this.d.calm,

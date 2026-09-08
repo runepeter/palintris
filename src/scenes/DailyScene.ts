@@ -1,3 +1,5 @@
+import { screenWidth, screenHeight } from './viewport';
+import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import type { DailyAttempt } from '../core/storage';
 import { bestAttempt, dailyShareText, displayStreak, mmss, parseDailyPuzzleId, sharedAttempt } from '../game/daily';
@@ -49,9 +51,10 @@ export class DailyScene extends Phaser.Scene {
   }
 
   private build(): void {
+    makeBackdrop(this);
     const s = services(this);
-    const cx = this.scale.width / 2;
-    const h = this.scale.height;
+    const cx = screenWidth(this) / 2;
+    const h = screenHeight(this);
     const id = s.modes.daily.todayId();
     const attempts = s.store.data.daily.attempts;
     const best = bestAttempt(attempts, id);

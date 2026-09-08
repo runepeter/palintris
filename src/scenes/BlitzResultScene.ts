@@ -1,3 +1,5 @@
+import { screenWidth, screenHeight } from './viewport';
+import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { COLORS, SPACE } from '../theme/theme';
@@ -43,8 +45,9 @@ export class BlitzResultScene extends Phaser.Scene {
   }
 
   private build(): void {
-    const cx = this.scale.width / 2;
-    const h = this.scale.height;
+    makeBackdrop(this);
+    const cx = screenWidth(this) / 2;
+    const h = screenHeight(this);
 
     makeLabel(this, cx, h * 0.2, 'Tiden er ute', { size: 40, color: COLORS.danger, bold: true });
     makeLabel(this, cx, h * 0.2 + 60, `Løste brett: ${this.solved}`, { size: 24, bold: true });

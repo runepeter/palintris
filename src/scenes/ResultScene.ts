@@ -1,3 +1,5 @@
+import { screenWidth, screenHeight } from './viewport';
+import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { parseLevelId } from '../core/progression';
@@ -74,6 +76,7 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private build(): void {
+    makeBackdrop(this);
     const s = services(this);
     const reducedMotion = s.settings().reducedMotion;
     const d = durations(reducedMotion);
@@ -83,8 +86,8 @@ export class ResultScene extends Phaser.Scene {
     const world = parsed?.world ?? 1;
     // Dagens brett hører ikke til en verden og bruker modusens egen farge.
     const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
-    const h = this.scale.height;
-    const cx = this.scale.width / 2;
+    const h = screenHeight(this);
+    const cx = screenWidth(this) / 2;
     const starsY = h * 0.32;
 
     const animate = !this.celebrated;
@@ -190,7 +193,7 @@ export class ResultScene extends Phaser.Scene {
     const g = this.add.graphics();
     g.fillStyle(worldAccent(world), 1);
     g.fillRoundedRect(-w / 2, -height / 2, w, height, RADIUS.panel);
-    const label = makeLabel(this, 0, 0, `Verden ${world} låst opp!`, { size: 16, color: COLORS.panel, bold: true });
+    const label = makeLabel(this, 0, 0, `Verden ${world} låst opp!`, { size: 16, color: COLORS.background, bold: true });
     this.add.container(x, y, [g, label]);
   }
 }

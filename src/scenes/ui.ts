@@ -1,3 +1,4 @@
+import { screenWidth, PIXEL_RATIO } from './viewport';
 import Phaser from 'phaser';
 import { COLORS, cssColor, DURATION, EASING, FONTS, RADIUS } from '../theme/theme';
 
@@ -22,6 +23,7 @@ export interface LabelOpts {
 
 export const makeLabel = (scene: Phaser.Scene, x: number, y: number, text: string, opts: LabelOpts): Phaser.GameObjects.Text => {
   const t = scene.add.text(x, y, text, {
+    resolution: PIXEL_RATIO,
     fontFamily: opts.font === 'body' ? FONTS.body : FONTS.display,
     fontSize: `${opts.size}px`,
     fontStyle: opts.bold === true ? 'bold' : 'normal',
@@ -49,11 +51,22 @@ export interface ButtonOpts {
 export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameObjects.Container => {
   const enabled = opts.enabled ?? true;
   const g = scene.add.graphics();
-  g.fillStyle(enabled ? opts.accent : COLORS.locked, 1);
+  g.fillStyle(COLORS.shadow, 0.8);
+  g.fillRoundedRect(-opts.width / 2, -opts.height / 2 + 5, opts.width, opts.height, RADIUS.button);
+  g.fillStyle(COLORS.panel, 1);
   g.fillRoundedRect(-opts.width / 2, -opts.height / 2, opts.width, opts.height, RADIUS.button);
+  g.fillStyle(opts.accent, enabled ? 0.13 : 0.03);
+  g.fillRoundedRect(-opts.width / 2, -opts.height / 2, opts.width, opts.height, RADIUS.button);
+  g.fillStyle(COLORS.white, enabled ? 0.04 : 0.015);
+  g.fillRoundedRect(-opts.width / 2 + 3, -opts.height / 2 + 3, opts.width - 6, opts.height * 0.42, RADIUS.button - 3);
+  g.lineStyle(1.5, enabled ? opts.accent : COLORS.line, enabled ? 0.85 : 0.5);
+  g.strokeRoundedRect(-opts.width / 2, -opts.height / 2, opts.width, opts.height, RADIUS.button);
+  g.lineStyle(1, enabled ? COLORS.ink : COLORS.line, 0.2);
+  g.lineBetween(-opts.width / 2 + 12, -opts.height / 2 + 4, opts.width / 2 - 12, -opts.height / 2 + 4);
   const label = makeLabel(scene, 0, 0, opts.label, {
-    size: opts.labelSize ?? Math.round(opts.height * 0.42),
-    color: COLORS.panel,
+    size: opts.labelSize ?? Math.round(opts.height * 0.34),
+    color: enabled ? COLORS.ink : COLORS.inkMuted,
+    font: 'body',
     bold: true,
   });
   const c = scene.add.container(opts.x, opts.y, [g, label]);
@@ -86,8 +99,8 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
 };
 
 /** Maks brettbredde i landskap; sentrert. */
-export const contentWidth = (scene: Phaser.Scene): number => Math.min(scene.scale.width, 480);
-export const contentLeft = (scene: Phaser.Scene): number => (scene.scale.width - contentWidth(scene)) / 2;
+export const contentWidth = (scene: Phaser.Scene): number => Math.min(screenWidth(scene), 480);
+export const contentLeft = (scene: Phaser.Scene): number => (screenWidth(scene) - contentWidth(scene)) / 2;
 
 /** Kopierer til utklippstavla. Usant når nettleseren nekter eller mangler API-et. */
 export const copyText = async (text: string): Promise<boolean> => {

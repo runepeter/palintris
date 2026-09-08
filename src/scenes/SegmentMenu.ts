@@ -1,3 +1,4 @@
+import { screenWidth, screenHeight } from './viewport';
 import Phaser from 'phaser';
 import type { SegmentAction } from '../game/gestures';
 import { COLORS } from '../theme/theme';
@@ -56,8 +57,8 @@ export class SegmentMenu extends Phaser.GameObjects.Container {
   show(x: number, y: number, mirrorEnabled: boolean): void {
     const halfW = PITCH + R;
     const minY = this.topEdge + R;
-    const maxX = Math.max(halfW + EDGE, this.scene.scale.width - halfW - EDGE);
-    const maxY = Math.max(minY, this.scene.scale.height - R - EDGE);
+    const maxX = Math.max(halfW + EDGE, screenWidth(this.scene) - halfW - EDGE);
+    const maxY = Math.max(minY, screenHeight(this.scene) - R - EDGE);
     this.setPosition(Phaser.Math.Clamp(x, halfW + EDGE, maxX), Phaser.Math.Clamp(y, minY, maxY));
     for (const b of this.buttons) b.node.setAlpha(b.action === 'mirror' && !mirrorEnabled ? DIMMED : 1);
     this.setVisible(true);

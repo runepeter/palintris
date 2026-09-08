@@ -1,4 +1,6 @@
+import { screenWidth, screenHeight, PIXEL_RATIO, prepareViewport } from './viewport';
 import Phaser from 'phaser';
+import { makeBackdrop } from './art';
 import { audio } from '../audio/sound';
 import type { BoardState } from '../core/board';
 import type { Command, Result } from '../core/commands';
@@ -246,6 +248,7 @@ export class BoardScene extends Phaser.Scene {
   }
 
   create(): void {
+    prepareViewport(this);
     const s = services(this);
     // En blitz-omgang teller sine egne brett, så hver inngang til scenen starter en fersk kø.
     if (this.modeKind === 'blitz') s.restartBlitz();
@@ -508,7 +511,7 @@ export class BoardScene extends Phaser.Scene {
    * Treffet begrenses også til hånd-stripa, så sirklene aldri skygger for brettet.
    */
   private near(z: { x: number; y: number }, x: number, y: number): boolean {
-    if (y < this.scale.height - HAND_HEIGHT) return false;
+    if (y < screenHeight(this) - HAND_HEIGHT) return false;
     const r = Math.min(ZONE_HIT, contentWidth(this) / 8 - 2);
     return Math.hypot(x - z.x, y - z.y) <= r;
   }
@@ -520,8 +523,10 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private pointer(type: 'down' | 'move' | 'up', p: Phaser.Input.Pointer): void {
+    const x = p.x / PIXEL_RATIO;
+    const y = p.y / PIXEL_RATIO;
     // Panelet spiser bare sitt eget trykk; et drag som alt er i gang må kunne slippes over det.
-    if (type === 'down' && this.intro?.hitPanel(p.x, p.y) === true) return;
+    if (type === 'down' && this.intro?.hitPanel(x, y) === true) return;
     const handOff = this.keyboardActive;
     this.keyboardActive = false;
     // Pekeren tar over markeringen fra tastaturet, ellers blir tastaturets valg stående usynlig
@@ -529,12 +534,12 @@ export class BoardScene extends Phaser.Scene {
     if (type === 'down') this.keyboard.state = { ...this.keyboard.state, selected: null, segment: null };
     // Et nytt grep mens brikker fortsatt flyr ville tatt tak i en brikke som ikke er framme ennå.
     const busy = this.inputLocked || (type === 'down' && this.pendingTweens > 0);
-    if (busy || this.view.solved || this.blockedByBanner(p.x, p.y)) {
+    if (busy || this.view.solved || this.blockedByBanner(x, y)) {
       if (handOff) this.syncGestureVisuals();
       return;
     }
-    const target = this.resolveTarget(p.x, p.y);
-    this.applyIntents(this.machine.handle({ type, x: p.x, y: p.y, t: this.time.now, target }));
+    const target = this.resolveTarget(x, y);
+    this.applyIntents(this.machine.handle({ type, x, y, t: this.time.now, target }));
     this.syncGestureVisuals();
   }
 
@@ -708,8 +713,8 @@ export class BoardScene extends Phaser.Scene {
     this.gapGfx.clear();
     if (s.name !== 'dragWild' && s.name !== 'wildArmed') return;
     // wildArmed har ingen peker nede; activePointer holder siste kjente posisjon.
-    const px = s.name === 'dragWild' ? s.x : this.input.activePointer.x;
-    const py = s.name === 'dragWild' ? s.y : this.input.activePointer.y;
+    const px = s.name === 'dragWild' ? s.x : this.input.activePointer.x / PIXEL_RATIO;
+    const py = s.name === 'dragWild' ? s.y : this.input.activePointer.y / PIXEL_RATIO;
     const nearest = hitGap(this.layout, (px - this.originX) / this.layout.scale, (py - this.originY) / this.layout.scale);
     const w = this.layout.gap * this.layout.scale + SPACE.sm;
     const h = this.layout.tile * this.layout.scale * 0.8;
@@ -740,7 +745,7 @@ export class BoardScene extends Phaser.Scene {
   private segmentAnchor(from: number, to: number): { x: number; y: number } {
     const a = this.layout.slots[from];
     const b = this.layout.slots[to];
-    if (a === undefined || b === undefined) return { x: this.scale.width / 2, y: this.scale.height / 2 };
+    if (a === undefined || b === undefined) return { x: screenWidth(this) / 2, y: screenHeight(this) / 2 };
     const p1 = this.screenPoint(a.x, a.y);
     const p2 = this.screenPoint(b.x, b.y);
     return { x: (p1.x + p2.x) / 2, y: Math.min(p1.y, p2.y) - this.layout.tile * this.layout.scale * 0.8 };
@@ -894,7 +899,7 @@ export class BoardScene extends Phaser.Scene {
    * avgir alltid nøyaktig det panelet legger beslag på: de to kan ikke overlappe.
    */
   private introSpace(): number {
-    return this.intro === null ? 0 : introHeight(this.scale.height) + INTRO_PAD;
+    return this.intro === null ? 0 : introHeight(screenHeight(this)) + INTRO_PAD;
   }
 
   /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
@@ -921,9 +926,13 @@ export class BoardScene extends Phaser.Scene {
   private relayout(): void {
     const w = contentWidth(this);
     const left = contentLeft(this);
-    this.intro?.layout(w - SPACE.xl, this.scale.height - HAND_HEIGHT - SPACE.md);
+    if (this.lastSize?.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this)) {
+      this.children.getByName('realm-backdrop')?.destroy();
+      makeBackdrop(this, 'board');
+    }
+    this.intro?.layout(w - SPACE.xl, screenHeight(this) - HAND_HEIGHT - SPACE.md);
     const boardTop = HUD_HEIGHT;
-    const boardHeight = Math.max(MIN_BOARD, this.scale.height - HUD_HEIGHT - HAND_HEIGHT - this.introSpace());
+    const boardHeight = Math.max(MIN_BOARD, screenHeight(this) - HUD_HEIGHT - HAND_HEIGHT - this.introSpace());
     this.layout = computeLayout({ count: this.view.tiles.length, width: w, height: boardHeight });
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
@@ -952,8 +961,8 @@ export class BoardScene extends Phaser.Scene {
   /** Tegner alt fra this.view: brikker (opprett/oppdater/fjern etter id), speillinje, HUD, hånd. animate styrer om brikker tweenes til plass. */
   private render(animate: boolean): void {
     this.relayout();
-    const resized = this.lastSize === null || this.lastSize.w !== this.scale.width || this.lastSize.h !== this.scale.height;
-    this.lastSize = { w: this.scale.width, h: this.scale.height };
+    const resized = this.lastSize === null || this.lastSize.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this);
+    this.lastSize = { w: screenWidth(this), h: screenHeight(this) };
     this.refreshChrome(resized);
     const colorBlind = services(this).settings().colorBlind;
     const size = this.layout.tile * this.layout.scale;
@@ -1065,7 +1074,9 @@ export class BoardScene extends Phaser.Scene {
     // over og under raden for å være synlig. Tegnes over brikkene, derfor lav alpha.
     const ext = this.layout.kind === 'row' ? this.layout.tile * this.layout.scale * 0.35 : 0;
     this.mirrorGfx.clear();
-    this.mirrorGfx.lineStyle(3, this.accent(), 0.45);
+    this.mirrorGfx.lineStyle(7, COLORS.glow, 0.1);
+    this.mirrorGfx.lineBetween(a.x, a.y - ext, b.x, b.y + ext);
+    this.mirrorGfx.lineStyle(1, COLORS.glow, 0.75);
     this.mirrorGfx.lineBetween(a.x, a.y - ext, b.x, b.y + ext);
   }
 
@@ -1098,10 +1109,10 @@ export class BoardScene extends Phaser.Scene {
     const left = contentLeft(this);
     const y = HUD_HEIGHT / 2;
     const bg = this.add.graphics();
-    bg.fillStyle(COLORS.panel, 1);
-    bg.fillRect(0, 0, this.scale.width, HUD_HEIGHT);
-    bg.fillStyle(this.accent(), 1);
-    bg.fillRect(0, HUD_HEIGHT - HUD_STRIPE, this.scale.width, HUD_STRIPE);
+    bg.fillStyle(COLORS.panel, 0.94);
+    bg.fillRect(0, 0, screenWidth(this), HUD_HEIGHT);
+    bg.fillStyle(this.accent(), 0.6);
+    bg.fillRect(left + 24, HUD_HEIGHT - HUD_STRIPE, w - 48, 1);
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
@@ -1119,10 +1130,16 @@ export class BoardScene extends Phaser.Scene {
     this.hand.removeAll(true);
     const w = contentWidth(this);
     const left = contentLeft(this);
-    const cy = this.scale.height - HAND_HEIGHT / 2;
+    const cy = screenHeight(this) - HAND_HEIGHT / 2;
     const pitch = w / 4;
     const centerOf = (i: number): number => left + pitch * (i + 0.5);
     const zoneW = pitch - SPACE.md;
+    const tray = this.add.graphics();
+    tray.fillStyle(COLORS.panel, 0.96);
+    tray.fillRoundedRect(left + 2, screenHeight(this) - HAND_HEIGHT, w - 4, HAND_HEIGHT - 8, RADIUS.panel);
+    tray.lineStyle(1, COLORS.gold, 0.4);
+    tray.lineBetween(left + 20, screenHeight(this) - HAND_HEIGHT, left + w - 20, screenHeight(this) - HAND_HEIGHT);
+    this.hand.add(tray);
 
     this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
     // Ladet joker har ingen spøkelse å vise, så sonen får en ring i stedet.
