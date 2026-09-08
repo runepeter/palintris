@@ -1,6 +1,7 @@
 import type { BoardState } from '../core/board';
 import { apply, createBoard } from '../core/board';
 import type { Command, RejectReason, Result } from '../core/commands';
+import { reject } from '../core/commands';
 import { isPalindrome } from '../core/palindrome';
 import type { Rules } from '../core/rules';
 import type { Stars } from '../core/scoring';
@@ -14,6 +15,9 @@ export interface SolverPort {
   solve(req: SolveRequest): Promise<SolveResult>;
   cancelAll(): void;
 }
+
+/** Kjernens avvisningsgrunner, pluss sesjonens egen for trekk etter dispose. */
+export type SessionReject = RejectReason | 'disposed';
 
 export type SolveStatus =
   | { readonly kind: 'idle' }
@@ -46,7 +50,8 @@ export interface SessionOptions {
 
 /**
  * Kjører ett brett: regler via apply, løser-status etter hvert trekk, stjerner ved løsning.
- * Vet ingenting om modus eller Phaser.
+ * Vet ingenting om modus eller Phaser. Kalleren leser view() etter konstruksjon; onChange
+ * fyres først etter første dispatch eller løser-svar.
  */
 export class BoardSession {
   private current: BoardState;
@@ -56,18 +61,19 @@ export class BoardSession {
 
   constructor(private readonly opts: SessionOptions) {
     this.current = createBoard(opts.tiles, opts.hand);
-    this.afterChange();
+    this.afterChange(false);
   }
 
   get state(): BoardState {
     return this.current;
   }
 
-  dispatch(cmd: Command): Result<BoardState, RejectReason> {
+  dispatch(cmd: Command): Result<BoardState, SessionReject> {
+    if (this.disposed) return reject('disposed');
     const r = apply(this.opts.rules, this.current, cmd);
     if (!r.ok) return r;
     this.current = r.value;
-    this.afterChange();
+    this.afterChange(true);
     return r;
   }
 
@@ -95,23 +101,23 @@ export class BoardSession {
     if (!this.disposed) this.opts.onChange(this.view());
   }
 
-  private afterChange(): void {
+  private afterChange(emitNow: boolean): void {
     const seq = ++this.requestSeq;
     if (isPalindrome(this.current.tiles)) {
       this.solveStatus = { kind: 'idle' };
       this.opts.solver.cancelAll();
-      this.emit();
+      if (emitNow) this.emit();
       return;
     }
     const budgetLeft = this.opts.budget - this.current.movesUsed;
     if (budgetLeft <= 0) {
       this.solveStatus = { kind: 'deadEnd' };
       this.opts.solver.cancelAll();
-      this.emit();
+      if (emitNow) this.emit();
       return;
     }
     this.solveStatus = { kind: 'pending' };
-    this.emit();
+    if (emitNow) this.emit();
     void this.opts.solver
       .solve({
         rules: this.opts.rules,
@@ -120,7 +126,8 @@ export class BoardSession {
         maxMoves: budgetLeft,
         limits: { states: this.opts.solverStates ?? CLIENT_SOLVER_STATES },
       })
-      .then((res) => this.onSolveResult(seq, res));
+      .then((res) => this.onSolveResult(seq, res))
+      .catch(() => this.onSolveResult(seq, { status: 'unknown' }));
   }
 
   private onSolveResult(seq: number, res: SolveResult): void {

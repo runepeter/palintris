@@ -45,8 +45,9 @@ const session = (s: string, opts: Partial<{ target: number; budget: number; hand
 };
 
 describe('BoardSession', () => {
-  it('starter med løserforespørsel med maxMoves = budsjett og 50 000 tilstander', () => {
-    const { sess, solver } = session('AAB', { budget: 5 });
+  it('starter med løserforespørsel med maxMoves = budsjett og 50 000 tilstander, uten å emitte', () => {
+    const { sess, solver, views } = session('AAB', { budget: 5 });
+    expect(views).toHaveLength(0);
     expect(sess.view().solveStatus).toEqual({ kind: 'pending' });
     expect(solver.requests).toHaveLength(1);
     expect(solver.requests[0]?.maxMoves).toBe(5);
@@ -142,6 +143,31 @@ describe('BoardSession', () => {
     sess.dispatch({ type: 'reset' });
     expect(symbolKey(sess.view().tiles)).toBe('ABCD');
     expect(sess.view().movesUsed).toBe(0);
+  });
+
+  it('dispatch etter dispose avvises uten ny løserforespørsel', () => {
+    const { sess, solver } = session('ABCD');
+    sess.dispose();
+    const r = sess.dispatch({ type: 'swap', a: 0, b: 1 });
+    expect(r).toEqual({ ok: false, reason: 'disposed' });
+    expect(symbolKey(sess.view().tiles)).toBe('ABCD');
+    expect(solver.requests).toHaveLength(1);
+  });
+
+  it('løser som feiler gir unknown uten ubehandlet rejection', async () => {
+    const views: SessionView[] = [];
+    const sess = new BoardSession({
+      rules: makeRules(ALL_OPS),
+      tiles: tilesFromString('ABCD'),
+      hand: { wild: 0, remove: 0 },
+      target: 1,
+      budget: 5,
+      solver: { solve: () => Promise.reject(new Error('worker')), cancelAll: () => {} },
+      onChange: (v) => views.push(v),
+    });
+    await flush();
+    expect(sess.view().solveStatus).toEqual({ kind: 'unknown' });
+    expect(views.at(-1)?.solveStatus).toEqual({ kind: 'unknown' });
   });
 
   it('dispose avbryter løser og stopper onChange', async () => {
