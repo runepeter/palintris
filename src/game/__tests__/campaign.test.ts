@@ -21,6 +21,7 @@ describe('CampaignMode', () => {
     expect(lvl.n).toBe(1);
     expect(lvl.target).toBe(src.target);
     expect(lvl.budget).toBe(src.budget);
+    expect(lvl.targetExact).toBe(src.targetExact);
     expect(lvl.rules.allowedOps.has('swap')).toBe(true);
     expect(lvl.contentVersion).toBe(CAMPAIGN.contentVersion);
     expect(mode.load('w9-01')).toBeNull();

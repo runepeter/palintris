@@ -23,6 +23,7 @@ export class CampaignMode implements BoardMode {
       hand: level.hand,
       rules: rulesFor(level),
       target: level.target,
+      targetExact: level.targetExact,
       budget: level.budget,
       contentVersion: CAMPAIGN.contentVersion,
     };
