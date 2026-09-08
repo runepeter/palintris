@@ -8,18 +8,26 @@ import { symbolKey } from '../core/tiles';
  * ingen ms-grense i løseren og ingen avhengighet til lokal tidssone.
  *
  * `movesRange[0]` settes per ukedag av `dailyRecipe`; verdien her er gulvet.
- * Taket er 6, men mål over 3 finnes ikke for denne formen: målt over 20 000
- * kandidater med 1 000 000 tilstander er minimum 1 i 54 %, 2 i 38 % og 3 i 1,1 %,
- * og aldri 4. Rotasjon og speiling over vilkårlige utsnitt gjør avstanden kort
- * uansett hvor mye brettet stokkes. Vil man ha mål 4, må daglig få joker og
- * fjerning i hånden slik verden 5 og 6 har.
+ *
+ * Mål over 3 finnes ikke for denne formen, så taket er uten praktisk betydning.
+ * Telling over 20 000 genererte kandidater, løst med 1 000 000 tilstander og
+ * maxMoves 8:
+ *
+ *   scrambleRange [2, 5]: min 1 i 11 940, min 2 i 5 991, min 3 i 89, min ≥ 4 i 0
+ *   scrambleRange [4, 9]: min 1 i 10 862, min 2 i 7 583, min 3 i 227, min ≥ 4 i 0
+ *
+ * Rotasjon og speiling over vilkårlige utsnitt gjør avstanden kort uansett hvor
+ * mye brettet stokkes; mer stokking flytter bare masse fra 1 til 2. Målet på en
+ * dag er derfor alltid 2 eller 3. Vil man ha mål 4, må daglig få joker og fjerning
+ * i hånden slik verden 5 og 6 har, og den formen koster ~5 ms per kandidat.
+ * Ikke gjenta målingen; den er gjort.
  */
 export const DAILY_RECIPE: Recipe = {
   id: 'daily',
   lengthRange: [7, 9],
   alphabet: 4,
   allowedOps: ['swap', 'rotate', 'mirror'],
-  movesRange: [2, 6],
+  movesRange: [2, 4],
   slack: 4,
   hand: { wild: 0, remove: 0 },
   lockedRange: [0, 0],

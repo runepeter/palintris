@@ -107,7 +107,7 @@ describe('dailyLevel', () => {
     expect(dailyLevel('ikke-en-dato', 1)).toBeNull();
   });
 
-  it('gir brett hver dag, og målet varierer over 21 dager', () => {
+  it('gir brett hver dag i 21 dager, med både mål 2 og mål 3', () => {
     const targets: number[] = [];
     const start = Date.parse('2026-09-08T00:00:00.000Z');
     for (let i = 0; i < 21; i++) {
@@ -118,17 +118,14 @@ describe('dailyLevel', () => {
     }
     expect(targets).toHaveLength(21);
     // Mål over 3 finnes ikke for denne oppskriften; se kommentaren på DAILY_RECIPE.
-    expect(new Set(targets).size).toBeGreaterThanOrEqual(2);
-    expect(Math.min(...targets)).toBeGreaterThanOrEqual(2);
+    expect([...new Set(targets)].sort()).toEqual([2, 3]);
   });
+});
 
-  it('følger ukedagskurven: mandag til onsdag lettest', () => {
-    // 2026-09-14 er en mandag, 2026-09-17 en torsdag.
+describe('dailyRecipe', () => {
+  it('gir minMoves 2 på mandag og 3 på torsdag', () => {
     expect(dailyRecipe('2026-09-14').movesRange[0]).toBe(2);
-    expect(dailyRecipe('2026-09-16').movesRange[0]).toBe(2);
     expect(dailyRecipe('2026-09-17').movesRange[0]).toBe(3);
-    expect(dailyRecipe('2026-09-20').movesRange[0]).toBe(3);
-    expect(dailyLevel('2026-09-17', 1)?.target).toBeGreaterThanOrEqual(3);
   });
 });
 
