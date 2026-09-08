@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint src scripts --ext .ts",
-    "lint:core": "eslint src/core src/content scripts --ext .ts",
+    "lint:core": "eslint src/core src/content src/theme src/game scripts --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "build:campaign": "tsx scripts/build-campaign.ts"

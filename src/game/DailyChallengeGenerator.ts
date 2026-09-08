@@ -107,10 +107,11 @@ function getAllowedOperations(
       // 4-5 operations
       return ['swap', 'rotate', 'mirror', 'insert', 'delete'];
 
-    case 'hard':
+    case 'hard': {
       // All operations, but shuffle order
       const shuffled = [...allOps].sort(() => rng() - 0.5);
       return shuffled.slice(0, 5 + Math.floor(rng() * 2)); // 5-6 operations
+    }
   }
 }
 
