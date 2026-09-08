@@ -2980,7 +2980,8 @@ git commit -m "feat(content): world recipes, offline campaign builder and frozen
 
 ## Ferdig-kriterier for plan 1
 
-- `npm test`, `npm run typecheck` og `npm run lint` er grønne på branch `redesign`.
+- `npm test`, `npm run typecheck` og `npm run lint:core` er grønne på branch `redesign`.
+- Alle kampanjenivåer har `targetExact: true`.
 - `src/core` har ingen import fra Phaser eller `src/scenes`, `src/ui`, `src/game`. Sjekk: `grep -rn "from 'phaser'" src/core` gir ingen treff.
 - `src/content/campaign.v1.json` finnes med 90 nivåer og er committet.
 - Tag `v1-legacy` peker på gammel main.
