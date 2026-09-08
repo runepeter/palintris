@@ -1,6 +1,7 @@
 import { screenWidth, PIXEL_RATIO } from './viewport';
 import Phaser from 'phaser';
 import { COLORS, cssColor, DURATION, EASING, FONTS, RADIUS } from '../theme/theme';
+import { audio } from '../audio/sound';
 
 export const SCENE = {
   boot: 'Boot',
@@ -92,6 +93,7 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
     c.on('pointerup', () => {
       if (!armed) return;
       armed = false;
+      audio.playClick();
       opts.onClick();
     });
   }
