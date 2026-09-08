@@ -12,6 +12,7 @@
     "lint:core": "eslint src/core src/content src/theme src/game src/audio src/scenes scripts --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "e2e": "playwright test",
     "build:campaign": "tsx scripts/build-campaign.ts"
   },
   "keywords": [
@@ -24,6 +25,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
