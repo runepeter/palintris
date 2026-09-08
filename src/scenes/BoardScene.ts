@@ -132,6 +132,7 @@ export class BoardScene extends Phaser.Scene {
   private mirrorGfx!: Phaser.GameObjects.Graphics;
   private gapGfx!: Phaser.GameObjects.Graphics;
   private hud!: Phaser.GameObjects.Container;
+  private exitButton!: Phaser.GameObjects.Container;
   private hand!: Phaser.GameObjects.Container;
   private menu!: SegmentMenu;
   private banner: Phaser.GameObjects.Container | null = null;
@@ -274,6 +275,10 @@ export class BoardScene extends Phaser.Scene {
     this.mirrorGfx = this.add.graphics().setDepth(6);
     this.gapGfx = this.add.graphics().setDepth(7);
     this.hud = this.add.container(0, 0).setDepth(10);
+    this.exitButton = makeButton(this, {
+      x: 0, y: 30, width: 68, height: 44, label: '← Meny', labelSize: 13, accent: COLORS.line,
+      onClick: () => this.exitToMenu(),
+    }).setDepth(30);
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
     this.startBoard(level);
@@ -495,6 +500,14 @@ export class BoardScene extends Phaser.Scene {
     this.destroyIntro();
     removeHook();
     this.session.dispose();
+  }
+
+  private exitToMenu(): void {
+    if (this.modeKind === 'daily' && this.timerRunning && !this.solvedFired) this.saveDailyProgress();
+    this.timerRunning = false;
+    this.clock.pause();
+    this.inputLocked = true;
+    this.scene.start(SCENE.menu);
   }
 
   private setupInput(): void {
@@ -926,6 +939,7 @@ export class BoardScene extends Phaser.Scene {
   private relayout(): void {
     const w = contentWidth(this);
     const left = contentLeft(this);
+    this.exitButton.setPosition(left + 42, 30);
     if (this.lastSize?.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this)) {
       this.children.getByName('realm-backdrop')?.destroy();
       makeBackdrop(this, 'board');
@@ -1116,7 +1130,9 @@ export class BoardScene extends Phaser.Scene {
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
-    this.hud.add(makeLabel(this, cx, y - SPACE.md, lines.top, { size: lines.topSize, bold: true }));
+    const title = makeLabel(this, cx + 38, y - SPACE.md, lines.top, { size: lines.topSize, bold: true });
+    title.setScale(Math.min(1, (w - 100) / title.width));
+    this.hud.add(title);
     this.hud.add(
       makeLabel(this, cx, y + SPACE.lg, lines.bottom, {
         size: 14,
