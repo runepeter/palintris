@@ -25,10 +25,22 @@ export interface Candidate {
 }
 
 const ALPHABET = 'ABCDEFGHIJ';
-const symbolAt = (i: number): string => ALPHABET[i] ?? 'A';
+const ALPHABET_ERROR = `alphabet må være 1..${ALPHABET.length}`;
+
+const assertAlphabet = (spec: GenerateSpec): void => {
+  if (spec.alphabet < 1 || spec.alphabet > ALPHABET.length) throw new Error(ALPHABET_ERROR);
+};
+
+const symbolAt = (i: number): string => {
+  const s = ALPHABET[i];
+  if (s === undefined) throw new Error(ALPHABET_ERROR);
+  return s;
+};
+
 const randomSymbol = (spec: GenerateSpec, rng: Rng): string => symbolAt(randInt(rng, 0, spec.alphabet - 1));
 
 export const makeTargetPalindrome = (spec: GenerateSpec, rng: Rng): Tile[] => {
+  assertAlphabet(spec);
   const half = Math.floor(spec.length / 2);
   const left: string[] = [];
   for (let i = 0; i < half; i++) left.push(randomSymbol(spec, rng));
@@ -126,6 +138,7 @@ export const validateSolution = (rules: Rules, c: Candidate): boolean => {
  * og noter forover-kommandoen for hvert steg. Løsningen valideres med apply.
  */
 export const generateCandidate = (spec: GenerateSpec, rng: Rng): Candidate | null => {
+  assertAlphabet(spec);
   const rules = makeRules(spec.allowedOps);
   const permOps = spec.allowedOps.filter(isPermOp);
   const permRules = makeRules(permOps);

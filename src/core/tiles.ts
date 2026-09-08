@@ -25,10 +25,14 @@ export const makeTile = (
   opts: { locked?: boolean; wild?: boolean } = {}
 ): Tile => {
   const wild = opts.wild === true;
+  const locked = opts.locked === true;
+  // symbolKey har ikke noe eget tegn for kombinasjonen, så to ulike tilstander
+  // ville fått samme søkenøkkel i løseren.
+  if (wild && locked) throw new Error('makeTile: en brikke kan ikke være både wild og locked');
   return {
     id,
     symbol: wild ? WILD_SYMBOL : symbol,
-    locked: opts.locked === true,
+    locked,
     wild,
   };
 };

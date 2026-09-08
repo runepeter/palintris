@@ -21,6 +21,12 @@ describe('makeTile', () => {
   it('joker får alltid symbolet *', () => {
     expect(makeTile(7, 'Q', { wild: true }).symbol).toBe(WILD_SYMBOL);
   });
+
+  it('avviser brikke som både er joker og låst', () => {
+    expect(() => makeTile(0, 'A', { wild: true, locked: true })).toThrow(
+      'makeTile: en brikke kan ikke være både wild og locked'
+    );
+  });
 });
 
 describe('makeSnapshot', () => {

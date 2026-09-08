@@ -80,6 +80,11 @@ describe('generateCandidate', () => {
     expect(found).toBeGreaterThan(0);
   });
 
+  it('kaster når alfabetet er utenfor 1..10', () => {
+    expect(() => generateCandidate({ ...base, alphabet: 11 }, createRng(1))).toThrow('alphabet må være 1..10');
+    expect(() => generateCandidate({ ...base, alphabet: 0 }, createRng(1))).toThrow('alphabet må være 1..10');
+  });
+
   it('er deterministisk for samme seed', () => {
     const a = generateCandidate(base, createRng(77));
     const b = generateCandidate(base, createRng(77));
