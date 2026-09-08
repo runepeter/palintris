@@ -2067,11 +2067,11 @@ describe('makeLevel', () => {
     expect(res).toEqual({ status: 'solved', moves: level.target });
   });
 
-  it('introOf rotate gir brett som ikke kan løses uten rotate innen budsjett', () => {
+  it('introOf rotate gir brett som ikke kan løses uten rotate innen mål', () => {
     const level = makeLevel(rotateWorld, { id: 'w2-01', contentVersion: 1, introOf: 'rotate', attempts: 200 });
     expect(level).not.toBeNull();
     if (level === null) return;
-    const res = solve({ rules: rulesFor({ allowedOps: ['swap'] }), tiles: level.tiles, hand: level.hand, maxMoves: level.budget, limits: { states: 100000 } });
+    const res = solve({ rules: rulesFor({ allowedOps: ['swap'] }), tiles: level.tiles, hand: level.hand, maxMoves: level.target, limits: { states: 100000 } });
     expect(res.status).toBe('unreachableWithinBudget');
   });
 
@@ -2157,8 +2157,7 @@ const passesIntro = (
   c: Candidate,
   recipe: Recipe,
   target: number,
-  targetExact: boolean,
-  budget: number
+  targetExact: boolean
 ): boolean => {
   if (introOf === 'locked') {
     if (!targetExact || !c.tiles.some((t) => t.locked)) return false;
@@ -2172,12 +2171,14 @@ const passesIntro = (
     });
     return res.status === 'solved';
   }
+  // Mekanikken må trengs for å nå mål (tre stjerner). Innen hele budsjettet er kravet
+  // ikke oppfyllbart: swap alene når enhver permutasjon på korte brett innen mål + slakk.
   const without = recipe.allowedOps.filter((op) => op !== introOf);
   const res = solve({
     rules: makeRules(without),
     tiles: c.tiles,
     hand: c.hand,
-    maxMoves: budget,
+    maxMoves: target,
     limits: { states: recipe.solverStates },
   });
   return res.status === 'unreachableWithinBudget';
@@ -2223,7 +2224,7 @@ export const makeLevel = (recipe: Recipe, opts: MakeLevelOptions): Level | null 
       continue;
     }
     const budget = target + recipe.slack;
-    if (opts.introOf !== undefined && !passesIntro(opts.introOf, c, recipe, target, targetExact, budget)) continue;
+    if (opts.introOf !== undefined && !passesIntro(opts.introOf, c, recipe, target, targetExact)) continue;
 
     return {
       id: opts.id,

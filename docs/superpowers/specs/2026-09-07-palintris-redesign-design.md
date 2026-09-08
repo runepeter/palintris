@@ -75,7 +75,7 @@ apply(rules: Rules, state: BoardState, cmd: Command): Result<BoardState, RejectR
   - Løser med fast `limits.states` (ingen ms) beregner `mål`. `solved` med `moves` utenfor oppskriftens intervall `[minMoves, maxMoves]` forkastes. `unknown` godtas kun når løsningslengden ligger i intervallet; da er `mål` = løsningslengde.
   - Kampanje: brett med samme symbolstreng som et tidligere godtatt brett i samme verden forkastes, i fast nivårekkefølge.
   - Daily: brettet for dag N sammenlignes med brettene for tidligere dager i samme ISO-uke, som hver genereres deterministisk fra egen dato. Rekkefølgen er dermed fast og uavhengig av hva klienten har spilt.
-  - Introduksjonsnivå for en operasjon: løser med `allowedOps` uten operasjonen må gi `unreachableWithinBudget`. Introduksjonsnivå for låser: løser må gi `solved` både med og uten låsene, og `moves` med låser må være strengt større enn uten. Gir noen av søkene `unknown`, forkastes kandidaten.
+  - Introduksjonsnivå for en operasjon: løser med `allowedOps` uten operasjonen og `maxMoves = mål` må gi `unreachableWithinBudget`, altså at mekanikken trengs for å nå mål og tre stjerner. Innen hele budsjettet er kravet ikke oppfyllbart, fordi swap alene når enhver permutasjon på korte brett innen mål + 4. Introduksjonsnivå for låser: løser må gi `solved` både med og uten låsene, og `moves` med låser må være strengt større enn uten. Gir noen av søkene `unknown`, forkastes kandidaten.
 - Generatoren er deterministisk fra seed og `contentVersion`. Samme seed og versjon gir samme brett og samme `mål` på alle enheter.
 
 ### Mål, budsjett og stjerner
