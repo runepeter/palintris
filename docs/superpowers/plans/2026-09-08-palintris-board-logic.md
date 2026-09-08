@@ -1658,6 +1658,8 @@ Legg til `src/game/saveStore.ts`, `src/game/modes/types.ts`, `src/game/modes/cam
 - `COLORS.wild` og `COLORS.panel` er begge hvite; en joker er usynlig uten regnbuekanten.
 - På odde hårnål står de to gapene rundt midtbrikken 44 px fra hverandre ved 84 px brikker, på grensen for touch-mål.
 - `apply` gir `ok(state)` for reset på startbrettet, så sesjonen re-emitter og re-løser uten grunn.
+- `symbolPattern('*')` og `symbolPattern('C')` gir begge `'rings'`; jokeren har egen regnbuekant, men velg gjerne et eget jokermønster utenfor seks-syklusen.
+- `.catch` etter `.then` i `session.ts` fanger også kast fra scenens `onChange` og nedgraderer da resultatet til `unknown`; `onChange` må ikke kaste, eller bytt til `.then(onOk, onErr)`.
 
 **Fra plan 1, fortsatt åpne for 2b**
 - Worker-chunk 2000 gir ~300 ms avbruddslatens på 13-brikkers brett.
