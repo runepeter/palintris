@@ -1643,3 +1643,27 @@ Legg til `src/game/saveStore.ts`, `src/game/modes/types.ts`, `src/game/modes/cam
 - Solver-worker instansiert via Vite `?worker` og `SolverClient` som `SolverPort`.
 - Visning av «ingen vei videre» ved `deadEnd`, «mål ukjent» ved `unknown`, stjerner ved løsning, verdensopplåsing.
 - Playwright-røyktest ved 390×844.
+
+## Etterslep og notater til plan 2b (fra sluttreview av 2a)
+
+**API-notater scene-forfatteren må vite**
+- `hitGap` dekker hele brettet: et punkt i et brikkesenter treffer alltid et gap. Kall `hitGap` bare mens en joker dras eller er armert, aldri som generell fallback. Ved folden på partallsbrett er brikkesenteret et eksakt uavgjort mellom foldgapet og nabogapet; laveste `at` vinner.
+- Én `SolverClient` per sesjon. Klienten holder én utestående forespørsel; deles den, blir den første avbrutt og står i `pending` uten retry.
+- Ingenting låser input. Sesjonen godtar trekk ved `budgetLeft <= 0` (0 stjerner er et bevisst utfall). Scenen må begrense til angre og reset ved `deadEnd`, og låse input under layoutskifte 6↔7.
+- `tick` er stille: den flipper `pending` til `segment` uten å emitte. Scenen må lese `machine.state` hver frame for å tegne segmentmarkering.
+- `TileSlot` har indeks, ikke brikke-id. Par `layout.slots[i]` med `view().tiles[i]` og regn om etter hver innsetting/fjerning.
+- Segment-U over folden tegnes fra slot-lista; `BoardLayout` har ingen sti-hjelper.
+- Tastatur (spec §2) er ikke bygget. Markør og shift-utvid må sameksistere med `selected` og `segment` i `GestureMachine`; avgjør eierskap før scene-input skrives. `GestureEnv.count()` er reservert til klamping av markøren.
+- `HintReason` (4) og `RejectReason` (10) er to vokabularer; 2b trenger én meldingstabell.
+- `COLORS.wild` og `COLORS.panel` er begge hvite; en joker er usynlig uten regnbuekanten.
+- På odde hårnål står de to gapene rundt midtbrikken 44 px fra hverandre ved 84 px brikker, på grensen for touch-mål.
+- `apply` gir `ok(state)` for reset på startbrettet, så sesjonen re-emitter og re-løser uten grunn.
+
+**Fra plan 1, fortsatt åpne for 2b**
+- Worker-chunk 2000 gir ~300 ms avbruddslatens på 13-brikkers brett.
+- `solver.worker.ts` typesjekkes mot DOM, ikke WebWorker-lib.
+- Bekreft 50 000-tilstandsbudsjettet på de lengste brettene.
+- `Level.solution` vises aldri som fasit.
+
+**Til plan 3**
+- `onSolved` skriver til storage også når beste stjerner er uendret; sammen med `recordStars` som adopterer eldre `contentVersion`.
