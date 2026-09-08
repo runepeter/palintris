@@ -1,12 +1,12 @@
 import { screenWidth, screenHeight } from './viewport';
 import { makeBackdrop } from './art';
 import Phaser from 'phaser';
-import { audio } from '../audio/sound';
 import { parseLevelId } from '../core/progression';
 import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
+import { resultPresentation } from '../game/feedback';
 import { parseFreeLevelId } from '../game/modes/free';
 import type { SolvedOutcome } from '../game/modes/types';
-import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
+import { COLORS, cssColor, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import type { ModeKind } from './BoardScene';
 import { Effects } from './effects';
 import { services } from './services';
@@ -23,10 +23,6 @@ interface ResultData {
 }
 
 const EMPTY_OUTCOME: SolvedOutcome = { stars: 0, previousStars: 0, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null };
-
-const STAR_FILLED = '★';
-const STAR_EMPTY = '☆';
-const STAR_SPACING = 64;
 
 export class ResultScene extends Phaser.Scene {
   private mode: ModeKind = 'campaign';
@@ -65,18 +61,12 @@ export class ResultScene extends Phaser.Scene {
 
   create(): void {
     this.build();
-    this.playResultSound();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize));
   }
 
-  private playResultSound(): void {
-    if (this.outcome.stars === 3) audio.playVictoryJingle();
-    else audio.playPalindrome();
-  }
-
   private build(): void {
-    makeBackdrop(this);
+    makeBackdrop(this, 'hero');
     const s = services(this);
     const reducedMotion = s.settings().reducedMotion;
     const d = durations(reducedMotion);
@@ -87,45 +77,66 @@ export class ResultScene extends Phaser.Scene {
     // Dagens brett hører ikke til en verden og bruker modusens egen farge.
     const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
     const h = screenHeight(this);
-    const cx = screenWidth(this) / 2;
-    const starsY = h * 0.32;
+    const w = screenWidth(this);
+    const cx = w / 2;
+    const landscape = w > h * 1.25;
+    const summaryX = landscape ? cx - Math.min(170, w * 0.2) : cx;
+    const summaryY = landscape ? h * 0.52 : h * 0.31;
+    const presentation = resultPresentation(this.outcome.stars, this.outcome.previousStars);
 
     const animate = !this.celebrated;
-    makeLabel(this, cx, h * 0.14, 'Løst!', { size: 40, color: accent, bold: true });
-    this.buildStars(cx, starsY, d, effects, animate);
+    makeLabel(this, summaryX, landscape ? 42 : h * 0.105, this.resultEyebrow(world), {
+      size: 10, color: COLORS.star, font: 'body', bold: true,
+    }).setLetterSpacing(2.2);
+    makeLabel(this, summaryX, landscape ? 78 : h * 0.165, presentation.title, {
+      size: landscape ? 30 : Math.min(38, w * 0.095), color: COLORS.ink, bold: true,
+    }).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
+    this.buildRatingSeal(summaryX, summaryY, accent, d, effects, animate);
     this.celebrated = true;
-    makeLabel(this, cx, starsY + 56, `${this.movesUsed} trekk · mål ${this.target}`, { size: 18, color: COLORS.inkMuted, font: 'body' });
-    if (this.mode === 'daily') this.buildDailyStats(cx, starsY + 86);
+    makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  mål ${this.target}`, {
+      size: 15, color: COLORS.inkMuted, font: 'body',
+    });
+    if (presentation.isPersonalBest) {
+      makeLabel(this, summaryX, summaryY + 110, this.outcome.previousStars > 0 ? 'NY PERSONLIG BESTE' : 'FØRSTE SEIER', {
+        size: 11, color: COLORS.success, font: 'body', bold: true,
+      }).setLetterSpacing(1.5);
+    }
+    if (this.mode === 'daily') this.buildDailyStats(summaryX, summaryY + (presentation.isPersonalBest ? 136 : 112));
     if (this.outcome.worldJustUnlocked !== null) {
-      this.buildUnlockBanner(cx, starsY + 104, this.outcome.worldJustUnlocked);
+      this.buildUnlockBanner(summaryX, summaryY + (presentation.isPersonalBest ? 142 : 116), this.outcome.worldJustUnlocked);
     }
 
-    const buttonsTop = h * 0.62;
+    const buttonsX = landscape ? cx + Math.min(170, w * 0.2) : cx;
+    const buttonsTop = landscape ? h * 0.39 : h * 0.66;
     if (this.mode === 'daily') {
-      this.buildDailyButtons(cx, buttonsTop, accent);
+      this.buildDailyButtons(buttonsX, buttonsTop, accent, landscape);
       return;
     }
     const nextLevel = this.outcome.nextLevelId;
     const isFree = this.mode === 'free';
-    // Fri spilling har ingen låst progresjon; neste brett er alltid klart.
+    const canContinue = nextLevel !== null && (isFree || this.outcome.nextUnlocked);
+    const toWorldMap = this.mode === 'campaign' || isFree;
     makeButton(this, {
-      x: cx, y: buttonsTop, width: 220, height: 52, label: 'Neste', accent, enabled: isFree || this.outcome.nextUnlocked,
+      x: buttonsX, y: buttonsTop, width: 268, height: 58,
+      label: canContinue ? 'Neste speil  →' : toWorldMap ? 'Til verdenskartet  →' : 'Til menyen  →', accent,
       onClick: () => {
-        if (nextLevel !== null) this.scene.start(SCENE.board, { mode: this.mode, levelId: nextLevel });
+        if (canContinue && nextLevel !== null) {
+          this.scene.start(SCENE.board, { mode: this.mode, levelId: nextLevel });
+        } else {
+          this.scene.start(toWorldMap ? SCENE.worldMap : SCENE.menu, toWorldMap ? { world } : undefined);
+        }
       },
     });
-    // Fri spilling gir alltid et nytt brett; «Spill igjen» har ingenting å gjenta.
+    const secondaryY = buttonsTop + 70;
     if (!isFree) {
       makeButton(this, {
-        x: cx, y: buttonsTop + 60, width: 220, height: 44, label: 'Spill igjen', accent: COLORS.inkMuted,
+        x: buttonsX - 70, y: secondaryY, width: 132, height: 40, label: 'Spill igjen', labelSize: 13, accent: COLORS.line,
         onClick: () => this.scene.start(SCENE.board, { mode: this.mode, levelId: this.levelId }),
       });
     }
-    // Kampanje og fri spilling går tilbake til verdenskartet; ingen andre moduser har et kart.
-    const toWorldMap = this.mode === 'campaign' || isFree;
     makeButton(this, {
-      x: cx, y: isFree ? buttonsTop + 60 : buttonsTop + 120, width: 220, height: 44,
-      label: toWorldMap ? 'Verdenskart' : 'Meny', accent: COLORS.inkMuted,
+      x: isFree ? buttonsX : buttonsX + 70, y: secondaryY, width: 132, height: 40, label: toWorldMap ? 'Verdenskart' : 'Meny',
+      labelSize: 13, accent: COLORS.line,
       onClick: () => {
         if (toWorldMap) this.scene.start(SCENE.worldMap, { world });
         else this.scene.start(SCENE.menu);
@@ -142,16 +153,16 @@ export class ResultScene extends Phaser.Scene {
     });
   }
 
-  private buildDailyButtons(cx: number, top: number, accent: number): void {
+  private buildDailyButtons(cx: number, top: number, accent: number, landscape: boolean): void {
     makeButton(this, {
-      x: cx, y: top, width: 220, height: 52, label: 'Nytt forsøk', accent,
+      x: cx, y: top, width: 268, height: 58, label: 'Nytt forsøk  →', accent,
       onClick: () => this.scene.start(SCENE.board, { mode: 'daily' }),
     });
     const share = sharedAttempt(services(this).store.data.daily.attempts, this.levelId);
     const text = share === undefined ? null : dailyShareText(share);
     makeButton(this, {
-      x: cx, y: top + 60, width: 220, height: 44,
-      label: this.copied === 'ok' ? 'Kopiert' : 'Del', accent: COLORS.inkMuted, enabled: text !== null,
+      x: cx - 70, y: top + 70, width: 132, height: 40,
+      label: this.copied === 'ok' ? 'Kopiert' : 'Del', labelSize: 13, accent: COLORS.line, enabled: text !== null,
       onClick: () => {
         if (text === null) return;
         void copyText(text).then((ok) => {
@@ -161,30 +172,63 @@ export class ResultScene extends Phaser.Scene {
       },
     });
     if (this.copied === 'fail') {
-      makeLabel(this, cx, top + 90, 'Kunne ikke kopiere', { size: 14, color: COLORS.danger, font: 'body' });
+      makeLabel(this, cx, top + (landscape ? 105 : 126), 'Kunne ikke kopiere', { size: 12, color: COLORS.danger, font: 'body' });
     }
     makeButton(this, {
-      x: cx, y: top + 120, width: 220, height: 44, label: 'Daglig', accent: COLORS.inkMuted,
+      x: cx + 70, y: top + 70, width: 132, height: 40, label: 'Daglig', labelSize: 13, accent: COLORS.line,
       onClick: () => this.scene.start(SCENE.daily),
     });
   }
 
-  /** animate er usann ved en resize-ombygging: stjernene tegnes da i sluttilstand, uten å gjenta tweens eller seremonieffekter. */
-  private buildStars(cx: number, y: number, d: ReturnType<typeof durations>, effects: Effects, animate: boolean): void {
+  /** Medaljongene tegnes som grafikk, så belønningen matcher juvelene uten fontavhengige stjernetegn. */
+  private buildRatingSeal(cx: number, y: number, accent: number, d: ReturnType<typeof durations>, effects: Effects, animate: boolean): void {
+    const seal = this.add.graphics();
+    seal.fillStyle(COLORS.shadow, 0.72);
+    seal.fillCircle(cx, y + 5, 77);
+    seal.fillStyle(COLORS.panel, 0.94);
+    seal.fillCircle(cx, y, 74);
+    seal.lineStyle(1, accent, 0.22);
+    seal.strokeCircle(cx, y, 66);
+    seal.lineStyle(2, accent, 0.7);
+    seal.strokeCircle(cx, y, 74);
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const inner = 79;
+      const outer = i % 3 === 0 ? 88 : 84;
+      seal.lineStyle(i % 3 === 0 ? 2 : 1, accent, i % 3 === 0 ? 0.7 : 0.28);
+      seal.lineBetween(cx + Math.cos(angle) * inner, y + Math.sin(angle) * inner, cx + Math.cos(angle) * outer, y + Math.sin(angle) * outer);
+    }
+
     for (let i = 0; i < 3; i++) {
       const filled = i < this.outcome.stars;
-      const label = makeLabel(this, cx + (i - 1) * STAR_SPACING, y, filled ? STAR_FILLED : STAR_EMPTY, {
-        size: 48, color: filled ? COLORS.star : COLORS.locked,
-      });
-      if (!filled) continue;
-      if (!animate) continue;
-      label.setScale(0);
-      this.tweens.add({ targets: label, scale: 1, duration: d.normal, ease: EASING.pop, delay: i * d.snap });
+      const x = cx + (i - 1) * 49;
+      const medal = this.add.graphics();
+      medal.fillStyle(COLORS.shadow, 0.85);
+      medal.fillCircle(0, 3, 22);
+      medal.fillStyle(filled ? COLORS.panel : COLORS.background, 1);
+      medal.fillCircle(0, 0, 21);
+      medal.lineStyle(filled ? 2.5 : 1.5, filled ? COLORS.star : COLORS.locked, filled ? 1 : 0.55);
+      medal.strokeCircle(0, 0, 21);
+      medal.lineStyle(1, filled ? COLORS.star : COLORS.line, filled ? 0.45 : 0.3);
+      medal.strokeCircle(0, 0, 16);
+      const glyph = filled ? COLORS.star : COLORS.locked;
+      medal.fillStyle(glyph, filled ? 1 : 0.4);
+      medal.fillPoints([{ x: 0, y: -11 }, { x: 4, y: -4 }, { x: 11, y: 0 }, { x: 4, y: 4 }, { x: 0, y: 11 }, { x: -4, y: 4 }, { x: -11, y: 0 }, { x: -4, y: -4 }], true);
+      const holder = this.add.container(x, y, [medal]);
+      if (filled && animate) {
+        holder.setScale(0);
+        this.tweens.add({ targets: holder, scale: 1, duration: d.normal, ease: EASING.pop, delay: i * d.snap });
+      }
     }
     if (animate && this.outcome.stars === 3) {
-      effects.starFall(12);
-      effects.confetti(cx, y, 60);
+      effects.confetti(cx, y, 54);
     }
+  }
+
+  private resultEyebrow(world: number): string {
+    if (this.mode === 'daily') return 'DAGENS SPEIL ER ÅPNET';
+    if (this.mode === 'free') return `FRI SPILLING  ·  VERDEN ${world}`;
+    return `SPEIL ${this.levelId.toUpperCase()}  ·  VERDEN ${world}`;
   }
 
   private buildUnlockBanner(x: number, y: number, world: number): void {

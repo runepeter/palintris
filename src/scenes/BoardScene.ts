@@ -867,7 +867,9 @@ export class BoardScene extends Phaser.Scene {
     this.timerRunning = false;
     this.hideBanner();
     this.menu.hide();
-    audio.playSuccess();
+    if (this.modeKind === 'blitz') audio.playSuccess();
+    else if (this.view.stars === 3) audio.playVictoryJingle();
+    else audio.playPalindrome();
     this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
     this.effects.flash(COLORS.success, 0.2);
     const movesUsed = this.view.movesUsed;
