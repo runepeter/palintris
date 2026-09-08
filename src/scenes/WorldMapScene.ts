@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { isWorldUnlocked, levelId, LEVELS_PER_WORLD, WORLD_COUNT, type StarMap } from '../core/progression';
+import { freeLevelId } from '../game/modes/free';
 import { COLORS, DURATION, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import { services } from './services';
 import { contentLeft, contentWidth, makeButton, makeLabel, SCENE } from './ui';
@@ -65,7 +66,7 @@ export class WorldMapScene extends Phaser.Scene {
     });
 
     const gridTop = 120;
-    const gridBottom = this.scale.height - 92;
+    const gridBottom = this.scale.height - 140;
     const cellW = width / COLS;
     const cellH = Math.min(cellW, (gridBottom - gridTop) / ROWS);
     const gridHeight = cellH * ROWS;
@@ -83,6 +84,11 @@ export class WorldMapScene extends Phaser.Scene {
       this.buildLevelCell(x, y, cellSize, n, id, starCount, unlocked, accent);
     }
 
+    const worldUnlocked = isWorldUnlocked(this.world, stars);
+    makeButton(this, {
+      x: cx, y: this.scale.height - 92, width: 220, height: 44, label: 'Fri spilling', accent: COLORS.inkMuted, enabled: worldUnlocked,
+      onClick: () => this.scene.start(SCENE.board, { mode: 'free', levelId: freeLevelId(this.world, 1) }),
+    });
     makeButton(this, { x: cx, y: this.scale.height - 44, width: 180, height: 48, label: 'Tilbake', accent, onClick: () => this.scene.start(SCENE.menu) });
   }
 

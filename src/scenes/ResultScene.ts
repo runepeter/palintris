@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { parseLevelId } from '../core/progression';
 import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
+import { parseFreeLevelId } from '../game/modes/free';
 import type { SolvedOutcome } from '../game/modes/types';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import type { ModeKind } from './BoardScene';
@@ -77,7 +78,8 @@ export class ResultScene extends Phaser.Scene {
     const reducedMotion = s.settings().reducedMotion;
     const d = durations(reducedMotion);
     const effects = new Effects(this, reducedMotion);
-    const parsed = parseLevelId(this.levelId);
+    // Fri spilling bruker et eget id-format (free-w{verden}-{n}), ikke kampanjens w{verden}-{nn}.
+    const parsed = this.mode === 'free' ? parseFreeLevelId(this.levelId) : parseLevelId(this.levelId);
     const world = parsed?.world ?? 1;
     // Dagens brett hører ikke til en verden og bruker modusens egen farge.
     const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
@@ -101,22 +103,28 @@ export class ResultScene extends Phaser.Scene {
       return;
     }
     const nextLevel = this.outcome.nextLevelId;
+    const isFree = this.mode === 'free';
+    // Fri spilling har ingen låst progresjon; neste brett er alltid klart.
     makeButton(this, {
-      x: cx, y: buttonsTop, width: 220, height: 52, label: 'Neste', accent, enabled: this.outcome.nextUnlocked,
+      x: cx, y: buttonsTop, width: 220, height: 52, label: 'Neste', accent, enabled: isFree || this.outcome.nextUnlocked,
       onClick: () => {
         if (nextLevel !== null) this.scene.start(SCENE.board, { mode: this.mode, levelId: nextLevel });
       },
     });
+    // Fri spilling gir alltid et nytt brett; «Spill igjen» har ingenting å gjenta.
+    if (!isFree) {
+      makeButton(this, {
+        x: cx, y: buttonsTop + 60, width: 220, height: 44, label: 'Spill igjen', accent: COLORS.inkMuted,
+        onClick: () => this.scene.start(SCENE.board, { mode: this.mode, levelId: this.levelId }),
+      });
+    }
+    // Kampanje og fri spilling går tilbake til verdenskartet; ingen andre moduser har et kart.
+    const toWorldMap = this.mode === 'campaign' || isFree;
     makeButton(this, {
-      x: cx, y: buttonsTop + 60, width: 220, height: 44, label: 'Spill igjen', accent: COLORS.inkMuted,
-      onClick: () => this.scene.start(SCENE.board, { mode: this.mode, levelId: this.levelId }),
-    });
-    // Fri spilling har ikke noe kart å gå tilbake til.
-    makeButton(this, {
-      x: cx, y: buttonsTop + 120, width: 220, height: 44,
-      label: this.mode === 'campaign' ? 'Verdenskart' : 'Meny', accent: COLORS.inkMuted,
+      x: cx, y: isFree ? buttonsTop + 60 : buttonsTop + 120, width: 220, height: 44,
+      label: toWorldMap ? 'Verdenskart' : 'Meny', accent: COLORS.inkMuted,
       onClick: () => {
-        if (this.mode === 'campaign') this.scene.start(SCENE.worldMap, { world });
+        if (toWorldMap) this.scene.start(SCENE.worldMap, { world });
         else this.scene.start(SCENE.menu);
       },
     });
