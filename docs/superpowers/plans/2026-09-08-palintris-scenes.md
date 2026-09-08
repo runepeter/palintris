@@ -1486,3 +1486,31 @@ Melding: `test(e2e): playwright smoke test solves a hairpin level at 390x844`.
 - Interaktive introduksjoner per verden (spec §2 Introduksjoner).
 - Sletting av legacy `src/scenes/*` (uten 2-suffiks), `src/ui`, `src/config`, `src/utils`, legacy-filer i `src/game`, `public/assets`-kits; omdøping av `*2`-scener; `lint` uten `lint:core`; CI.
 - Lagringsvalidering, signaturnivåer, høy-DPR-skarphet på tekst, mørkt tema.
+
+## Etterslep og notater til plan 3 (fra sluttreview av 2b)
+
+**Spec-gjeld**
+- Introduksjoner (spec §2) er ikke implementert; nå den største gjenstående spec-gjelden i §2.
+- Musikk per verden (spec §4): `audio.startMusic('gameplay')` kalles aldri; motoren har bare `menu`/`gameplay`.
+- `targetExact` leses aldri i BoardScene2; Daily og fri spilling trenger «mål ukjent».
+
+**Utsatt fra reviews**
+- `makeButton` hover-tweens akkumulerer ved hurtig over/ut; tas sammen med omdøping av `ui.ts`.
+- `private` tilbake på `effects`/`menu`/`banner` i BoardScene2.
+- Dobbel `redraw()` per brikke per render (`setTile` + `setFlags`).
+- Pointer-down under tweens svelger hele gesten uten feedback; vis et hint eller kø.
+- `PalintrisHook` i e2e kan drifte fra `TestHook`: legg en assignability-sjekk eller importer typen.
+- Verdenskart har ~200 px død luft over og under rutenettet; nivå 1 står 6 px fra venstre kant ved 390 px.
+- Kontrast mellom matched-ring (`COLORS.success`) og grønn brikke (symbol D) er lav.
+- `pendingTweens = 0` i `onResize` mens utfasings-tweens utenfor `tiles` lever kan gjøre `busy()` usann for tidlig.
+- Høy-DPR: canvas måles til 390×844 ved DPR 3, all tekst oppskaleres. Kjent begrensning, bør løses i plan 3 (`resolution`/`zoom` i Phaser-config eller egen håndtering).
+- `SolverClient` er app-global i `services.ts`, ikke én per sesjon som 2a-notatet sa. Trygt fordi `cancelled` + `requestSeq` filtrerer, men noter før Daily/Blitz kjører flere brett.
+- `symbolPattern('*')` og `'C'` gir begge `'rings'`.
+
+**E2E å legge til (høyest verdi)**
+1. w6-01: joker fra hånd inn i foldgapet, og fjern via drag til hånden.
+2. Et brett som krysser 6↔7 ved innsetting, med `busy()`-sjekk gjennom layoutskiftet.
+3. Blindgate: bruk opp budsjettet, bekreft banner, at brettinput er stengt og at angre åpner igjen.
+
+**Legacy som slettes i plan 3**
+- `src/scenes/*.ts` uten `2`-suffiks, `src/ui`, `src/config`, `src/utils` (inkl. shim `src/utils/audio.ts`), legacy-filer i `src/game` (BadgeSystem, DailyChallengeGenerator, PowerUps, PuzzleManager, TimeAttackManager), `src/types`, `public/assets`-kits, `scripts/validateLevels.ts`, ESLint `ignorePatterns` for legacy, `lint:core` erstattes av `lint`. Deretter omdøpes `*2`-scener.
