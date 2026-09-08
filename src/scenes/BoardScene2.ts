@@ -107,6 +107,8 @@ export class BoardScene2 extends Phaser.Scene {
   /** Brikka som dras; snap-back trenger id, siden indeksene flytter seg under et trekk. */
   private dragId: number | null = null;
   private lastState: GestureState | null = null;
+  /** Siste håndterte tastehendelse, holdt på identitet. Se key(). */
+  private lastKeyEvent: KeyboardEvent | null = null;
   private keyboardActive = false;
   private solvedFired = false;
   private inputLocked = false;
@@ -154,6 +156,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.armedRing = null;
     this.dragId = null;
     this.lastState = null;
+    this.lastKeyEvent = null;
     this.keyboardActive = false;
     this.solvedFired = false;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
@@ -466,6 +469,10 @@ export class BoardScene2 extends Phaser.Scene {
   }
 
   private key(e: KeyboardEvent): void {
+    // Phaser tømmer ikke KeyboardManager.queue mellom passeringene, så det samme
+    // event-objektet kan leveres flere ganger. Auto-repeat skal heller ikke telle som trekk.
+    if (e.repeat || e === this.lastKeyEvent) return;
+    this.lastKeyEvent = e;
     if (this.inputLocked || this.view.solved) return;
     const code = KEY_MAP[e.code];
     if (code === undefined) return;

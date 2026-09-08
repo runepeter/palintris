@@ -52,9 +52,22 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
   c.setSize(opts.width, opts.height);
   if (enabled) {
     c.setInteractive({ useHandCursor: true });
+    // Phaser fyrer pointerup på knappen uansett hvor pointerdown skjedde. Uten armeringen
+    // ville et drag som slippes over Angre eller Reset utføre kommandoen.
+    let armed = false;
     c.on('pointerover', () => scene.tweens.add({ targets: c, scale: 1.04, duration: DURATION.snap, ease: EASING.pop }));
-    c.on('pointerout', () => scene.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop }));
-    c.on('pointerup', () => opts.onClick());
+    c.on('pointerout', () => {
+      armed = false;
+      scene.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop });
+    });
+    c.on('pointerdown', () => {
+      armed = true;
+    });
+    c.on('pointerup', () => {
+      if (!armed) return;
+      armed = false;
+      opts.onClick();
+    });
   }
   return c;
 };
