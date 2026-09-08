@@ -16,7 +16,8 @@ export interface SolveRequest {
 export type SolveResult =
   | { readonly status: 'solved'; readonly moves: number }
   | { readonly status: 'unreachableWithinBudget' }
-  | { readonly status: 'unknown' };
+  | { readonly status: 'unknown' }
+  | { readonly status: 'cancelled' };
 
 export const stateKey = (tiles: readonly Tile[], hand: Hand): string =>
   `${symbolKey(tiles)}|${hand.wild}|${hand.remove}`;

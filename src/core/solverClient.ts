@@ -30,6 +30,6 @@ export class SolverClient {
     const { requestId, resolve } = this.pending;
     this.pending = null;
     this.worker.postMessage({ kind: 'cancel', requestId });
-    resolve({ status: 'unknown' });
+    resolve({ status: 'cancelled' });
   }
 }

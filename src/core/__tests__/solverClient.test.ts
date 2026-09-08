@@ -35,7 +35,7 @@ describe('SolverClient', () => {
     const client = new SolverClient(w);
     const first = client.solve(req('ABCDEFGHIJ'));
     const second = client.solve(req('AAB'));
-    await expect(first).resolves.toEqual({ status: 'unknown' });
+    await expect(first).resolves.toEqual({ status: 'cancelled' });
     await expect(second).resolves.toEqual({ status: 'solved', moves: 1 });
     expect(w.sent.some((m) => m.kind === 'cancel')).toBe(true);
   });
