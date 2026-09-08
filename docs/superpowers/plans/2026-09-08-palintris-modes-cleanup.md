@@ -146,7 +146,7 @@ describe('intro og daily progress', () => {
 - Meny: knapper «Kampanje», «Daglig», «Blitz», «Innstillinger». Musikk uendret her.
 
 - [ ] **Step 1: Tjenester og typer.** `services.ts` bygger alle fire moduser (`DailyMode(store, CONTENT_VERSION, () => new Date())`, `BlitzMode(store, new BlitzQueue(hashString(String(Date.now())), CONTENT_VERSION))`, `FreeMode(CONTENT_VERSION, createRng(Date.now() >>> 0))`).
-- [ ] **Step 2: BoardScene.** Innfør `mode`-felt, HUD-varianter, timer/klokke, `loadBoard`, `inProgress`-lagring og replay, `visibilitychange`-håndtering (registrer på `document`, fjern ved shutdown). `testHook` får `mode` og `clockMs()`.
+- [ ] **Step 2: BoardScene.** Innfør `mode`-felt, HUD-varianter, timer/klokke, `loadBoard`, `inProgress`-lagring og replay, `visibilitychange`-håndtering (registrer på `document`, fjern ved shutdown). `testHook` får `mode`, `clockMs()` og `bannerVisible()`.
 - [ ] **Step 3: Scener.** `DailyScene`, `BlitzResultScene`, endringer i `MenuScene` og `ResultScene`, registrering i `main.ts`.
 - [ ] **Step 4: Verifiser.** Alle porter + `npm run e2e`. Kjør i nettleser hvis verktøy finnes: Daily fra meny til del-knapp; Blitz til «Tiden er ute».
 - [ ] **Step 5: Commit.** Melding: `feat(scenes): mode-agnostic board with daily and blitz`.
