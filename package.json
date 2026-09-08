@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "lint": "eslint src scripts --ext .ts",
+    "lint:core": "eslint src/core src/content scripts --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "build:campaign": "tsx scripts/build-campaign.ts"

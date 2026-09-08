@@ -25,7 +25,7 @@ function canBecomePalindrome(sequence: string[], allowedOps: string[]): { possib
 
   const symbolCounts = new Map<string, number>();
   for (const s of sequence) {
-    symbolCounts.set(s, (symbolCounts.get(s) || 0) + 1);
+    symbolCounts.set(s, (symbolCounts.get(s) ?? 0) + 1);
   }
 
   // For a palindrome, at most one symbol can have an odd count

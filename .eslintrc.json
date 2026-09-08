@@ -4,7 +4,7 @@
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.json", "./tsconfig.node.json"]
   },
   "plugins": ["@typescript-eslint"],
   "extends": [
@@ -20,6 +20,21 @@
     "@typescript-eslint/strict-boolean-expressions": "error",
     "no-console": "warn"
   },
+  "overrides": [
+    {
+      "files": ["scripts/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["**/__tests__/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
+    }
+  ],
   "env": {
     "browser": true,
     "es2020": true
