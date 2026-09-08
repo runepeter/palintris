@@ -3,94 +3,94 @@ import Phaser from 'phaser';
 export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 600;
 
-// Vibrant, energetic color palette
+// Refined, professional color palette with subtle elegance
 export const COLORS = {
-  // Backgrounds
-  background: 0x0a0a1a,
-  backgroundLight: 0x1a1a3a,
-  backgroundGradientStart: 0x1a0a2e,
-  backgroundGradientEnd: 0x0a1a2e,
+  // Backgrounds - deeper, richer tones
+  background: 0x0d1117,
+  backgroundLight: 0x161b22,
+  backgroundGradientStart: 0x0d1117,
+  backgroundGradientEnd: 0x1a1f2e,
 
-  // Primary palette
-  primary: 0x2a1a4a,
-  secondary: 0x3a2a5a,
-  tertiary: 0x4a3a6a,
+  // Primary palette - sophisticated dark tones
+  primary: 0x21262d,
+  secondary: 0x30363d,
+  tertiary: 0x484f58,
 
-  // Accent colors - vibrant neon
-  accent: 0xff00ff,           // Magenta
-  accentSecondary: 0x00ffff,  // Cyan
-  accentTertiary: 0xffff00,   // Yellow
+  // Accent colors - refined, less saturated
+  accent: 0x58a6ff,           // Soft blue (primary accent)
+  accentSecondary: 0x7ee787,  // Soft green
+  accentTertiary: 0xffa657,   // Warm amber
 
-  // Status colors
-  success: 0x00ff88,
-  successLight: 0x88ffcc,
-  warning: 0xffaa00,
-  warningLight: 0xffcc66,
-  error: 0xff3366,
-  errorLight: 0xff6699,
+  // Status colors - easier on eyes
+  success: 0x3fb950,
+  successLight: 0x56d364,
+  warning: 0xd29922,
+  warningLight: 0xe3b341,
+  error: 0xf85149,
+  errorLight: 0xff7b72,
 
-  // Text
-  text: 0xffffff,
-  textMuted: 0xaaaacc,
-  textDark: 0x1a1a2e,
+  // Text - better contrast hierarchy
+  text: 0xf0f6fc,
+  textMuted: 0x8b949e,
+  textDark: 0x0d1117,
 
-  // Tile colors - more vibrant
+  // Tile colors - cohesive and calm
   tile: {
-    default: 0x2a2a4a,
-    selected: 0xff00ff,
-    highlight: 0x00ffff,
-    palindrome: 0x00ff88,
-    error: 0xff3366,
-    hover: 0x4a4a6a,
-    locked: 0x1a1a2a,
+    default: 0x21262d,
+    selected: 0x58a6ff,
+    highlight: 0x7ee787,
+    palindrome: 0x3fb950,
+    error: 0xf85149,
+    hover: 0x30363d,
+    locked: 0x161b22,
   },
 
-  // Symbol colors - bright and distinct
+  // Symbol colors - distinguishable but harmonious
   symbols: {
-    letters: 0x00ffff,   // Cyan
-    numbers: 0xffff00,   // Yellow
-    shapes: 0xff00ff,    // Magenta
-    colors: 0xff8800,    // Orange
-    mixed: 0xffffff,     // White
+    letters: 0x79c0ff,   // Light blue
+    numbers: 0xffa657,   // Amber
+    shapes: 0xd2a8ff,    // Lavender
+    colors: 0xff7b72,    // Coral
+    mixed: 0xf0f6fc,     // Off-white
   },
 
-  // UI elements
+  // UI elements - consistent and clean
   ui: {
-    button: 0x3a2a5a,
-    buttonHover: 0x5a4a7a,
-    buttonActive: 0xff00ff,
-    buttonDisabled: 0x2a2a3a,
-    panel: 0x1a1a3a,
-    panelBorder: 0xff00ff,
-    progressBar: 0x00ff88,
-    progressBarBg: 0x2a2a4a,
+    button: 0x21262d,
+    buttonHover: 0x30363d,
+    buttonActive: 0x58a6ff,
+    buttonDisabled: 0x161b22,
+    panel: 0x161b22,
+    panelBorder: 0x30363d,
+    progressBar: 0x3fb950,
+    progressBarBg: 0x21262d,
     badge: {
       bronze: 0xcd7f32,
       silver: 0xc0c0c0,
-      gold: 0xffd700,
-      platinum: 0xe5e4e2,
-      diamond: 0xb9f2ff,
+      gold: 0xffc83d,
+      platinum: 0xe8e8e8,
+      diamond: 0xa5d8ff,
     },
   },
 
-  // Difficulty colors
+  // Difficulty colors - clear progression
   difficulty: {
-    tutorial: 0x00ff88,
-    easy: 0x88ff00,
-    medium: 0xffff00,
-    hard: 0xff8800,
-    expert: 0xff00ff,
+    tutorial: 0x7ee787,
+    easy: 0x3fb950,
+    medium: 0xd29922,
+    hard: 0xffa657,
+    expert: 0xf85149,
   },
 
-  // Rainbow for effects
+  // Rainbow for effects - softer palette
   rainbow: [
-    0xff0000,  // Red
-    0xff8800,  // Orange
-    0xffff00,  // Yellow
-    0x00ff00,  // Green
-    0x00ffff,  // Cyan
-    0x0088ff,  // Blue
-    0xff00ff,  // Magenta
+    0xf85149,  // Soft red
+    0xffa657,  // Amber
+    0xd29922,  // Gold
+    0x3fb950,  // Green
+    0x58a6ff,  // Blue
+    0xa5d8ff,  // Sky blue
+    0xd2a8ff,  // Lavender
   ],
 } as const;
 

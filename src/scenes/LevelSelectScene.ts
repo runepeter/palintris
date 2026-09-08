@@ -24,12 +24,17 @@ export class LevelSelectScene extends Phaser.Scene {
   create(): void {
     const gameState = loadGameState();
 
+    // Background
+    const bg = this.add.graphics();
+    bg.fillGradientStyle(0x0d1117, 0x0d1117, 0x1a1f2e, 0x1a1f2e, 1);
+    bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
     // Title
     const title = this.add.text(GAME_WIDTH / 2, 30, 'Select Level', {
       fontFamily: 'Arial',
-      fontSize: '32px',
+      fontSize: '28px',
       fontStyle: 'bold',
-      color: '#ffffff',
+      color: '#f0f6fc',
     });
     title.setOrigin(0.5, 0.5);
 
@@ -92,35 +97,45 @@ export class LevelSelectScene extends Phaser.Scene {
     const container = this.add.container(x, 0);
 
     const bg = this.add.graphics();
-    bg.fillStyle(unlocked ? 0x44aa88 : 0x2a2a4a, 1);
-    bg.fillRoundedRect(-85, -18, 170, 36, 8);
+    bg.fillStyle(unlocked ? COLORS.primary : COLORS.backgroundLight, 1);
+    bg.fillRoundedRect(-85, -17, 170, 34, 6);
     if (unlocked) {
-      bg.lineStyle(2, 0x66ddaa, 1);
-      bg.strokeRoundedRect(-85, -18, 170, 36, 8);
+      bg.lineStyle(1, COLORS.accentSecondary, 0.5);
+      bg.strokeRoundedRect(-85, -17, 170, 34, 6);
     }
 
     const label = this.add.text(0, 0, unlocked ? text : `🔒 ${lockText}`, {
       fontFamily: 'Arial',
-      fontSize: '14px',
+      fontSize: '13px',
       fontStyle: unlocked ? 'bold' : 'normal',
-      color: unlocked ? '#ffffff' : '#666666',
+      color: unlocked ? '#f0f6fc' : '#484f58',
     });
     label.setOrigin(0.5, 0.5);
 
     container.add([bg, label]);
-    container.setSize(170, 36);
+    container.setSize(170, 34);
 
     if (unlocked) {
       container.setInteractive({ useHandCursor: true });
       container.on('pointerover', () => {
+        bg.clear();
+        bg.fillStyle(COLORS.secondary, 1);
+        bg.fillRoundedRect(-85, -17, 170, 34, 6);
+        bg.lineStyle(1, COLORS.accentSecondary, 0.8);
+        bg.strokeRoundedRect(-85, -17, 170, 34, 6);
         this.tweens.add({
           targets: container,
-          scaleX: 1.05,
-          scaleY: 1.05,
+          scaleX: 1.03,
+          scaleY: 1.03,
           duration: 100,
         });
       });
       container.on('pointerout', () => {
+        bg.clear();
+        bg.fillStyle(COLORS.primary, 1);
+        bg.fillRoundedRect(-85, -17, 170, 34, 6);
+        bg.lineStyle(1, COLORS.accentSecondary, 0.5);
+        bg.strokeRoundedRect(-85, -17, 170, 34, 6);
         this.tweens.add({
           targets: container,
           scaleX: 1,
@@ -172,8 +187,8 @@ export class LevelSelectScene extends Phaser.Scene {
       `Page ${this.currentPage + 1} of ${totalPages}`,
       {
         fontFamily: 'Arial',
-        fontSize: '16px',
-        color: '#888888',
+        fontSize: '14px',
+        color: '#8b949e',
       }
     );
     pageText.setOrigin(0.5, 0.5);
@@ -187,7 +202,7 @@ export class LevelSelectScene extends Phaser.Scene {
       {
         fontFamily: 'Arial',
         fontSize: '12px',
-        color: '#666666',
+        color: '#484f58',
       }
     );
     descText.setOrigin(0.5, 0.5);
@@ -329,35 +344,55 @@ export class LevelSelectScene extends Phaser.Scene {
   private getDifficultyColor(difficulty: Difficulty): number {
     switch (difficulty) {
       case 'tutorial':
-        return 0x4caf50;
+        return COLORS.difficulty.tutorial;
       case 'easy':
-        return 0x8bc34a;
+        return COLORS.difficulty.easy;
       case 'medium':
-        return 0xffc107;
+        return COLORS.difficulty.medium;
       case 'hard':
-        return 0xff9800;
+        return COLORS.difficulty.hard;
       case 'expert':
-        return 0xf44336;
+        return COLORS.difficulty.expert;
     }
   }
 
   private createBackButton(): void {
-    const button = this.add.container(60, 50);
+    const button = this.add.container(60, 30);
 
     const bg = this.add.graphics();
     bg.fillStyle(COLORS.primary, 1);
-    bg.fillRoundedRect(-40, -20, 80, 40, 8);
+    bg.fillRoundedRect(-40, -16, 80, 32, 6);
+    bg.lineStyle(1, COLORS.secondary, 0.5);
+    bg.strokeRoundedRect(-40, -16, 80, 32, 6);
 
     const label = this.add.text(0, 0, '← Back', {
       fontFamily: 'Arial',
-      fontSize: '16px',
-      color: '#ffffff',
+      fontSize: '13px',
+      color: '#8b949e',
     });
     label.setOrigin(0.5, 0.5);
 
     button.add([bg, label]);
-    button.setSize(80, 40);
+    button.setSize(80, 32);
     button.setInteractive({ useHandCursor: true });
+
+    button.on('pointerover', () => {
+      bg.clear();
+      bg.fillStyle(COLORS.secondary, 1);
+      bg.fillRoundedRect(-40, -16, 80, 32, 6);
+      bg.lineStyle(1, COLORS.tertiary, 0.7);
+      bg.strokeRoundedRect(-40, -16, 80, 32, 6);
+      label.setColor('#f0f6fc');
+    });
+
+    button.on('pointerout', () => {
+      bg.clear();
+      bg.fillStyle(COLORS.primary, 1);
+      bg.fillRoundedRect(-40, -16, 80, 32, 6);
+      bg.lineStyle(1, COLORS.secondary, 0.5);
+      bg.strokeRoundedRect(-40, -16, 80, 32, 6);
+      label.setColor('#8b949e');
+    });
 
     button.on('pointerdown', () => {
       this.scene.start('MenuScene');
@@ -371,11 +406,13 @@ export class LevelSelectScene extends Phaser.Scene {
     if (this.currentPage > 0) {
       const prevBtn = this.add.text(100, GAME_HEIGHT - 80, '← Previous', {
         fontFamily: 'Arial',
-        fontSize: '18px',
-        color: '#ffffff',
+        fontSize: '15px',
+        color: '#8b949e',
       });
       prevBtn.setOrigin(0.5, 0.5);
       prevBtn.setInteractive({ useHandCursor: true });
+      prevBtn.on('pointerover', () => prevBtn.setColor('#f0f6fc'));
+      prevBtn.on('pointerout', () => prevBtn.setColor('#8b949e'));
       prevBtn.on('pointerdown', () => {
         this.currentPage--;
         const gameState = loadGameState();
@@ -387,11 +424,13 @@ export class LevelSelectScene extends Phaser.Scene {
     if (this.currentPage < totalPages - 1) {
       const nextBtn = this.add.text(GAME_WIDTH - 100, GAME_HEIGHT - 80, 'Next →', {
         fontFamily: 'Arial',
-        fontSize: '18px',
-        color: '#ffffff',
+        fontSize: '15px',
+        color: '#8b949e',
       });
       nextBtn.setOrigin(0.5, 0.5);
       nextBtn.setInteractive({ useHandCursor: true });
+      nextBtn.on('pointerover', () => nextBtn.setColor('#f0f6fc'));
+      nextBtn.on('pointerout', () => nextBtn.setColor('#8b949e'));
       nextBtn.on('pointerdown', () => {
         this.currentPage++;
         const gameState = loadGameState();
