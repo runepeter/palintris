@@ -123,9 +123,11 @@ const parseDaily = (raw: unknown): SaveData['daily'] | null => {
     if (parsed === null) return null;
     attempts.push(parsed);
   }
+  // inProgress skrives etter hvert trekk og er derfor det mest utsatte feltet. Den er
+  // valgfri, så en ødelagt verdi kastes som om den manglet i stedet for å velte hele
+  // lagringen og dermed stjernene.
   const inProgress = parseDailyProgress(raw['inProgress']);
-  if (inProgress === null) return null;
-  return inProgress === undefined ? { attempts, streak } : { attempts, streak, inProgress };
+  return inProgress === null || inProgress === undefined ? { attempts, streak } : { attempts, streak, inProgress };
 };
 
 const parseBlitz = (raw: unknown): SaveData['blitz'] | null => {
@@ -146,9 +148,9 @@ const parseSettings = (raw: unknown): Settings => {
   };
 };
 
-const parseIntrosSeen = (raw: unknown): readonly string[] | null => {
-  if (raw === undefined) return [];
-  if (!Array.isArray(raw) || !raw.every(isString)) return null;
+/** Valgfritt felt: en ødelagt liste koster bare at introene vises igjen. */
+const parseIntrosSeen = (raw: unknown): readonly string[] => {
+  if (!Array.isArray(raw) || !raw.every(isString)) return [];
   return raw;
 };
 
@@ -164,12 +166,9 @@ export const parseSave = (raw: unknown): SaveData | null => {
   const blitz = parseBlitz(raw['blitz']);
   if (blitz === null) return null;
 
+  // Valgfritt felt med en trygg default; en ødelagt verdi skal ikke koste stjernene.
   const contentVersionRaw = raw['contentVersion'];
-  const contentVersion = contentVersionRaw === undefined ? 1 : contentVersionRaw;
-  if (!isNumber(contentVersion)) return null;
-
-  const introsSeen = parseIntrosSeen(raw['introsSeen']);
-  if (introsSeen === null) return null;
+  const contentVersion = isNumber(contentVersionRaw) ? contentVersionRaw : 1;
 
   return {
     saveVersion: 1,
@@ -178,7 +177,7 @@ export const parseSave = (raw: unknown): SaveData | null => {
     daily,
     blitz,
     settings: parseSettings(raw['settings']),
-    introsSeen,
+    introsSeen: parseIntrosSeen(raw['introsSeen']),
   };
 };
 

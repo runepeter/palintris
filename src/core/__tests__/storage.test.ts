@@ -106,6 +106,46 @@ describe('parseSave', () => {
   it('avviser feil form på stars', () => {
     expect(parseSave({ saveVersion: 1, stars: { 'w1-01': 'oops' } })).toBeNull();
   });
+  it('beholder stjernene når inProgress er ødelagt', () => {
+    const d = parseSave({
+      saveVersion: 1,
+      stars: { 'w1-01': { stars: 3, contentVersion: 1 } },
+      daily: { attempts: [], streak: 4, inProgress: { puzzleId: 7, commands: 'tull' } },
+      blitz: { best: 3 },
+      settings: { sound: true, music: true, reducedMotion: false, colorBlind: false },
+    });
+    expect(d).not.toBeNull();
+    expect(d?.daily.inProgress).toBeUndefined();
+    expect(d?.daily.streak).toBe(4);
+    expect(d?.stars['w1-01']).toEqual({ stars: 3, contentVersion: 1 });
+  });
+  it('ødelagt introsSeen og contentVersion faller til default', () => {
+    const d = parseSave({
+      saveVersion: 1,
+      contentVersion: 'to',
+      stars: { 'w1-01': { stars: 1, contentVersion: 1 } },
+      daily: { attempts: [], streak: 0 },
+      blitz: { best: 0 },
+      settings: { sound: true, music: true, reducedMotion: false, colorBlind: false },
+      introsSeen: [1, 'w2-01'],
+    });
+    expect(d).not.toBeNull();
+    expect(d?.introsSeen).toEqual([]);
+    expect(d?.contentVersion).toBe(1);
+    expect(d?.stars['w1-01']).toEqual({ stars: 1, contentVersion: 1 });
+  });
+  it('obligatoriske felt er fortsatt strenge', () => {
+    const valid = {
+      saveVersion: 1,
+      stars: {},
+      daily: { attempts: [], streak: 0 },
+      blitz: { best: 0 },
+      settings: { sound: true, music: true, reducedMotion: false, colorBlind: false },
+    };
+    expect(parseSave({ ...valid, daily: { attempts: [], streak: 'null' } })).toBeNull();
+    expect(parseSave({ ...valid, daily: { attempts: [{ puzzleId: 1 }], streak: 0 } })).toBeNull();
+    expect(parseSave({ ...valid, blitz: { best: 'mange' } })).toBeNull();
+  });
   it('avviser feil saveVersion', () => {
     expect(parseSave({ saveVersion: 2 })).toBeNull();
   });
