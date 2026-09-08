@@ -111,6 +111,8 @@ export class BoardScene2 extends Phaser.Scene {
   private lastKeyEvent: KeyboardEvent | null = null;
   private keyboardActive = false;
   private solvedFired = false;
+  /** Satt når create() ga opp fordi nivået ikke fantes. Da er session og machine udefinert. */
+  private aborted = false;
   private inputLocked = false;
   private pendingTweens = 0;
   private lastKind: LayoutKind | null = null;
@@ -159,6 +161,7 @@ export class BoardScene2 extends Phaser.Scene {
     this.lastKeyEvent = null;
     this.keyboardActive = false;
     this.solvedFired = false;
+    this.aborted = false;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
@@ -166,6 +169,8 @@ export class BoardScene2 extends Phaser.Scene {
     const s = services(this);
     const level = s.mode.load(this.levelId);
     if (level === null) {
+      // session og machine finnes ikke; alt som kjører videre må se at scenen ga opp.
+      this.aborted = true;
       this.scene.start(SCENE.menu);
       return;
     }
@@ -203,6 +208,7 @@ export class BoardScene2 extends Phaser.Scene {
   }
 
   override update(time: number): void {
+    if (this.aborted) return;
     this.machine.tick(time);
     // tick() er stille, så hold-overgangen fanges bare ved å sammenligne tilstanden.
     if (this.machine.state !== this.lastState) this.syncGestureVisuals();
@@ -215,6 +221,7 @@ export class BoardScene2 extends Phaser.Scene {
   }
 
   private teardown(): void {
+    if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
     removeHook();
     this.session.dispose();

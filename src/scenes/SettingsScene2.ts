@@ -13,13 +13,17 @@ const ROWS: ReadonlyArray<{ key: keyof Settings; label: string }> = [
 ];
 
 export class SettingsScene2 extends Phaser.Scene {
+  /** Fast referanse, så SHUTDOWN kan koble den av den globale ScaleManager. */
+  private readonly onResize = (): void => this.rebuild();
+
   constructor() {
     super(SCENE.settings);
   }
 
   create(): void {
     this.build();
-    this.scale.on(Phaser.Scale.Events.RESIZE, () => this.rebuild());
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize));
   }
 
   private rebuild(): void {

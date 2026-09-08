@@ -4,16 +4,20 @@ import { COLORS, SPACE, worldAccent } from '../theme/theme';
 import { makeButton, makeLabel, SCENE } from './ui';
 
 export class MenuScene2 extends Phaser.Scene {
+  /** Fast referanse, så SHUTDOWN kan koble den av den globale ScaleManager. */
+  private readonly onResize = (): void => {
+    this.children.removeAll(true);
+    this.build();
+  };
+
   constructor() {
     super(SCENE.menu);
   }
 
   create(): void {
     this.build();
-    this.scale.on(Phaser.Scale.Events.RESIZE, () => {
-      this.children.removeAll(true);
-      this.build();
-    });
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize));
     this.input.once('pointerdown', () => audio.startMusic('menu'));
   }
 
