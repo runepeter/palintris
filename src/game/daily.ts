@@ -1,29 +1,48 @@
 import type { Level, Recipe } from '../core/level';
 import { makeLevel } from '../core/level';
-import type { DailyAttempt } from '../core/storage';
+import type { DailyAttempt, SaveData } from '../core/storage';
 import { symbolKey } from '../core/tiles';
 
 /**
  * Dagens brett er likt på alle enheter, så alt her er rent deterministisk:
  * ingen ms-grense i løseren og ingen avhengighet til lokal tidssone.
+ *
+ * `movesRange[0]` settes per ukedag av `dailyRecipe`; verdien her er gulvet.
+ * Taket er 6, men mål over 3 finnes ikke for denne formen: målt over 20 000
+ * kandidater med 1 000 000 tilstander er minimum 1 i 54 %, 2 i 38 % og 3 i 1,1 %,
+ * og aldri 4. Rotasjon og speiling over vilkårlige utsnitt gjør avstanden kort
+ * uansett hvor mye brettet stokkes. Vil man ha mål 4, må daglig få joker og
+ * fjerning i hånden slik verden 5 og 6 har.
  */
 export const DAILY_RECIPE: Recipe = {
   id: 'daily',
   lengthRange: [7, 9],
   alphabet: 4,
   allowedOps: ['swap', 'rotate', 'mirror'],
-  movesRange: [2, 4],
+  movesRange: [2, 6],
   slack: 4,
   hand: { wild: 0, remove: 0 },
   lockedRange: [0, 0],
-  scrambleRange: [2, 5],
+  scrambleRange: [4, 9],
   solverStates: 50000,
 };
+
+/**
+ * Minste antall trekk per ISO-ukedag, mandag først: lett tidlig i uken, tyngre
+ * mot helgen. Uten kurven stoppet generatoren på første kandidat hver dag, og
+ * målet ble det samme tallet året rundt.
+ */
+const DAILY_MIN_MOVES: readonly number[] = [2, 2, 2, 3, 3, 3, 3];
 
 /** Dagens brett har ingen reell trekkgrense; budsjettet er bare stjernegrunnlag. */
 export const DAILY_BUDGET = 999;
 
-const DAILY_ATTEMPTS = 60;
+/**
+ * Bare 1,1 % av kandidatene har minimum 3, så 60 forsøk lot omtrent annenhver
+ * tyngre dag stå uten brett i det hele tatt. 1200 forsøk gjør et bomskudd så
+ * godt som umulig og koster ingenting på dagene som treffer tidlig.
+ */
+const DAILY_ATTEMPTS = 1200;
 const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
 const PUZZLE_ID = /^daily-(\d{4}-\d{2}-\d{2})-v(\d+)$/;
 const DAY_MS = 86_400_000;
@@ -56,16 +75,27 @@ const shiftDays = (dateKey: string, days: number): string | null => {
   return d === null ? null : utcDateKey(new Date(d.getTime() + days * DAY_MS));
 };
 
+/** 0 for mandag, 6 for søndag. -1 for ugyldig dato. */
+const isoWeekday = (dateKey: string): number => {
+  const d = dateFromKey(dateKey);
+  return d === null ? -1 : (d.getUTCDay() + 6) % 7;
+};
+
 /** Datoene fra mandag i ISO-uken til og med `dateKey`. Tom liste for ugyldig dato. */
 export const isoWeekDates = (dateKey: string): string[] => {
   const d = dateFromKey(dateKey);
   if (d === null) return [];
-  const isoWeekday = (d.getUTCDay() + 6) % 7;
   const out: string[] = [];
-  for (let i = isoWeekday; i >= 0; i--) {
+  for (let i = isoWeekday(dateKey); i >= 0; i--) {
     out.push(utcDateKey(new Date(d.getTime() - i * DAY_MS)));
   }
   return out;
+};
+
+/** Oppskriften for én dag. Bare minimumskravet varierer; resten er felles. */
+export const dailyRecipe = (dateKey: string): Recipe => {
+  const minMoves = DAILY_MIN_MOVES[isoWeekday(dateKey)] ?? DAILY_RECIPE.movesRange[0];
+  return { ...DAILY_RECIPE, movesRange: [minMoves, DAILY_RECIPE.movesRange[1]] };
 };
 
 const levelCache = new Map<string, Level | null>();
@@ -85,7 +115,7 @@ export const dailyLevel = (dateKey: string, contentVersion: number): Level | nul
     const id = dailyPuzzleId(day, contentVersion);
     let level = levelCache.get(id);
     if (level === undefined) {
-      level = makeLevel(DAILY_RECIPE, {
+      level = makeLevel(dailyRecipe(day), {
         id,
         contentVersion,
         previousKeys,
@@ -129,6 +159,19 @@ export const streakAfter = (attempts: readonly DailyAttempt[], dateKey: string):
     cursor = shiftDays(cursor, -1);
   }
   return count;
+};
+
+/**
+ * Rekka slik den skal stå på skjermen. Den lagrede `streak` oppdateres først når
+ * dagen fullføres, så et åpent brett viser rekka til og med i går. Uten dette sto
+ * gårsdagens tall igjen selv når kjeden var brutt, og hoppet så ned ved løsning.
+ */
+export const displayStreak = (save: SaveData, todayKey: string): number => {
+  const attempts = save.daily.attempts;
+  const solvedToday = attempts.some((a) => parseDailyPuzzleId(a.puzzleId)?.dateKey === todayKey);
+  if (solvedToday) return save.daily.streak;
+  const yesterday = shiftDays(todayKey, -1);
+  return yesterday === null ? 0 : streakAfter(attempts, yesterday);
 };
 
 /** Dagens resultat er første fullførte forsøk; senere forsøk er trening og deles ikke. */

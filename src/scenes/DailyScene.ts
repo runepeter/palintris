@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { DailyAttempt } from '../core/storage';
-import { bestAttempt, dailyShareText, mmss, parseDailyPuzzleId, sharedAttempt } from '../game/daily';
+import { bestAttempt, dailyShareText, displayStreak, mmss, parseDailyPuzzleId, sharedAttempt } from '../game/daily';
 import { COLORS, SPACE } from '../theme/theme';
 import { services } from './services';
 import { copyText, makeButton, makeLabel, SCENE } from './ui';
@@ -56,11 +56,12 @@ export class DailyScene extends Phaser.Scene {
     const attempts = s.store.data.daily.attempts;
     const best = bestAttempt(attempts, id);
     const share = sharedAttempt(attempts, id);
-    const streak = s.store.data.daily.streak;
+    const dateKey = parseDailyPuzzleId(id)?.dateKey ?? '';
+    const streak = displayStreak(s.store.data, dateKey);
 
     const top = h * 0.18;
     makeLabel(this, cx, top, 'Daglig', { size: 44, color: COLORS.inkMuted, bold: true });
-    makeLabel(this, cx, top + 44, parseDailyPuzzleId(id)?.dateKey ?? '', { size: 18, color: COLORS.inkMuted, font: 'body' });
+    makeLabel(this, cx, top + 44, dateKey, { size: 18, color: COLORS.inkMuted, font: 'body' });
     makeLabel(this, cx, top + 74, `Rekke: ${streak} ${streak === 1 ? 'dag' : 'dager'}`, { size: 16, color: COLORS.inkMuted, font: 'body' });
     makeLabel(this, cx, top + 110, this.status(best), { size: 18, font: 'body' });
 

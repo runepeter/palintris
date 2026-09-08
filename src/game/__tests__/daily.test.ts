@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import type { DailyAttempt, StorageLike } from '../../core/storage';
+import type { DailyAttempt, SaveData, StorageLike } from '../../core/storage';
+import { defaultSave } from '../../core/storage';
 import {
   bestAttempt,
   DAILY_BUDGET,
   dailyLevel,
   dailyPuzzleId,
+  dailyRecipe,
   dailyShareText,
+  displayStreak,
   isoWeekDates,
   parseDailyPuzzleId,
   sharedAttempt,
@@ -102,6 +105,64 @@ describe('dailyLevel', () => {
 
   it('gir null for ugyldig datonøkkel', () => {
     expect(dailyLevel('ikke-en-dato', 1)).toBeNull();
+  });
+
+  it('gir brett hver dag, og målet varierer over 21 dager', () => {
+    const targets: number[] = [];
+    const start = Date.parse('2026-09-08T00:00:00.000Z');
+    for (let i = 0; i < 21; i++) {
+      const dateKey = utcDateKey(new Date(start + i * 86_400_000));
+      const level = dailyLevel(dateKey, 1);
+      expect(level, dateKey).not.toBeNull();
+      if (level !== null) targets.push(level.target);
+    }
+    expect(targets).toHaveLength(21);
+    // Mål over 3 finnes ikke for denne oppskriften; se kommentaren på DAILY_RECIPE.
+    expect(new Set(targets).size).toBeGreaterThanOrEqual(2);
+    expect(Math.min(...targets)).toBeGreaterThanOrEqual(2);
+  });
+
+  it('følger ukedagskurven: mandag til onsdag lettest', () => {
+    // 2026-09-14 er en mandag, 2026-09-17 en torsdag.
+    expect(dailyRecipe('2026-09-14').movesRange[0]).toBe(2);
+    expect(dailyRecipe('2026-09-16').movesRange[0]).toBe(2);
+    expect(dailyRecipe('2026-09-17').movesRange[0]).toBe(3);
+    expect(dailyRecipe('2026-09-20').movesRange[0]).toBe(3);
+    expect(dailyLevel('2026-09-17', 1)?.target).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('displayStreak', () => {
+  const save = (attempts: readonly DailyAttempt[], streak: number): SaveData => ({
+    ...defaultSave(),
+    daily: { attempts: [...attempts], streak },
+  });
+  const solvedOn = (dates: readonly string[]): DailyAttempt[] =>
+    dates.map((d) => attempt({ puzzleId: dailyPuzzleId(d, 1) }));
+
+  const MON_TO_FRI = ['2026-09-07', '2026-09-08', '2026-09-09', '2026-09-10', '2026-09-11'];
+
+  it('viser rekka til og med i går når dagens brett er uløst', () => {
+    // Løst man-fre, åpner lørdag uten å ha løst den: fem dager til og med fredag.
+    expect(displayStreak(save(solvedOn(MON_TO_FRI), 5), '2026-09-12')).toBe(5);
+  });
+
+  it('viser lagret verdi når dagen er løst', () => {
+    const attempts = solvedOn([...MON_TO_FRI, '2026-09-12']);
+    expect(displayStreak(save(attempts, 6), '2026-09-12')).toBe(6);
+  });
+
+  it('viser 0 når kjeden er brutt, i stedet for den lagrede verdien', () => {
+    // Man-fre løst, så helgen hoppet over: mandag skal ikke fortsatt si 5.
+    expect(displayStreak(save(solvedOn(MON_TO_FRI), 5), '2026-09-14')).toBe(0);
+  });
+
+  it('teller flere forsøk samme dag som én', () => {
+    const attempts = [
+      ...solvedOn(MON_TO_FRI),
+      attempt({ puzzleId: dailyPuzzleId('2026-09-11', 1), attempt: 2 }),
+    ];
+    expect(displayStreak(save(attempts, 5), '2026-09-12')).toBe(5);
   });
 });
 
