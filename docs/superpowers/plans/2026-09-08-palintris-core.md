@@ -2990,3 +2990,23 @@ git commit -m "feat(content): world recipes, offline campaign builder and frozen
 
 - Brett, gester, layout, tema, scener: plan 2.
 - Daily-ID og ISO-uke-filter, Blitz-regler, signaturnivåer, sletting av gamle scener og assets, CI, ESLint flat config: plan 3.
+
+## Etterslep fra plan 1 (til plan 2 og 3)
+
+Fra sluttreview og per-task-reviews, ført her fordi SDD-arbeidsområdet slettes ved ferdigstilling.
+
+**Plan 2 (brett og interaksjon)**
+- `SolverClient.cancelAll` gir `unknown` både ved erstattet forespørsel og ved nådd tilstandsgrense. UI må ikke vise et erstattet svar som «mål ukjent»; vurder egen `cancelled`-status.
+- Chunk-størrelse 2000 i worker gir opptil ~300 ms avbruddslatens på 13-brikkers brett; skaler ned for lange brett.
+- `solver.worker.ts` typesjekkes mot DOM, ikke WebWorker-lib; rett når worker instansieres.
+- `Level.solution` er en eksistensgaranti, ikke et hint. w2-01 løses med bare swap. Brikker slås opp på `id`, aldri indeks, og `solution` vises aldri som fasit.
+- Bekreft klientens `states`-budsjett: 50 000 gir 60–210 ms på de lengste brettene.
+- Vanskelighet kommer primært fra lengde, ikke trekk: kampanjens mål er 1–4. Vurder større `scrambleRange` eller begrenset swap i balansering.
+
+**Plan 3 (moduser, lagring, opprydding)**
+- Parkert: `loadSave` validerer bare at `stars`/`daily`/`blitz` er objekter. Legg inn skjemavalidering når skjemaet utvides.
+- Feil `saveVersion` sammen med legacy-nøkkel gir migrasjon, ikke default. Avklar og test.
+- `recordStars` adopterer `contentVersion` også når den er eldre.
+- `npm run lint` feiler på legacy-filer (48 feil). Ryddes når gamle scener slettes; deretter kan `lint:core` fjernes.
+- `parseLevelId` antar ensifret verden; `isWorldUnlocked` guarder ikke `world < 1`.
+- `makeTargetPalindrome` guarder ikke `wild + locked > length` selv; `generateCandidate` gjør det.
