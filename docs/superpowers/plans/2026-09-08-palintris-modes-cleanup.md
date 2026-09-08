@@ -220,3 +220,32 @@ describe('intro og daily progress', () => {
 - Høy-DPR-skarphet på tekst (canvas ved DPR 1).
 - Signaturnivåer (håndlagde, 3–5 per verden) — innholdsarbeid; skriptet støtter JSON-format allerede.
 - Mørkt tema, konto/sky-lagring, ledertavler.
+
+## Etterslep etter plan 3 (fra sluttreview av hele branchen)
+
+Sluttreviewen fant 0 Critical, 6 Important og 13 Minor. De seks Important og fem Minor ble fikset i sluttbølgen (se git-loggen etter 22e6cdb). Dette står igjen som oppfølging:
+
+**Spec-gjeld**
+- §3 Lagring: «lite merke» på stjerner fra eldre `contentVersion` er ikke bygget; `SaveData.contentVersion` leses ingen steder.
+- §5 ESLint flat config: fortsatt `.eslintrc.json`.
+- §5 Struktur: scene-kode ligger i `src/scenes`, ikke `src/game`. Avviket holder `src/game` Phaser-fri og anbefales beholdt; oppdater spec.
+- §3 Signaturnivåer (3–5 håndlagde per verden) er ikke laget; byggeskriptet støtter formatet.
+- Høy-DPR-skarphet på tekst: canvas ved DPR 1, all tekst oppskaleres. Egen oppfølging.
+
+**Kjente svakheter**
+- Verdenskart: ~380 px død luft ved 390×844 og lav kontrast på låste celler.
+- Blitz har ingen introduksjon: 45 s, bonus og hopp-over-kostnad forklares aldri.
+- `BlitzQueue.peek()` kaster etter 200 mislykkede genereringer uten fangst (praktisk umulig med verden 1–3).
+- Liggende format med intro-panel gir brikker under 44 px (liggende er ikke designmål).
+- `symbolPattern('*')` og `'C'` gir begge `rings`.
+- CI installerer Playwright-nettlesere hver kjøring uten cache.
+- Bundle 1,6 MB / 372 kB gzip i én chunk; vurder `manualChunks` når lastetid blir tema.
+- Daily-generering (opptil 7 brett per uke) og fri spilling kjører synkront på spilltråden; worker-generering er en mulig forbedring.
+
+**Anbefalte neste steg, etter spillerverdi**
+1. Rydd verdenskartet (luft og kontrast).
+2. Gi Blitz en kort introduksjon.
+3. Balanser kampanjen: mål er 1–4 trekk; vanskelighet kommer fra lengde.
+4. Signaturnivåer per verden.
+5. Høy-DPR-tekst.
+6. Stjerne-merke for eldre innholdsversjon.
