@@ -11,6 +11,7 @@ export const COLORS = {
   locked: 0xb9b3ad,
   success: 0x3fbf7f,
   danger: 0xe0555b,
+  star: 0xffd166,
 } as const;
 
 /** Korall, solgul, turkis, lilla, lime, dyp blå. Indeks 0 er verden 1. */
