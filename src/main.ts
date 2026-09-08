@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
+import { BlitzResultScene } from './scenes/BlitzResultScene';
 import { BoardScene } from './scenes/BoardScene';
 import { BootScene } from './scenes/BootScene';
+import { DailyScene } from './scenes/DailyScene';
 import { MenuScene } from './scenes/MenuScene';
 import { ResultScene } from './scenes/ResultScene';
 import { SettingsScene } from './scenes/SettingsScene';
@@ -18,7 +20,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: '100%',
   },
   input: { mouse: true, touch: true },
-  scene: [BootScene, MenuScene, WorldMapScene, BoardScene, ResultScene, SettingsScene],
+  scene: [BootScene, MenuScene, WorldMapScene, BoardScene, ResultScene, DailyScene, BlitzResultScene, SettingsScene],
 };
 
 new Phaser.Game(config);

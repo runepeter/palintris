@@ -3,6 +3,9 @@ import { audio } from '../audio/sound';
 import { COLORS, SPACE, worldAccent } from '../theme/theme';
 import { makeButton, makeLabel, SCENE } from './ui';
 
+const BUTTON_W = 220;
+const BUTTON_H = 52;
+
 export class MenuScene extends Phaser.Scene {
   /** Fast referanse, så SHUTDOWN kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
@@ -24,10 +27,18 @@ export class MenuScene extends Phaser.Scene {
   private build(): void {
     const cx = this.scale.width / 2;
     const h = this.scale.height;
-    makeLabel(this, cx, h * 0.28, 'Palintris', { size: 56, color: worldAccent(1), bold: true });
-    makeLabel(this, cx, h * 0.28 + 44, 'Gjør rekka til et palindrom', { size: 18, color: COLORS.inkMuted, font: 'body' });
-    const canPlay = this.scene.get(SCENE.worldMap) !== null;
-    makeButton(this, { x: cx, y: h * 0.55, width: 220, height: 56, label: 'Spill', accent: worldAccent(1), enabled: canPlay, onClick: () => this.scene.start(SCENE.worldMap) });
-    makeButton(this, { x: cx, y: h * 0.55 + 56 + SPACE.lg, width: 220, height: 48, label: 'Innstillinger', accent: COLORS.inkMuted, onClick: () => this.scene.start(SCENE.settings) });
+    makeLabel(this, cx, h * 0.22, 'Palintris', { size: 56, color: worldAccent(1), bold: true });
+    makeLabel(this, cx, h * 0.22 + 44, 'Gjør rekka til et palindrom', { size: 18, color: COLORS.inkMuted, font: 'body' });
+
+    const hasBoard = this.scene.get(SCENE.board) !== null;
+    const top = h * 0.46;
+    const pitch = BUTTON_H + SPACE.md;
+    const button = (row: number, label: string, accent: number, enabled: boolean, onClick: () => void): void => {
+      makeButton(this, { x: cx, y: top + pitch * row, width: BUTTON_W, height: BUTTON_H, label, accent, enabled, onClick });
+    };
+    button(0, 'Kampanje', worldAccent(1), this.scene.get(SCENE.worldMap) !== null, () => this.scene.start(SCENE.worldMap));
+    button(1, 'Daglig', COLORS.inkMuted, this.scene.get(SCENE.daily) !== null, () => this.scene.start(SCENE.daily));
+    button(2, 'Blitz', COLORS.danger, hasBoard, () => this.scene.start(SCENE.board, { mode: 'blitz' }));
+    button(3, 'Innstillinger', COLORS.inkMuted, true, () => this.scene.start(SCENE.settings));
   }
 }

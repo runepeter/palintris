@@ -8,6 +8,7 @@ import {
   dailyShareText,
   isoWeekDates,
   parseDailyPuzzleId,
+  sharedAttempt,
   streakAfter,
   utcDateKey,
 } from '../daily';
@@ -162,6 +163,21 @@ describe('bestAttempt', () => {
 
   it('gir undefined uten forsøk på puslespillet', () => {
     expect(bestAttempt([], dailyPuzzleId('2026-09-08', 1))).toBeUndefined();
+  });
+});
+
+describe('sharedAttempt', () => {
+  it('velger første fullførte forsøk, ikke det beste', () => {
+    const id = dailyPuzzleId('2026-09-08', 1);
+    const attempts = [
+      attempt({ puzzleId: id, attempt: 1, moves: 6, timeMs: 9000 }),
+      attempt({ puzzleId: id, attempt: 2, moves: 3, timeMs: 1000 }),
+    ];
+    expect(sharedAttempt(attempts, id)?.moves).toBe(6);
+  });
+
+  it('gir undefined når dagen ikke er fullført', () => {
+    expect(sharedAttempt([], dailyPuzzleId('2026-09-08', 1))).toBeUndefined();
   });
 });
 

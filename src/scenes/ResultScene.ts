@@ -1,17 +1,22 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { parseLevelId } from '../core/progression';
+import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
 import type { SolvedOutcome } from '../game/modes/types';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
+import type { ModeKind } from './BoardScene';
 import { Effects } from './effects';
 import { services } from './services';
-import { contentWidth, makeButton, makeLabel, SCENE } from './ui';
+import { contentWidth, copyText, makeButton, makeLabel, SCENE } from './ui';
 
 interface ResultData {
+  readonly mode: ModeKind;
   readonly levelId: string;
   readonly outcome: SolvedOutcome;
   readonly movesUsed: number;
   readonly target: number;
+  /** Bare daglig måler tid; ellers 0. */
+  readonly timeMs: number;
 }
 
 const EMPTY_OUTCOME: SolvedOutcome = { stars: 0, previousStars: 0, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null };
@@ -21,18 +26,18 @@ const STAR_EMPTY = '☆';
 const STAR_SPACING = 64;
 
 export class ResultScene extends Phaser.Scene {
+  private mode: ModeKind = 'campaign';
   private levelId = '';
   private outcome: SolvedOutcome = EMPTY_OUTCOME;
   private movesUsed = 0;
   private target = 0;
+  private timeMs = 0;
+  private copied: 'idle' | 'ok' | 'fail' = 'idle';
   /** Sann etter første build; en resize skal tegne stjernene statisk uten å gjenta tweens/effekter. */
   private celebrated = false;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
-  private readonly onResize = (): void => {
-    this.children.removeAll(true);
-    this.build();
-  };
+  private readonly onResize = (): void => this.rebuild();
 
   constructor() {
     super(SCENE.result);
@@ -40,11 +45,19 @@ export class ResultScene extends Phaser.Scene {
 
   /** Phaser gjenbruker sceneinstansen, så feltene må nullstilles her og ikke bare i initialiseringen. */
   init(data: Partial<ResultData> = {}): void {
+    this.mode = data.mode ?? 'campaign';
     this.levelId = data.levelId ?? '';
     this.outcome = data.outcome ?? EMPTY_OUTCOME;
     this.movesUsed = data.movesUsed ?? 0;
     this.target = data.target ?? 0;
+    this.timeMs = data.timeMs ?? 0;
+    this.copied = 'idle';
     this.celebrated = false;
+  }
+
+  private rebuild(): void {
+    this.children.removeAll(true);
+    this.build();
   }
 
   create(): void {
@@ -66,7 +79,8 @@ export class ResultScene extends Phaser.Scene {
     const effects = new Effects(this, reducedMotion);
     const parsed = parseLevelId(this.levelId);
     const world = parsed?.world ?? 1;
-    const accent = worldAccent(world);
+    // Dagens brett hører ikke til en verden og bruker modusens egen farge.
+    const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
     const h = this.scale.height;
     const cx = this.scale.width / 2;
     const starsY = h * 0.32;
@@ -76,25 +90,71 @@ export class ResultScene extends Phaser.Scene {
     this.buildStars(cx, starsY, d, effects, animate);
     this.celebrated = true;
     makeLabel(this, cx, starsY + 56, `${this.movesUsed} trekk · mål ${this.target}`, { size: 18, color: COLORS.inkMuted, font: 'body' });
+    if (this.mode === 'daily') this.buildDailyStats(cx, starsY + 86);
     if (this.outcome.worldJustUnlocked !== null) {
       this.buildUnlockBanner(cx, starsY + 104, this.outcome.worldJustUnlocked);
     }
 
     const buttonsTop = h * 0.62;
+    if (this.mode === 'daily') {
+      this.buildDailyButtons(cx, buttonsTop, accent);
+      return;
+    }
     const nextLevel = this.outcome.nextLevelId;
     makeButton(this, {
       x: cx, y: buttonsTop, width: 220, height: 52, label: 'Neste', accent, enabled: this.outcome.nextUnlocked,
       onClick: () => {
-        if (nextLevel !== null) this.scene.start(SCENE.board, { levelId: nextLevel });
+        if (nextLevel !== null) this.scene.start(SCENE.board, { mode: this.mode, levelId: nextLevel });
       },
     });
     makeButton(this, {
       x: cx, y: buttonsTop + 60, width: 220, height: 44, label: 'Spill igjen', accent: COLORS.inkMuted,
-      onClick: () => this.scene.start(SCENE.board, { levelId: this.levelId }),
+      onClick: () => this.scene.start(SCENE.board, { mode: this.mode, levelId: this.levelId }),
     });
+    // Fri spilling har ikke noe kart å gå tilbake til.
     makeButton(this, {
-      x: cx, y: buttonsTop + 120, width: 220, height: 44, label: 'Verdenskart', accent: COLORS.inkMuted,
-      onClick: () => this.scene.start(SCENE.worldMap, { world }),
+      x: cx, y: buttonsTop + 120, width: 220, height: 44,
+      label: this.mode === 'campaign' ? 'Verdenskart' : 'Meny', accent: COLORS.inkMuted,
+      onClick: () => {
+        if (this.mode === 'campaign') this.scene.start(SCENE.worldMap, { world });
+        else this.scene.start(SCENE.menu);
+      },
+    });
+  }
+
+  /** Streaken leses som lagret: modusen har alt oppdatert den for dagens første løsning. */
+  private buildDailyStats(cx: number, y: number): void {
+    const daily = services(this).store.data.daily;
+    const attempt = daily.attempts.filter((a) => a.puzzleId === this.levelId).length;
+    makeLabel(this, cx, y, `Tid ${mmss(this.timeMs)} · forsøk ${attempt} · rekke ${daily.streak}`, {
+      size: 16, color: COLORS.inkMuted, font: 'body',
+    });
+  }
+
+  private buildDailyButtons(cx: number, top: number, accent: number): void {
+    makeButton(this, {
+      x: cx, y: top, width: 220, height: 52, label: 'Nytt forsøk', accent,
+      onClick: () => this.scene.start(SCENE.board, { mode: 'daily' }),
+    });
+    const share = sharedAttempt(services(this).store.data.daily.attempts, this.levelId);
+    const text = share === undefined ? null : dailyShareText(share);
+    makeButton(this, {
+      x: cx, y: top + 60, width: 220, height: 44,
+      label: this.copied === 'ok' ? 'Kopiert' : 'Del', accent: COLORS.inkMuted, enabled: text !== null,
+      onClick: () => {
+        if (text === null) return;
+        void copyText(text).then((ok) => {
+          this.copied = ok ? 'ok' : 'fail';
+          this.rebuild();
+        });
+      },
+    });
+    if (this.copied === 'fail') {
+      makeLabel(this, cx, top + 90, 'Kunne ikke kopiere', { size: 14, color: COLORS.danger, font: 'body' });
+    }
+    makeButton(this, {
+      x: cx, y: top + 120, width: 220, height: 44, label: 'Daglig', accent: COLORS.inkMuted,
+      onClick: () => this.scene.start(SCENE.daily),
     });
   }
 

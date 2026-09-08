@@ -100,7 +100,7 @@ export const dailyLevel = (dateKey: string, contentVersion: number): Level | nul
   return result;
 };
 
-const mmss = (timeMs: number): string => {
+export const mmss = (timeMs: number): string => {
   const total = Math.max(0, Math.floor(timeMs / 1000));
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 };
@@ -130,6 +130,12 @@ export const streakAfter = (attempts: readonly DailyAttempt[], dateKey: string):
   }
   return count;
 };
+
+/** Dagens resultat er første fullførte forsøk; senere forsøk er trening og deles ikke. */
+export const sharedAttempt = (
+  attempts: readonly DailyAttempt[],
+  puzzleId: string
+): DailyAttempt | undefined => attempts.find((a) => a.puzzleId === puzzleId && a.attempt === 1);
 
 /** Færrest trekk vinner, deretter minst tid. */
 export const bestAttempt = (

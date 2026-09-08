@@ -28,9 +28,16 @@ export class BootScene extends Phaser.Scene {
   }
 
   private next(): void {
-    const level = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('level') : null;
-    if (level !== null && parseLevelId(level) !== null && this.scene.get(SCENE.board) !== null) {
-      this.scene.start(SCENE.board, { levelId: level });
+    const params = import.meta.env.DEV ? new URLSearchParams(window.location.search) : null;
+    const hasBoard = this.scene.get(SCENE.board) !== null;
+    const mode = params?.get('mode') ?? null;
+    if ((mode === 'daily' || mode === 'blitz') && hasBoard) {
+      this.scene.start(SCENE.board, { mode });
+      return;
+    }
+    const level = params?.get('level') ?? null;
+    if (level !== null && parseLevelId(level) !== null && hasBoard) {
+      this.scene.start(SCENE.board, { mode: 'campaign', levelId: level });
       return;
     }
     this.scene.start(SCENE.menu);

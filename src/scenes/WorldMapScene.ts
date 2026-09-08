@@ -74,7 +74,7 @@ export class WorldMapScene extends Phaser.Scene {
 
     for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
       const id = levelId(this.world, n);
-      const unlocked = s.mode.isUnlocked(id);
+      const unlocked = s.modes.campaign.isUnlocked(id);
       const starCount = stars[id] ?? 0;
       const col = (n - 1) % COLS;
       const row = Math.floor((n - 1) / COLS);
@@ -98,6 +98,6 @@ export class WorldMapScene extends Phaser.Scene {
     c.setInteractive({ useHandCursor: true });
     c.on('pointerover', () => this.tweens.add({ targets: c, scale: 1.05, duration: DURATION.snap, ease: EASING.pop }));
     c.on('pointerout', () => this.tweens.add({ targets: c, scale: 1, duration: DURATION.snap, ease: EASING.pop }));
-    c.on('pointerup', () => this.scene.start(SCENE.board, { levelId: id }));
+    c.on('pointerup', () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: id }));
   }
 }

@@ -1,7 +1,12 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
+import type { BoardState } from '../core/board';
+import type { Command, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
+import { setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
+import { BlitzClock } from '../game/blitz';
+import { mmss } from '../game/daily';
 import type { GestureState, HintReason, Intent, Target } from '../game/gestures';
 import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
@@ -9,19 +14,31 @@ import type { KeyCode } from '../game/keyboard';
 import { KeyboardController } from '../game/keyboard';
 import type { BoardLayout, LayoutKind } from '../game/layout';
 import { computeLayout, hitGap, hitTile } from '../game/layout';
-import type { ModeLevel } from '../game/modes/types';
+import { BLITZ_NEXT } from '../game/modes/blitz';
+import type { BoardMode, ModeLevel } from '../game/modes/types';
 import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import { Effects } from './effects';
 import { SegmentMenu } from './SegmentMenu';
-import { services } from './services';
+import { services, type Services } from './services';
 import { installHook, removeHook } from './testHook';
 import { TileView } from './TileView';
 import { contentLeft, contentWidth, makeButton, makeLabel, SCENE } from './ui';
 
+export type ModeKind = BoardMode['kind'];
+
 interface BoardData {
-  readonly levelId: string;
+  readonly mode: ModeKind;
+  /** Kampanje og fri spilling peker ut et brett; daglig og blitz henter sitt eget. */
+  readonly levelId?: string;
+}
+
+/** De to HUD-linjene. Toppen er stor i blitz, der klokken er hovedsaken. */
+interface HudLines {
+  readonly top: string;
+  readonly topSize: number;
+  readonly bottom: string;
 }
 
 const HUD_HEIGHT = 96;
@@ -33,6 +50,10 @@ const DASH = 8;
 const ZONE_HIT = 48;
 const BANNER_W = 360;
 const BANNER_H = 96;
+const HUD_TOP = 22;
+const HUD_CLOCK = 30;
+/** «Hopp over» er for lang for knappebredden på 390 px med standard teksthøyde. */
+const SKIP_LABEL = 15;
 
 /** Brikken bak joker-spøkelset. Ligger utenfor brettet, så id-en treffer aldri this.tiles. */
 const GHOST_TILE = makeTile(-1, WILD_SYMBOL, { wild: true });
@@ -86,6 +107,8 @@ const dashedRect = (g: Phaser.GameObjects.Graphics, x: number, y: number, w: num
 
 export class BoardScene extends Phaser.Scene {
   private levelId = '';
+  private modeKind: ModeKind = 'campaign';
+  private mode!: BoardMode;
   private level!: ModeLevel;
   private session!: BoardSession;
   private machine!: GestureMachine;
@@ -117,10 +140,22 @@ export class BoardScene extends Phaser.Scene {
   private pendingTweens = 0;
   private lastKind: LayoutKind | null = null;
   private lastSize: { w: number; h: number } | null = null;
-  private hudCache: { movesUsed: number; budgetLeft: number } | null = null;
+  /** De viste HUD-linjene, så en klokke som tikker bare bygger HUD-en når teksten endrer seg. */
+  private hudText: string | null = null;
   private handCache: { wild: number; remove: number; canUndo: boolean } | null = null;
   private view!: SessionView;
   private d = durations(false);
+  /** Sann mens fanen er skjult: begge klokkene står stille. */
+  private paused = false;
+  /** Daglig: tid brukt, kommandologg og starttidspunkt for gjenopptakelse. */
+  private elapsedMs = 0;
+  private timerRunning = false;
+  private startedAt = '';
+  private commands: Command[] = [];
+  /** Sann mens lagrede kommandoer spilles av: ingen animasjon og ingen ny lagring. */
+  private replaying = false;
+  private clock = new BlitzClock();
+  private blitzDone = false;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
@@ -138,19 +173,29 @@ export class BoardScene extends Phaser.Scene {
     this.syncGestureVisuals();
   };
 
+  /** Fast referanse, så teardown kan koble den av document. */
+  private readonly onVisibility = (): void => {
+    this.paused = document.hidden;
+    if (this.modeKind !== 'blitz') return;
+    if (this.paused) this.clock.pause();
+    // Et løst brett venter på neste; da skal klokken stå til det er lastet.
+    else if (!this.solvedFired && !this.blitzDone) this.clock.resume();
+  };
+
   constructor() {
     super(SCENE.board);
   }
 
   /** Phaser gjenbruker sceneinstansen, så feltene må nullstilles her og ikke bare i initialiseringen. */
   init(data: BoardData): void {
-    this.levelId = data.levelId;
+    this.modeKind = data.mode;
+    this.levelId = data.levelId ?? '';
     this.tiles = new Map();
     this.pendingTweens = 0;
     this.inputLocked = false;
     this.lastKind = null;
     this.lastSize = null;
-    this.hudCache = null;
+    this.hudText = null;
     this.handCache = null;
     this.banner = null;
     this.hint = null;
@@ -162,12 +207,23 @@ export class BoardScene extends Phaser.Scene {
     this.keyboardActive = false;
     this.solvedFired = false;
     this.aborted = false;
+    this.paused = false;
+    this.elapsedMs = 0;
+    this.timerRunning = false;
+    this.startedAt = '';
+    this.commands = [];
+    this.replaying = false;
+    this.clock = new BlitzClock();
+    this.blitzDone = false;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
   create(): void {
     const s = services(this);
-    const level = s.mode.load(this.levelId);
+    // En blitz-omgang teller sine egne brett, så hver inngang til scenen starter en fersk kø.
+    if (this.modeKind === 'blitz') s.restartBlitz();
+    this.mode = s.modes[this.modeKind];
+    const level = this.mode.load(this.startId(s));
     if (level === null) {
       // session og machine finnes ikke; alt som kjører videre må se at scenen ga opp.
       this.aborted = true;
@@ -177,16 +233,6 @@ export class BoardScene extends Phaser.Scene {
     this.level = level;
     this.d = durations(s.settings().reducedMotion);
     this.effects = new Effects(this, s.settings().reducedMotion);
-    this.session = new BoardSession({
-      rules: level.rules,
-      tiles: level.tiles,
-      hand: level.hand,
-      target: level.target,
-      budget: level.budget,
-      solver: s.solver,
-      onChange: (v) => this.onViewChange(v),
-    });
-    this.view = this.session.view();
     const env = {
       count: () => this.view.tiles.length,
       isLocked: (i: number) => this.view.tiles[i]?.locked === true,
@@ -199,20 +245,167 @@ export class BoardScene extends Phaser.Scene {
     this.gapGfx = this.add.graphics().setDepth(7);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
-    this.menu = new SegmentMenu(this, worldAccent(level.world), HUD_HEIGHT);
-    this.render(false);
+    this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
+    this.startBoard(level);
+    if (this.modeKind === 'blitz') this.clock.start();
+    this.paused = document.hidden;
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
+    document.addEventListener('visibilitychange', this.onVisibility);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
-    installHook(this.makeHook());
     this.setupInput();
+    // Et gjenopptatt dagsbrett kan alt være løst; da hører seremonien til nå.
+    if (this.view.solved) this.onSolved();
   }
 
-  override update(time: number): void {
+  /** Daglig og blitz eier sin egen id; kampanje og fri spilling får den fra kalleren. */
+  private startId(s: Services): string {
+    if (this.modeKind === 'daily') return s.modes.daily.todayId();
+    if (this.modeKind === 'blitz') return BLITZ_NEXT;
+    return this.levelId;
+  }
+
+  /** Bygger sesjonen for ett brett og tegner det. Kalleren har ryddet etter forrige brett. */
+  private startBoard(level: ModeLevel): void {
+    this.level = level;
+    this.levelId = level.id;
+    this.solvedFired = false;
+    this.hudText = null;
+    this.handCache = null;
+    this.lastKind = null;
+    const s = services(this);
+    const newSession = (): BoardSession =>
+      new BoardSession({
+        rules: level.rules,
+        tiles: level.tiles,
+        hand: level.hand,
+        target: level.target,
+        budget: level.budget,
+        solver: s.solver,
+        onChange: (v) => this.onViewChange(v),
+      });
+    this.session = newSession();
+    this.view = this.session.view();
+    if (this.modeKind === 'daily' && !this.replayDaily()) {
+      // Lagrede trekk passer ikke brettet lenger; da er dagen bedre tjent med blank start.
+      this.session.dispose();
+      this.session = newSession();
+      this.view = this.session.view();
+      this.commands = [];
+      this.elapsedMs = 0;
+      this.startedAt = '';
+      s.store.update((d) => setDailyProgress(d, undefined));
+    }
+    this.render(false);
+    installHook(this.makeHook());
+  }
+
+  /**
+   * Spiller av dagens lagrede kommandoer. Usant når en av dem ble avvist, slik at
+   * kalleren kan forkaste framgangen i stedet for å spille videre på feil tilstand.
+   */
+  private replayDaily(): boolean {
+    const progress = services(this).store.data.daily.inProgress;
+    if (progress === undefined || progress.puzzleId !== this.levelId) return true;
+    this.replaying = true;
+    let ok = true;
+    for (const cmd of progress.commands) {
+      if (!this.session.dispatch(cmd).ok) {
+        ok = false;
+        break;
+      }
+    }
+    this.replaying = false;
+    if (!ok) return false;
+    this.commands = [...progress.commands];
+    this.elapsedMs = progress.elapsedMs;
+    this.startedAt = progress.startedAt;
+    return true;
+  }
+
+  /** Neste brett i samme scene: uten scene.start, som ville nullstilt klokken og modusen. */
+  private loadBoard(level: ModeLevel): void {
+    this.session.dispose();
+    for (const v of this.tiles.values()) {
+      this.tweens.killTweensOf(v);
+      v.destroy();
+    }
+    this.tiles.clear();
+    this.pendingTweens = 0;
+    this.inputLocked = false;
+    this.dragId = null;
+    this.hideBanner();
+    this.hint?.destroy();
+    this.hint = null;
+    this.wildGhost?.destroy();
+    this.wildGhost = null;
+    this.menu.hide();
+    this.machine.reset();
+    this.keyboard.reset();
+    this.keyboardActive = false;
+    this.startBoard(level);
+    this.syncGestureVisuals();
+  }
+
+  override update(time: number, delta: number): void {
     if (this.aborted) return;
     this.machine.tick(time);
     // tick() er stille, så hold-overgangen fanges bare ved å sammenligne tilstanden.
     if (this.machine.state !== this.lastState) this.syncGestureVisuals();
     if (this.inputLocked && this.pendingTweens === 0) this.inputLocked = false;
+    this.tickClock(delta);
+  }
+
+  /** Begge klokkene mates fra spilløkka, aldri fra setInterval: en skjult fane står stille. */
+  private tickClock(delta: number): void {
+    if (this.modeKind === 'daily') {
+      if (!this.timerRunning || this.paused) return;
+      this.elapsedMs += delta;
+      this.refreshChrome(false);
+      return;
+    }
+    if (this.modeKind !== 'blitz' || this.blitzDone) return;
+    // Et brett løst i samme frame har alt lagt på bonusen sin, så over leses etter den.
+    if (this.clock.over) {
+      this.finishBlitz();
+      return;
+    }
+    this.clock.tick(delta);
+    this.refreshChrome(false);
+    if (this.clock.over) this.finishBlitz();
+  }
+
+  /** Daglig og blitz hører ikke til en verden og har hver sin faste farge. */
+  private accent(): number {
+    if (this.modeKind === 'daily') return COLORS.inkMuted;
+    if (this.modeKind === 'blitz') return COLORS.danger;
+    return worldAccent(this.level.world);
+  }
+
+  /**
+   * Alle godtatte kommandoer går her, så dagens brett kan gjenopptas: kommandologgen
+   * og tiden lagres etter hvert trekk, og tiden starter ved det første.
+   */
+  private dispatch(cmd: Command): Result<BoardState, SessionReject> {
+    const r = this.session.dispatch(cmd);
+    if (r.ok) this.recordDaily(cmd);
+    return r;
+  }
+
+  private recordDaily(cmd: Command): void {
+    // onSolved har alt ryddet bort inProgress; et nytt lagringskall ville skrevet den tilbake.
+    if (this.modeKind !== 'daily' || this.replaying || this.solvedFired) return;
+    if (!this.timerRunning) {
+      this.timerRunning = true;
+      if (this.startedAt === '') this.startedAt = new Date().toISOString();
+    }
+    this.commands.push(cmd);
+    const progress = {
+      puzzleId: this.levelId,
+      startedAt: this.startedAt,
+      elapsedMs: Math.round(this.elapsedMs),
+      commands: [...this.commands],
+    };
+    services(this).store.update((d) => setDailyProgress(d, progress));
   }
 
   /** Klemmes mot 0: en resize nullstiller telleren, men utfasing-tweens utenfor this.tiles lever videre. */
@@ -221,6 +414,7 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private teardown(): void {
+    document.removeEventListener('visibilitychange', this.onVisibility);
     if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
     removeHook();
@@ -336,7 +530,7 @@ export class BoardScene extends Phaser.Scene {
       const cmd = intentToCommand(intent, this.view.tiles);
       if (cmd === null) continue;
       const at = this.intentPoint(intent);
-      const r = this.session.dispatch(cmd);
+      const r = this.dispatch(cmd);
       if (!r.ok) {
         this.showHint(r.reason, at ?? undefined);
         audio.playError();
@@ -346,7 +540,7 @@ export class BoardScene extends Phaser.Scene {
       else if (intent.type !== 'segment') audio.playSelect();
       else if (intent.action === 'mirror') audio.playMirror();
       else audio.playRotate();
-      if (at !== null) this.effects.burst(at.x, at.y, worldAccent(this.level.world));
+      if (at !== null) this.effects.burst(at.x, at.y, this.accent());
       this.effects.nudge();
     }
   }
@@ -444,7 +638,7 @@ export class BoardScene extends Phaser.Scene {
     const nearest = hitGap(this.layout, (px - this.originX) / this.layout.scale, (py - this.originY) / this.layout.scale);
     const w = this.layout.gap * this.layout.scale + SPACE.sm;
     const h = this.layout.tile * this.layout.scale * 0.8;
-    const accent = worldAccent(this.level.world);
+    const accent = this.accent();
     for (const g of this.layout.gaps) {
       const p = this.screenPoint(g.x, g.y);
       this.gapGfx.fillStyle(accent, g.at === nearest ? 0.8 : 0.35);
@@ -496,7 +690,7 @@ export class BoardScene extends Phaser.Scene {
         rest.push(intent);
         continue;
       }
-      const r = this.session.dispatch({ type: intent.type });
+      const r = this.dispatch({ type: intent.type });
       if (!r.ok) this.showHint(r.reason);
       else if (intent.type === 'undo') audio.playUndo();
     }
@@ -555,17 +749,57 @@ export class BoardScene extends Phaser.Scene {
     if (this.solvedFired) return;
     this.solvedFired = true;
     this.inputLocked = true;
+    this.timerRunning = false;
     this.hideBanner();
     this.menu.hide();
     audio.playSuccess();
     this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
     this.effects.flash(COLORS.success, 0.2);
     const movesUsed = this.view.movesUsed;
-    const outcome = services(this).mode.onSolved(this.levelId, movesUsed);
+    if (this.modeKind === 'blitz') {
+      this.blitzSolved(movesUsed);
+      return;
+    }
+    const timeMs = Math.round(this.elapsedMs);
+    const outcome = this.mode.onSolved(this.levelId, movesUsed, this.modeKind === 'daily' ? { timeMs } : undefined);
     this.time.delayedCall(this.d.ceremony, () => {
       const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
-      this.scene.start(next, { levelId: this.levelId, outcome, movesUsed, target: this.level.target });
+      this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
     });
+  }
+
+  /** Bonusen legges på før klokken leses, så et brett løst på målstreken teller. */
+  private blitzSolved(movesUsed: number): void {
+    const blitz = services(this).modes.blitz;
+    const solvedBefore = blitz.solved;
+    blitz.onSolved(this.levelId, movesUsed);
+    this.clock.onSolved(solvedBefore, movesUsed <= this.level.target);
+    this.clock.pause();
+    this.time.delayedCall(this.d.ceremony, () => this.nextBlitzBoard());
+  }
+
+  private nextBlitzBoard(): void {
+    if (this.blitzDone) return;
+    this.loadBoard(services(this).modes.blitz.load(BLITZ_NEXT));
+    this.clock.resume();
+  }
+
+  /** «Hopp over» koster tid; er tiden dermed ute, avsluttes omgangen i stedet. */
+  private skipBlitz(): void {
+    if (this.blitzDone || this.solvedFired) return;
+    this.clock.skip();
+    if (this.clock.over) {
+      this.finishBlitz();
+      return;
+    }
+    this.loadBoard(services(this).modes.blitz.load(BLITZ_NEXT));
+  }
+
+  private finishBlitz(): void {
+    if (this.blitzDone) return;
+    this.blitzDone = true;
+    this.inputLocked = true;
+    this.scene.start(SCENE.blitzResult, services(this).modes.blitz.finish());
   }
 
   /** Brettområdet: mellom HUD og hånd, maks 480 bredt, sentrert. Kun geometri og speillinje. */
@@ -585,10 +819,11 @@ export class BoardScene extends Phaser.Scene {
    * inneholder knapper, så en unødig ombygging mellom pointerdown og pointerup ville spist klikket.
    */
   private refreshChrome(resized: boolean): void {
-    const hud = this.hudCache;
-    if (resized || hud === null || hud.movesUsed !== this.view.movesUsed || hud.budgetLeft !== this.view.budgetLeft) {
-      this.hudCache = { movesUsed: this.view.movesUsed, budgetLeft: this.view.budgetLeft };
-      this.buildHud();
+    const lines = this.hudLines();
+    const text = `${lines.top}|${lines.bottom}`;
+    if (resized || this.hudText !== text) {
+      this.hudText = text;
+      this.buildHud(lines);
     }
     const hand = this.handCache;
     const h = this.view.hand;
@@ -687,6 +922,8 @@ export class BoardScene extends Phaser.Scene {
 
   private onViewChange(v: SessionView): void {
     this.view = v;
+    // Avspilling tegner én gang til slutt; hver mellomtilstand ville gitt en animasjon.
+    if (this.replaying) return;
     this.keyboard.clampCursor();
     this.render(true);
     if (v.solved) {
@@ -710,11 +947,34 @@ export class BoardScene extends Phaser.Scene {
     // over og under raden for å være synlig. Tegnes over brikkene, derfor lav alpha.
     const ext = this.layout.kind === 'row' ? this.layout.tile * this.layout.scale * 0.35 : 0;
     this.mirrorGfx.clear();
-    this.mirrorGfx.lineStyle(3, worldAccent(this.level.world), 0.45);
+    this.mirrorGfx.lineStyle(3, this.accent(), 0.45);
     this.mirrorGfx.lineBetween(a.x, a.y - ext, b.x, b.y + ext);
   }
 
-  private buildHud(): void {
+  /** Toppen er trekk-telleren, unntatt i blitz der klokken er det eneste som haster. */
+  private hudLines(): HudLines {
+    const moves = this.level.targetExact
+      ? `Trekk ${this.view.movesUsed} / mål ${this.level.target}`
+      : `Trekk ${this.view.movesUsed} · mål ukjent`;
+    switch (this.modeKind) {
+      case 'daily':
+        return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}` };
+      case 'blitz':
+        return {
+          top: mmss(this.clock.remainingMs),
+          topSize: HUD_CLOCK,
+          bottom: `Løst ${services(this).modes.blitz.solved} · ${moves}`,
+        };
+      case 'free':
+        return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}` };
+      case 'campaign': {
+        const budget = this.level.showBudget ? ` · Budsjett ${this.view.budgetLeft}` : '';
+        return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}` };
+      }
+    }
+  }
+
+  private buildHud(lines: HudLines): void {
     this.hud.removeAll(true);
     const w = contentWidth(this);
     const left = contentLeft(this);
@@ -722,14 +982,14 @@ export class BoardScene extends Phaser.Scene {
     const bg = this.add.graphics();
     bg.fillStyle(COLORS.panel, 1);
     bg.fillRect(0, 0, this.scale.width, HUD_HEIGHT);
-    bg.fillStyle(worldAccent(this.level.world), 1);
+    bg.fillStyle(this.accent(), 1);
     bg.fillRect(0, HUD_HEIGHT - HUD_STRIPE, this.scale.width, HUD_STRIPE);
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
-    this.hud.add(makeLabel(this, cx, y - SPACE.md, `Trekk ${this.view.movesUsed} / mål ${this.level.target}`, { size: 22, bold: true }));
+    this.hud.add(makeLabel(this, cx, y - SPACE.md, lines.top, { size: lines.topSize, bold: true }));
     this.hud.add(
-      makeLabel(this, cx, y + SPACE.lg, `Verden ${this.level.world} · Nivå ${this.level.n} · Budsjett ${this.view.budgetLeft}`, {
+      makeLabel(this, cx, y + SPACE.lg, lines.bottom, {
         size: 14,
         color: COLORS.inkMuted,
         font: 'body',
@@ -765,20 +1025,25 @@ export class BoardScene extends Phaser.Scene {
         accent: COLORS.inkMuted,
         enabled: this.view.canUndo,
         onClick: () => {
-          this.session.dispatch({ type: 'undo' });
+          this.dispatch({ type: 'undo' });
           audio.playUndo();
         },
       })
     );
+    const skip = this.modeKind === 'blitz';
     this.hand.add(
       makeButton(this, {
         x: centerOf(3),
         y: cy,
         width: zoneW,
         height: ZONE_HEIGHT,
-        label: 'Reset',
+        label: skip ? 'Hopp over' : 'Reset',
+        labelSize: skip ? SKIP_LABEL : undefined,
         accent: COLORS.danger,
-        onClick: () => this.session.dispatch({ type: 'reset' }),
+        onClick: () => {
+          if (skip) this.skipBlitz();
+          else this.dispatch({ type: 'reset' });
+        },
       })
     );
 
@@ -803,6 +1068,7 @@ export class BoardScene extends Phaser.Scene {
   private makeHook(): import('./testHook').TestHook {
     return {
       levelId: this.levelId,
+      mode: this.modeKind,
       view: () => this.view,
       screenLayout: () => ({
         slots: this.layout.slots.map((s) => ({ index: s.index, ...this.screenPoint(s.x, s.y) })),
@@ -813,6 +1079,8 @@ export class BoardScene extends Phaser.Scene {
       zones: () => this.zones(),
       busy: () => this.inputLocked || this.pendingTweens > 0,
       state: () => this.machine.state,
+      clockMs: () => (this.modeKind === 'blitz' ? this.clock.remainingMs : Math.round(this.elapsedMs)),
+      bannerVisible: () => this.banner !== null,
     };
   }
 

@@ -1,4 +1,5 @@
 import type { GestureState, SegmentAction } from '../game/gestures';
+import type { BoardMode } from '../game/modes/types';
 import type { SessionView } from '../game/session';
 
 export interface ScreenPoint {
@@ -8,6 +9,7 @@ export interface ScreenPoint {
 
 export interface TestHook {
   readonly levelId: string;
+  readonly mode: BoardMode['kind'];
   view(): SessionView;
   screenLayout(): {
     readonly slots: ReadonlyArray<ScreenPoint & { index: number }>;
@@ -18,6 +20,9 @@ export interface TestHook {
   zones(): { readonly wild: ScreenPoint; readonly remove: ScreenPoint; readonly undo: ScreenPoint; readonly reset: ScreenPoint };
   busy(): boolean;
   state(): GestureState;
+  /** Blitz: tid igjen. Daglig: tid brukt. Ellers 0. */
+  clockMs(): number;
+  bannerVisible(): boolean;
 }
 
 declare global {

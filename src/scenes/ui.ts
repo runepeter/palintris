@@ -7,6 +7,8 @@ export const SCENE = {
   worldMap: 'WorldMap',
   board: 'Board',
   result: 'Result',
+  daily: 'Daily',
+  blitzResult: 'BlitzResult',
   settings: 'Settings',
 } as const;
 
@@ -39,6 +41,8 @@ export interface ButtonOpts {
   readonly accent: number;
   readonly onClick: () => void;
   readonly enabled?: boolean;
+  /** Overstyrer teksthøyden når etiketten er for lang for knappebredden. */
+  readonly labelSize?: number;
 }
 
 /** Avrundet knapp med tekst. Hover/trykk skalerer lett; deaktivert er dempet og ikke interaktiv. */
@@ -47,7 +51,11 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
   const g = scene.add.graphics();
   g.fillStyle(enabled ? opts.accent : COLORS.locked, 1);
   g.fillRoundedRect(-opts.width / 2, -opts.height / 2, opts.width, opts.height, RADIUS.button);
-  const label = makeLabel(scene, 0, 0, opts.label, { size: Math.round(opts.height * 0.42), color: COLORS.panel, bold: true });
+  const label = makeLabel(scene, 0, 0, opts.label, {
+    size: opts.labelSize ?? Math.round(opts.height * 0.42),
+    color: COLORS.panel,
+    bold: true,
+  });
   const c = scene.add.container(opts.x, opts.y, [g, label]);
   c.setSize(opts.width, opts.height);
   if (enabled) {
@@ -75,3 +83,13 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
 /** Maks brettbredde i landskap; sentrert. */
 export const contentWidth = (scene: Phaser.Scene): number => Math.min(scene.scale.width, 480);
 export const contentLeft = (scene: Phaser.Scene): number => (scene.scale.width - contentWidth(scene)) / 2;
+
+/** Kopierer til utklippstavla. Usant når nettleseren nekter eller mangler API-et. */
+export const copyText = async (text: string): Promise<boolean> => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+};
