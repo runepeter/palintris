@@ -90,6 +90,17 @@ describe('segment', () => {
   it('Q uten segment gir ingenting', () => {
     expect(kb().handle(key('KeyQ'))).toEqual([]);
   });
+  it('vanlig pil nullstiller segmentet', () => {
+    const k = kb();
+    k.handle(key('ArrowRight'));
+    k.handle(key('ArrowRight', true));
+    k.handle(key('ArrowRight', true));
+    expect(k.state.segment).toEqual({ anchor: 1, end: 3 });
+    k.handle(key('ArrowLeft'));
+    expect(k.state).toEqual({ cursor: 2, selected: null, segment: null });
+    k.handle(key('ArrowRight', true));
+    expect(k.state.segment).toEqual({ anchor: 2, end: 3 });
+  });
 });
 
 describe('hånd, undo, reset, escape', () => {
