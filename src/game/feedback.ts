@@ -80,3 +80,5 @@ export const campaignSummary = (starMap: StarMap, blitzBest: number): CampaignSu
   }
   return { solved, total: WORLD_COUNT * LEVELS_PER_WORLD, stars, blitzBest, hasProgress: solved > 0 };
 };
+
+export const blitzUrgency = (remainingMs: number): boolean => remainingMs <= 10_000;

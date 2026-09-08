@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { tilesFromString } from '../../core/tiles';
-import { campaignSummary, moveFeedback, resultPresentation } from '../feedback';
+import { blitzUrgency, campaignSummary, moveFeedback, resultPresentation } from '../feedback';
 
 describe('game feedback', () => {
   it('teller speilpar og finner par som nettopp kom i harmoni', () => {
@@ -40,5 +40,11 @@ describe('game feedback', () => {
       blitzBest: 7,
       hasProgress: true,
     });
+  });
+
+  it('markerer bare de siste ti sekundene i Blitz som kritiske', () => {
+    expect(blitzUrgency(10_001)).toBe(false);
+    expect(blitzUrgency(10_000)).toBe(true);
+    expect(blitzUrgency(0)).toBe(true);
   });
 });

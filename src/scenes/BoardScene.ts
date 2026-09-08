@@ -7,9 +7,9 @@ import type { Command, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
 import { markIntroSeen, setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
-import { BlitzClock } from '../game/blitz';
+import { BLITZ, BlitzClock, blitzBonusMs } from '../game/blitz';
 import { mmss } from '../game/daily';
-import { harmonyProgress, moveFeedback } from '../game/feedback';
+import { blitzUrgency, harmonyProgress, moveFeedback } from '../game/feedback';
 import type { GestureState, HintReason, Intent, Target } from '../game/gestures';
 import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
@@ -46,6 +46,8 @@ interface HudLines {
   readonly topSize: number;
   readonly bottom: string;
   readonly harmony: string;
+  readonly topColor?: number;
+  readonly urgent?: boolean;
 }
 
 const HUD_HEIGHT = 96;
@@ -885,9 +887,17 @@ export class BoardScene extends Phaser.Scene {
   private blitzSolved(movesUsed: number): void {
     const blitz = services(this).modes.blitz;
     const solvedBefore = blitz.solved;
+    const atTarget = movesUsed <= this.level.target;
+    const bonus = blitzBonusMs(solvedBefore, atTarget);
     blitz.onSolved(this.levelId, movesUsed);
-    this.clock.onSolved(solvedBefore, movesUsed <= this.level.target);
+    this.clock.onSolved(solvedBefore, atTarget);
     this.clock.pause();
+    this.effects.reward(
+      contentLeft(this) + contentWidth(this) / 2,
+      screenHeight(this) - HAND_HEIGHT - SPACE.xl,
+      `+${bonus / 1000}s${atTarget ? ' · Målbonus!' : ''}`,
+      COLORS.success
+    );
     this.time.delayedCall(this.d.ceremony, () => this.nextBlitzBoard());
   }
 
@@ -902,6 +912,12 @@ export class BoardScene extends Phaser.Scene {
   private skipBlitz(): void {
     if (this.blitzDone || this.solvedFired) return;
     this.clock.skip();
+    this.effects.reward(
+      contentLeft(this) + contentWidth(this) / 2,
+      screenHeight(this) - HAND_HEIGHT - SPACE.xl,
+      `−${BLITZ.skipCostMs / 1000}s`,
+      COLORS.danger
+    );
     if (this.clock.over) {
       this.finishBlitz();
       return;
@@ -1165,13 +1181,17 @@ export class BoardScene extends Phaser.Scene {
     switch (this.modeKind) {
       case 'daily':
         return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}`, harmony: this.harmonyText() };
-      case 'blitz':
+      case 'blitz': {
+        const urgent = blitzUrgency(this.clock.remainingMs);
         return {
-          top: mmss(this.clock.remainingMs),
+          top: urgent ? `⚡ ${mmss(this.clock.remainingMs)} ⚡` : mmss(this.clock.remainingMs),
           topSize: HUD_CLOCK,
-          bottom: `Løst ${services(this).modes.blitz.solved} · ${moves}`,
+          bottom: urgent ? `SISTE SEKUNDER · Løst ${services(this).modes.blitz.solved}` : `Løst ${services(this).modes.blitz.solved} · ${moves}`,
           harmony: this.harmonyText(),
+          topColor: urgent ? COLORS.danger : COLORS.ink,
+          urgent,
         };
+      }
       case 'free':
         return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}`, harmony: this.harmonyText() };
       case 'campaign': {
@@ -1194,6 +1214,10 @@ export class BoardScene extends Phaser.Scene {
     const bg = this.add.graphics();
     bg.fillStyle(COLORS.panel, 0.94);
     bg.fillRect(0, 0, screenWidth(this), HUD_HEIGHT);
+    if (lines.urgent === true) {
+      bg.fillStyle(COLORS.danger, 0.1);
+      bg.fillRect(0, 0, screenWidth(this), HUD_HEIGHT);
+    }
     const progressWidth = w - 48;
     const ratio = this.harmony.total === 0 ? 1 : this.harmony.matched / this.harmony.total;
     bg.fillStyle(COLORS.line, 0.55);
@@ -1203,7 +1227,7 @@ export class BoardScene extends Phaser.Scene {
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
-    const title = makeLabel(this, cx + 38, y - SPACE.md, lines.top, { size: lines.topSize, bold: true });
+    const title = makeLabel(this, cx + 38, y - SPACE.md, lines.top, { size: lines.topSize, color: lines.topColor, bold: true });
     title.setScale(Math.min(1, (w - 100) / title.width));
     this.hud.add(title);
     this.hud.add(

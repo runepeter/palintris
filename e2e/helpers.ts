@@ -13,6 +13,7 @@ export interface Hook {
   zones(): Promise<ReturnType<TestHook['zones']>>;
   busy(): Promise<boolean>;
   state(): Promise<ReturnType<TestHook['state']>>;
+  clockMs(): Promise<number>;
   bannerVisible(): Promise<boolean>;
   introVisible(): Promise<boolean>;
   dismissIntro(): Promise<void>;
@@ -61,6 +62,11 @@ export const hook = (page: Page): Hook => ({
     page.evaluate(() => {
       if (window.__palintris === undefined) throw new Error('__palintris mangler');
       return window.__palintris.state();
+    }),
+  clockMs: () =>
+    page.evaluate(() => {
+      if (window.__palintris === undefined) throw new Error('__palintris mangler');
+      return window.__palintris.clockMs();
     }),
   bannerVisible: () =>
     page.evaluate(() => {
