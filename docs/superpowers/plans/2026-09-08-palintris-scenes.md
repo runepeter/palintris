@@ -616,7 +616,7 @@ const loadFonts = async (): Promise<void> => {
   if (typeof document === 'undefined' || !('fonts' in document)) return;
   const loads = [document.fonts.load(`600 24px ${FONTS.display}`), document.fonts.load(`400 16px ${FONTS.body}`)];
   const timeout = new Promise<void>((resolve) => setTimeout(resolve, FONT_TIMEOUT_MS));
-  await Promise.race([Promise.all(loads).then(() => undefined), timeout]);
+  await Promise.race([Promise.allSettled(loads).then(() => undefined), timeout]);
 };
 
 export class BootScene2 extends Phaser.Scene {
@@ -629,7 +629,7 @@ export class BootScene2 extends Phaser.Scene {
     const s = createServices();
     installServices(this.game, s);
     audio.configure({ sound: s.settings().sound, music: s.settings().music });
-    void loadFonts().then(() => this.next());
+    void loadFonts().then(() => this.next(), () => this.next());
   }
 
   private next(): void {
