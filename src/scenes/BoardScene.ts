@@ -469,6 +469,8 @@ export class BoardScene extends Phaser.Scene {
   /** Skriver kommandologgen og tiden slik de står nå. Kalles etter hvert trekk og mens klokken går. */
   private saveDailyProgress(): void {
     this.sinceDailySaveMs = 0;
+    // onSolved rydder bort inProgress; en lagring etterpå ville skrevet den tilbake.
+    if (this.solvedFired) return;
     const progress = {
       puzzleId: this.levelId,
       startedAt: this.startedAt,
