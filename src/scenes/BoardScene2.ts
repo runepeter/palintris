@@ -64,15 +64,39 @@ export class BoardScene2 extends Phaser.Scene {
   private inputLocked = false;
   private pendingTweens = 0;
   private lastKind: LayoutKind | null = null;
+  private lastSize: { w: number; h: number } | null = null;
+  private hudCache: { movesUsed: number; budgetLeft: number } | null = null;
+  private handCache: { wild: number; remove: number; canUndo: boolean } | null = null;
   private view!: SessionView;
   private d = durations(false);
+
+  /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
+  private readonly onResize = (): void => {
+    for (const v of this.tiles.values()) {
+      this.tweens.killTweensOf(v);
+      v.setScale(1);
+    }
+    this.pendingTweens = 0;
+    this.render(false);
+  };
 
   constructor() {
     super(SCENE.board);
   }
 
+  /** Phaser gjenbruker sceneinstansen, så feltene må nullstilles her og ikke bare i initialiseringen. */
   init(data: BoardData): void {
     this.levelId = data.levelId;
+    this.tiles = new Map();
+    this.pendingTweens = 0;
+    this.inputLocked = false;
+    this.lastKind = null;
+    this.lastSize = null;
+    this.hudCache = null;
+    this.handCache = null;
+    this.menu = null;
+    this.banner = null;
+    this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
   create(): void {
@@ -106,12 +130,8 @@ export class BoardScene2 extends Phaser.Scene {
     this.mirrorGfx = this.add.graphics().setDepth(1);
     this.hud = this.add.container(0, 0).setDepth(10);
     this.hand = this.add.container(0, 0).setDepth(10);
-    this.relayout();
     this.render(false);
-    this.scale.on(Phaser.Scale.Events.RESIZE, () => {
-      this.relayout();
-      this.render(false);
-    });
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     installHook(this.makeHook());
     // Task 5 legger til setupInput() her.
@@ -123,12 +143,18 @@ export class BoardScene2 extends Phaser.Scene {
     if (this.inputLocked && this.pendingTweens === 0) this.inputLocked = false;
   }
 
+  /** Klemmes mot 0: en resize nullstiller telleren, men utfasing-tweens utenfor this.tiles lever videre. */
+  private tweenDone(): void {
+    this.pendingTweens = Math.max(0, this.pendingTweens - 1);
+  }
+
   private teardown(): void {
+    this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
     removeHook();
     this.session.dispose();
   }
 
-  /** Brettområdet: mellom HUD og hånd, maks 480 bredt, sentrert. */
+  /** Brettområdet: mellom HUD og hånd, maks 480 bredt, sentrert. Kun geometri og speillinje. */
   private relayout(): void {
     const w = contentWidth(this);
     const left = contentLeft(this);
@@ -138,13 +164,32 @@ export class BoardScene2 extends Phaser.Scene {
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
     this.drawMirror();
-    this.buildHud();
-    this.buildHand();
+  }
+
+  /**
+   * Bygger HUD og hånd bare når størrelsen eller de viste verdiene har endret seg. Hånden
+   * inneholder knapper, så en unødig ombygging mellom pointerdown og pointerup ville spist klikket.
+   */
+  private refreshChrome(resized: boolean): void {
+    const hud = this.hudCache;
+    if (resized || hud === null || hud.movesUsed !== this.view.movesUsed || hud.budgetLeft !== this.view.budgetLeft) {
+      this.hudCache = { movesUsed: this.view.movesUsed, budgetLeft: this.view.budgetLeft };
+      this.buildHud();
+    }
+    const hand = this.handCache;
+    const h = this.view.hand;
+    if (resized || hand === null || hand.wild !== h.wild || hand.remove !== h.remove || hand.canUndo !== this.view.canUndo) {
+      this.handCache = { wild: h.wild, remove: h.remove, canUndo: this.view.canUndo };
+      this.buildHand();
+    }
   }
 
   /** Tegner alt fra this.view: brikker (opprett/oppdater/fjern etter id), speillinje, HUD, hånd. animate styrer om brikker tweenes til plass. */
   private render(animate: boolean): void {
     this.relayout();
+    const resized = this.lastSize === null || this.lastSize.w !== this.scale.width || this.lastSize.h !== this.scale.height;
+    this.lastSize = { w: this.scale.width, h: this.scale.height };
+    this.refreshChrome(resized);
     const colorBlind = services(this).settings().colorBlind;
     const size = this.layout.tile * this.layout.scale;
     const live = new Set<number>();
@@ -162,7 +207,8 @@ export class BoardScene2 extends Phaser.Scene {
         this.tiles.set(tile.id, v);
         if (animate) {
           v.setScale(0);
-          this.tweens.add({ targets: v, scale: 1, duration: this.d.normal, ease: EASING.pop });
+          this.pendingTweens++;
+          this.tweens.add({ targets: v, scale: 1, duration: this.d.normal, ease: EASING.pop, onComplete: () => this.tweenDone() });
         }
       }
       v.setTile(tile, size, colorBlind);
@@ -174,9 +220,7 @@ export class BoardScene2 extends Phaser.Scene {
           y: p.y,
           duration: this.d.normal,
           ease: EASING.move,
-          onComplete: () => {
-            this.pendingTweens--;
-          },
+          onComplete: () => this.tweenDone(),
         });
       } else {
         v.setPosition(p.x, p.y);
@@ -198,7 +242,7 @@ export class BoardScene2 extends Phaser.Scene {
         duration: this.d.snap,
         ease: EASING.move,
         onComplete: () => {
-          this.pendingTweens--;
+          this.tweenDone();
           v.destroy();
         },
       });
