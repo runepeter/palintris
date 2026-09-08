@@ -62,8 +62,8 @@ describe('FreeMode', () => {
   });
 
   it('gir et brett i hver verden', () => {
-    // Uten nedtrappingen av ramp-nivået er verden 2 og 3 uten treff: movesRange
-    // kollapser til [3,3], og eksakt minimum 3 er for sjeldent på korte brett.
+    // På høyere ramp-nivå kollapser movesRange til én verdi, og verden 2 og 3 blir
+    // uten treff fordi eksakt minimum 3 er for sjeldent på korte brett.
     const mode = new FreeMode(1, createRng(21));
     for (let w = 1; w <= WORLD_COUNT; w++) {
       const lvl = mode.load(freeLevelId(w, 5));

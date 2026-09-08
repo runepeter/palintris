@@ -8,12 +8,13 @@ import { CLIENT_SOLVER_STATES } from '../session';
 import type { BoardMode, ModeLevel, SolvedOutcome } from './types';
 
 /**
- * Fri lek sikter mot midten av vanskelighetskurven, men faller ned trinnet når
- * generatoren ikke finner noe der. På nivå 8 kollapser movesRange til én verdi i
- * flere verdener, og et eksakt minimum på så korte brett er for sjeldent til at
- * en runtime-generator treffer det.
+ * Genereringen går synkront i spilltråden, så trinnene er valgt for fart: nivå 4
+ * koster ~10 ms per brett, mens nivå 8 koster over et halvt sekund i verden 5 og 6
+ * og ikke gir treff i det hele tatt i verden 2 og 3. Fri lek er valgfri og skal
+ * ikke fryse Phaser; vanskeligheten kommer først og fremst fra brettlengden.
+ * Nivå 1 er et sikkerhetsnett når generatoren bommer på nivå 4.
  */
-const FREE_RAMPS = [8, 4, 1] as const;
+const FREE_RAMPS = [4, 1] as const;
 const FREE_ID = /^free-w(\d+)-(\d+)$/;
 /** Generatoren kan bomme på en oppskrift; noen forsøk per trinn holder i praksis. */
 const TRIES_PER_RAMP = 4;
