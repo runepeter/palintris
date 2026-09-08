@@ -73,17 +73,22 @@ const cmdArb = (n: number): fc.Arbitrary<Command> =>
     }),
     fc.record({ type: fc.constant('mirror' as const), from: fc.integer({ min: 0, max: n }), to: fc.integer({ min: 0, max: n }) }),
     fc.record({ type: fc.constant('insertWild' as const), at: fc.integer({ min: 0, max: n + 1 }) }),
-    fc.record({ type: fc.constant('remove' as const), tileId: fc.integer({ min: 0, max: n + 3 }) })
+    fc.record({ type: fc.constant('remove' as const), tileId: fc.integer({ min: 0, max: n + 3 }) }),
+    fc.constant({ type: 'reset' as const })
   );
 
 describe('undo egenskaper', () => {
-  it('undo etter ethvert lovlig trekk gir forrige snapshot', () => {
+  it('undo etter enhver lovlig kommando gir forrige snapshot', () => {
+    let accepted = 0;
     fc.assert(
       fc.property(fc.array(cmdArb(6), { maxLength: 30 }), (cmds) => {
         let state = createBoard(tilesFromString('ABCBAD'), { wild: 2, remove: 2 });
         for (const cmd of cmds) {
           const r = apply(rules, state, cmd);
           if (!r.ok) continue;
+          // Reset på startbrettet returnerer samme tilstand og legger ingenting i historikken.
+          if (r.value === state) continue;
+          accepted++;
           const back = apply(rules, r.value, { type: 'undo' });
           expect(back.ok).toBe(true);
           if (back.ok) expect(toSnapshot(back.value)).toEqual(toSnapshot(state));
@@ -91,5 +96,6 @@ describe('undo egenskaper', () => {
         }
       })
     );
+    expect(accepted).toBeGreaterThan(0);
   });
 });
