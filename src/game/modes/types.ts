@@ -14,6 +14,10 @@ export interface ModeLevel {
   readonly targetExact: boolean;
   readonly budget: number;
   readonly contentVersion: number;
+  /** Sant når tiden er en del av resultatet, så brettet viser en klokke. */
+  readonly timed: boolean;
+  /** Usant når budsjettet bare er en teknisk øvre grense og ikke skal vises. */
+  readonly showBudget: boolean;
 }
 
 /** nextLevelId, nextUnlocked og worldJustUnlocked er null/false for moduser uten progresjon. */
@@ -25,10 +29,15 @@ export interface SolvedOutcome {
   readonly worldJustUnlocked: number | null;
 }
 
+/** Ekstra tall fra brettet som bare tidsbaserte moduser bryr seg om. */
+export interface SolvedInfo {
+  readonly timeMs: number;
+}
+
 /** Brettet vet ingenting om modus. Modusen leverer brett og avgjør hva som skjer ved løsning. */
 export interface BoardMode {
-  readonly kind: 'campaign' | 'daily' | 'blitz';
+  readonly kind: 'campaign' | 'daily' | 'blitz' | 'free';
   load(levelId: string): ModeLevel | null;
   isUnlocked(levelId: string): boolean;
-  onSolved(levelId: string, movesUsed: number): SolvedOutcome;
+  onSolved(levelId: string, movesUsed: number, info?: SolvedInfo): SolvedOutcome;
 }

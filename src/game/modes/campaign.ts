@@ -26,6 +26,8 @@ export class CampaignMode implements BoardMode {
       targetExact: level.targetExact,
       budget: level.budget,
       contentVersion: CAMPAIGN.contentVersion,
+      timed: false,
+      showBudget: true,
     };
   }
 
