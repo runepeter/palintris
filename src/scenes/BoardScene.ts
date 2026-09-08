@@ -22,7 +22,7 @@ import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import { Effects } from './effects';
-import { INTRO_HEIGHT, IntroOverlay } from './IntroOverlay';
+import { introHeight, IntroOverlay } from './IntroOverlay';
 import { SegmentMenu } from './SegmentMenu';
 import { services, type Services } from './services';
 import { installHook, removeHook } from './testHook';
@@ -57,10 +57,10 @@ const HUD_TOP = 22;
 const HUD_CLOCK = 30;
 /** «Hopp over» er for lang for knappebredden på 390 px med standard teksthøyde. */
 const SKIP_LABEL = 15;
-/** Introen tar denne plassen fra brettflaten: panelet pluss luft over og under. */
-const INTRO_SPACE = INTRO_HEIGHT + SPACE.md * 2;
-/** Under denne bretthøyden gir brettet ingenting fra seg til introen. Se introSpace(). */
-const INTRO_MIN_BOARD = 220;
+/** Luft over og under intropanelet. Brettflaten avgir panelhøyden pluss dette. */
+const INTRO_PAD = SPACE.md * 2;
+/** Bare et gulv mot ikke-positiv høyde; computeLayout skalerer brettet ned selv. */
+const MIN_BOARD = 24;
 
 /** Brikken bak joker-spøkelset. Ligger utenfor brettet, så id-en treffer aldri this.tiles. */
 const GHOST_TILE = makeTile(-1, WILD_SYMBOL, { wild: true });
@@ -834,13 +834,11 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /**
-   * Plassen introen tar fra brettflaten. På lave skjermer gir brettet ingenting fra seg;
-   * da legger panelet seg over nedre del i stedet for å klemme brettet flatt.
+   * Plassen introen tar fra brettflaten. Panelet er lavere i liggende format, og brettet
+   * avgir alltid nøyaktig det panelet legger beslag på: de to kan ikke overlappe.
    */
   private introSpace(): number {
-    if (this.intro === null) return 0;
-    const avail = this.scale.height - HUD_HEIGHT - HAND_HEIGHT;
-    return Math.min(INTRO_SPACE, Math.max(0, avail - INTRO_MIN_BOARD));
+    return this.intro === null ? 0 : introHeight(this.scale.height) + INTRO_PAD;
   }
 
   /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
@@ -869,7 +867,7 @@ export class BoardScene extends Phaser.Scene {
     const left = contentLeft(this);
     this.intro?.layout(w - SPACE.xl, this.scale.height - HAND_HEIGHT - SPACE.md);
     const boardTop = HUD_HEIGHT;
-    const boardHeight = this.scale.height - HUD_HEIGHT - HAND_HEIGHT - this.introSpace();
+    const boardHeight = Math.max(MIN_BOARD, this.scale.height - HUD_HEIGHT - HAND_HEIGHT - this.introSpace());
     this.layout = computeLayout({ count: this.view.tiles.length, width: w, height: boardHeight });
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
