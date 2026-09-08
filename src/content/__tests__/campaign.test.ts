@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CAMPAIGN, getCampaignLevel } from '../campaign';
-import { CONTENT_VERSION, INTRO_LEVELS, WORLD_RECIPES } from '../recipes';
+import { BUILD_ATTEMPTS, CONTENT_VERSION, INTRO_LEVELS, rampedRecipe, WORLD_RECIPES } from '../recipes';
 import { validateSolution } from '../../core/generator';
 import { makeLevel, rulesFor } from '../../core/level';
 import { isPalindrome } from '../../core/palindrome';
@@ -23,6 +23,7 @@ describe('campaign.v1.json', () => {
       expect(level.tiles.length, level.id).toBeGreaterThanOrEqual(MIN_LENGTH);
       expect(level.tiles.length, level.id).toBeLessThanOrEqual(MAX_LENGTH);
       expect(validateSolution(rulesFor(level), level), level.id).toBe(true);
+      expect(level.targetExact, level.id).toBe(true);
       const recipe = WORLD_RECIPES.find((r) => r.id === level.recipeId);
       expect(recipe, level.id).toBeDefined();
       if (recipe !== undefined) {
@@ -48,10 +49,44 @@ describe('campaign.v1.json', () => {
     expect(getCampaignLevel('w5-01')?.solution.some((m) => m.type === 'insertWild')).toBe(true);
   });
 
+  it('mål stiger innen hver verden', () => {
+    for (let world = 1; world <= WORLD_COUNT; world++) {
+      const first = getCampaignLevel(levelId(world, 1));
+      const last = getCampaignLevel(levelId(world, LEVELS_PER_WORLD));
+      expect(first, `w${world}`).toBeDefined();
+      expect(last, `w${world}`).toBeDefined();
+      if (first === undefined || last === undefined) continue;
+      expect(last.target, `w${world}`).toBeGreaterThan(first.target);
+    }
+  });
+
   it('w1-01 kan regenereres identisk fra oppskrift', () => {
     const recipe = WORLD_RECIPES[0];
     expect(recipe).toBeDefined();
     if (recipe === undefined) return;
-    expect(makeLevel(recipe, { id: 'w1-01', contentVersion: CONTENT_VERSION, attempts: 400 })).toEqual(getCampaignLevel('w1-01'));
+    expect(
+      makeLevel(rampedRecipe(recipe, 1), {
+        id: 'w1-01',
+        contentVersion: CONTENT_VERSION,
+        attempts: BUILD_ATTEMPTS,
+        requireExact: true,
+      })
+    ).toEqual(getCampaignLevel('w1-01'));
+  });
+
+  // Verden 6 utelates: nivåene der koster flere sekunder hver å regenerere.
+  it.each([1, 2, 3, 4, 5])('w%i-03 kan regenereres identisk fra oppskrift', (world) => {
+    const recipe = WORLD_RECIPES[world - 1];
+    expect(recipe).toBeDefined();
+    if (recipe === undefined) return;
+    const previousKeys = [1, 2].map((n) => symbolKey(getCampaignLevel(levelId(world, n))?.tiles ?? []));
+    const level = makeLevel(rampedRecipe(recipe, 3), {
+      id: levelId(world, 3),
+      contentVersion: CONTENT_VERSION,
+      previousKeys,
+      attempts: BUILD_ATTEMPTS,
+      requireExact: true,
+    });
+    expect(level).toEqual(getCampaignLevel(levelId(world, 3)));
   });
 });

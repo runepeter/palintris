@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs';
-import { CONTENT_VERSION, INTRO_LEVELS, WORLD_RECIPES } from '../src/content/recipes';
+import { BUILD_ATTEMPTS, CONTENT_VERSION, INTRO_LEVELS, rampedRecipe, WORLD_RECIPES } from '../src/content/recipes';
 import type { IntroOf, Level, Recipe } from '../src/core/level';
 import { makeLevel } from '../src/core/level';
 import { levelId, LEVELS_PER_WORLD } from '../src/core/progression';
@@ -11,7 +11,14 @@ const levels: Level[] = [];
 const makeIntroLevel = (recipe: Recipe, id: string, keys: readonly string[], introOf: IntroOf): Level | null => {
   for (let len = recipe.lengthRange[0]; len <= recipe.lengthRange[1]; len++) {
     const pinned: Recipe = { ...recipe, lengthRange: [len, len] };
-    const level = makeLevel(pinned, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, introOf, attempts: 400 });
+    const level = makeLevel(pinned, {
+      id,
+      contentVersion: CONTENT_VERSION,
+      previousKeys: keys,
+      introOf,
+      attempts: BUILD_ATTEMPTS,
+      requireExact: true,
+    });
     if (level !== null) return level;
   }
   return null;
@@ -23,9 +30,10 @@ WORLD_RECIPES.forEach((recipe, wi) => {
   for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
     const id = levelId(world, n);
     const introOf = INTRO_LEVELS[id];
+    const ramped = rampedRecipe(recipe, n);
     const level = introOf === undefined
-      ? makeLevel(recipe, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, attempts: 400 })
-      : makeIntroLevel(recipe, id, keys, introOf);
+      ? makeLevel(ramped, { id, contentVersion: CONTENT_VERSION, previousKeys: keys, attempts: BUILD_ATTEMPTS, requireExact: true })
+      : makeIntroLevel(ramped, id, keys, introOf);
     if (level === null) {
       console.error(`Kunne ikke generere ${id}`);
       process.exit(1);

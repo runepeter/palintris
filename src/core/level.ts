@@ -43,6 +43,8 @@ export interface MakeLevelOptions {
   readonly previousKeys?: readonly string[];
   readonly introOf?: IntroOf;
   readonly attempts?: number;
+  /** Forkast kandidater der løseren gir opp, slik at målet alltid er ekte minimum. */
+  readonly requireExact?: boolean;
 }
 
 export const levelSeed = (contentVersion: number, id: string): number =>
@@ -85,6 +87,9 @@ const passesIntro = (
 /**
  * Deterministisk: samme oppskrift, id og contentVersion gir samme nivå og samme mål.
  * Bruker aldri ms-grense i løseren.
+ *
+ * Uten `requireExact` kan målet være generatorens løsningslengde, som bare er en
+ * øvre grense. Med `requireExact` er målet alltid ekte minimum, mot høyere byggetid.
  */
 export const makeLevel = (recipe: Recipe, opts: MakeLevelOptions): Level | null => {
   const seed = levelSeed(opts.contentVersion, opts.id);
@@ -115,6 +120,7 @@ export const makeLevel = (recipe: Recipe, opts: MakeLevelOptions): Level | null 
       target = res.moves;
       targetExact = true;
     } else if (res.status === 'unknown') {
+      if (opts.requireExact === true) continue;
       if (c.solution.length < minMoves || c.solution.length > maxMoves) continue;
       target = c.solution.length;
       targetExact = false;

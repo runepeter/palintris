@@ -333,32 +333,32 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 2,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
+          "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 3,
-          "symbol": "C",
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -370,10 +370,20 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 2,
       "targetExact": true,
-      "budget": 5,
+      "budget": 6,
       "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
         {
           "type": "swap",
           "a": 2,
@@ -381,8 +391,8 @@
         },
         {
           "type": "swap",
-          "a": 3,
-          "b": 4
+          "a": 1,
+          "b": 2
         }
       ]
     },
@@ -458,14 +468,8 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
+          "id": 1,
           "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -476,14 +480,14 @@
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "B",
+          "id": 0,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "A",
+          "id": 3,
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -495,20 +499,10 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 2,
       "targetExact": true,
-      "budget": 5,
+      "budget": 6,
       "solution": [
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
-        {
-          "type": "swap",
-          "a": 2,
-          "b": 3
-        },
         {
           "type": "swap",
           "a": 1,
@@ -516,8 +510,18 @@
         },
         {
           "type": "swap",
-          "a": 2,
-          "b": 3
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
         }
       ]
     },
@@ -588,20 +592,20 @@
           "wild": false
         },
         {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 1,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 3,
-          "symbol": "A",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
@@ -625,14 +629,29 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 2,
       "targetExact": true,
-      "budget": 5,
+      "budget": 6,
       "solution": [
         {
           "type": "swap",
           "a": 4,
           "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
         }
       ]
     },
@@ -713,32 +732,38 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 2,
-          "symbol": "A",
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "C",
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
-          "symbol": "C",
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -750,24 +775,24 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 3,
       "targetExact": true,
-      "budget": 5,
+      "budget": 7,
       "solution": [
         {
           "type": "swap",
-          "a": 3,
-          "b": 4
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
         },
         {
           "type": "swap",
           "a": 1,
           "b": 2
-        },
-        {
-          "type": "swap",
-          "a": 0,
-          "b": 1
         }
       ]
     },
@@ -779,13 +804,19 @@
       "tiles": [
         {
           "id": 0,
-          "symbol": "C",
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "B",
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -796,14 +827,8 @@
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "C",
+          "id": 1,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -815,14 +840,29 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 3,
       "targetExact": true,
-      "budget": 5,
+      "budget": 7,
       "solution": [
         {
           "type": "swap",
           "a": 2,
           "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
         }
       ]
     },
@@ -833,8 +873,20 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 0,
           "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -845,14 +897,14 @@
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "B",
+          "id": 4,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "C",
+          "id": 5,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -864,14 +916,24 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 3,
       "targetExact": true,
-      "budget": 5,
+      "budget": 7,
       "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
         {
           "type": "swap",
           "a": 2,
           "b": 3
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
         }
       ]
     },
@@ -883,31 +945,31 @@
       "tiles": [
         {
           "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 1,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "C",
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
-          "symbol": "B",
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -919,10 +981,20 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 1,
+      "target": 3,
       "targetExact": true,
-      "budget": 5,
+      "budget": 7,
       "solution": [
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
         {
           "type": "swap",
           "a": 3,
@@ -1464,44 +1536,44 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
+          "id": 5,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "A",
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -1514,37 +1586,38 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "rotate",
-          "from": 0,
+          "from": 1,
           "to": 4,
           "dir": "left"
         },
         {
           "type": "rotate",
-          "from": 3,
-          "to": 5,
+          "from": 5,
+          "to": 6,
           "dir": "right"
-        },
-        {
-          "type": "swap",
-          "a": 2,
-          "b": 3
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
         },
         {
           "type": "rotate",
-          "from": 3,
+          "from": 4,
           "to": 5,
-          "dir": "right"
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 0,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
         }
       ]
     },
@@ -1556,7 +1629,7 @@
       "tiles": [
         {
           "id": 0,
-          "symbol": "B",
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
@@ -1567,20 +1640,32 @@
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "B",
+          "id": 2,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
+          "id": 6,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 4,
           "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -1593,26 +1678,38 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "rotate",
-          "from": 1,
-          "to": 3,
+          "from": 4,
+          "to": 6,
           "dir": "right"
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
         },
         {
           "type": "rotate",
-          "from": 2,
-          "to": 4,
-          "dir": "right"
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
         }
       ]
     },
@@ -1623,12 +1720,6 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 0,
           "symbol": "A",
           "locked": false,
@@ -1642,25 +1733,31 @@
         },
         {
           "id": 1,
-          "symbol": "A",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 5,
-          "symbol": "A",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 3,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "B",
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "D",
           "locked": false,
           "wild": false
         }
@@ -1673,36 +1770,38 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
-          "type": "swap",
-          "a": 0,
-          "b": 1
-        },
-        {
-          "type": "swap",
-          "a": 4,
-          "b": 5
-        },
-        {
           "type": "rotate",
-          "from": 2,
+          "from": 1,
           "to": 6,
           "dir": "left"
         },
         {
           "type": "rotate",
-          "from": 1,
-          "to": 3,
-          "dir": "left"
+          "from": 3,
+          "to": 5,
+          "dir": "right"
         },
         {
           "type": "swap",
           "a": 4,
           "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
         }
       ]
     },
@@ -1713,44 +1812,44 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
+          "id": 5,
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "A",
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "B",
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -1763,20 +1862,38 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 2,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 6,
+          "dir": "right"
+        },
         {
           "type": "rotate",
           "from": 0,
           "to": 5,
-          "dir": "right"
+          "dir": "left"
         },
         {
           "type": "swap",
-          "a": 2,
-          "b": 3
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
         }
       ]
     },
@@ -1787,25 +1904,13 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 0,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
+          "id": 1,
           "symbol": "A",
           "locked": false,
           "wild": false
@@ -1818,12 +1923,24 @@
         },
         {
           "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
+          "id": 4,
           "symbol": "C",
           "locked": false,
           "wild": false
@@ -1837,18 +1954,24 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "swap",
-          "a": 0,
-          "b": 1
+          "a": 2,
+          "b": 3
         },
         {
           "type": "rotate",
-          "from": 1,
+          "from": 2,
+          "to": 5,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
           "to": 6,
           "dir": "right"
         },
@@ -1856,6 +1979,12 @@
           "type": "rotate",
           "from": 5,
           "to": 6,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
           "dir": "right"
         }
       ]
@@ -1867,8 +1996,20 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 1,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
@@ -1879,26 +2020,20 @@
           "wild": false
         },
         {
-          "id": 4,
+          "id": 5,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
+          "id": 4,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "C",
+          "id": 3,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -1911,20 +2046,36 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "rotate",
-          "from": 0,
-          "to": 3,
+          "from": 5,
+          "to": 6,
           "dir": "right"
         },
         {
           "type": "swap",
-          "a": 3,
-          "b": 4
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
         }
       ]
     },
@@ -1936,19 +2087,31 @@
       "tiles": [
         {
           "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "A",
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 1,
-          "symbol": "B",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
@@ -1959,8 +2122,8 @@
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "D",
+          "id": 6,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -1973,33 +2136,36 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
           "type": "rotate",
-          "from": 2,
-          "to": 3,
+          "from": 0,
+          "to": 5,
           "dir": "right"
         },
         {
           "type": "rotate",
           "from": 1,
-          "to": 4,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 0,
-          "to": 2,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 2,
           "to": 3,
-          "dir": "left"
+          "dir": "right"
         }
       ]
     },
@@ -2016,37 +2182,37 @@
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 6,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
+          "id": 4,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 4,
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
           "symbol": "A",
           "locked": false,
           "wild": false
@@ -2060,20 +2226,27 @@
         "swap",
         "rotate"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "rotate",
           "from": 1,
           "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
           "dir": "right"
         },
         {
-          "type": "swap",
-          "a": 5,
-          "b": 6
+          "type": "rotate",
+          "from": 1,
+          "to": 6,
+          "dir": "right"
         },
         {
           "type": "swap",
@@ -2082,15 +2255,9 @@
         },
         {
           "type": "rotate",
-          "from": 3,
-          "to": 6,
+          "from": 2,
+          "to": 4,
           "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 3,
-          "to": 5,
-          "dir": "right"
         }
       ]
     },
@@ -2697,8 +2864,26 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 2,
-          "symbol": "C",
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
@@ -2709,32 +2894,14 @@
           "wild": false
         },
         {
-          "id": 6,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "D",
+          "id": 2,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
           "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -2748,37 +2915,24 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "rotate",
-          "from": 2,
-          "to": 3,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
-          "from": 2,
-          "to": 6,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
           "from": 0,
-          "to": 3,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 0,
-          "to": 6,
-          "dir": "left"
+          "to": 2,
+          "dir": "right"
         },
         {
           "type": "mirror",
-          "from": 3,
+          "from": 2,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 4,
           "to": 6
         }
       ]
@@ -2791,6 +2945,30 @@
       "tiles": [
         {
           "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "C",
           "locked": false,
           "wild": false
@@ -2802,7 +2980,7 @@
           "wild": false
         },
         {
-          "id": 1,
+          "id": 3,
           "symbol": "D",
           "locked": false,
           "wild": false
@@ -2810,18 +2988,6 @@
         {
           "id": 4,
           "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -2835,35 +3001,41 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
-        {
-          "type": "mirror",
-          "from": 1,
-          "to": 4
-        },
-        {
-          "type": "mirror",
-          "from": 1,
-          "to": 4
-        },
         {
           "type": "mirror",
           "from": 3,
           "to": 5
         },
         {
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "left"
+        },
+        {
           "type": "swap",
-          "a": 1,
-          "b": 2
+          "a": 4,
+          "b": 5
         },
         {
           "type": "rotate",
-          "from": 2,
+          "from": 1,
           "to": 5,
           "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 6,
+          "b": 7
         }
       ]
     },
@@ -2874,25 +3046,25 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
+          "id": 3,
           "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
           "symbol": "D",
           "locked": false,
           "wild": false
@@ -2904,14 +3076,14 @@
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "D",
+          "id": 6,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "B",
+          "id": 0,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -2925,43 +3097,26 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
-          "type": "mirror",
-          "from": 3,
-          "to": 6
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
           "type": "rotate",
-          "from": 3,
-          "to": 6,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
-          "from": 5,
+          "from": 4,
           "to": 6,
           "dir": "right"
         },
         {
           "type": "rotate",
           "from": 2,
-          "to": 5,
+          "to": 4,
           "dir": "left"
         },
         {
-          "type": "rotate",
-          "from": 4,
-          "to": 6,
-          "dir": "right"
+          "type": "mirror",
+          "from": 0,
+          "to": 3
         }
       ]
     },
@@ -2973,37 +3128,43 @@
       "tiles": [
         {
           "id": 0,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
+          "id": 6,
           "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
           "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -3017,35 +3178,37 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "mirror",
-          "from": 3,
-          "to": 5
+          "from": 4,
+          "to": 6
         },
         {
-          "type": "mirror",
-          "from": 2,
-          "to": 5
+          "type": "rotate",
+          "from": 3,
+          "to": 6,
+          "dir": "right"
         },
         {
-          "type": "mirror",
-          "from": 3,
-          "to": 5
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "right"
         },
         {
           "type": "rotate",
           "from": 2,
-          "to": 4,
+          "to": 3,
           "dir": "right"
         },
         {
           "type": "mirror",
           "from": 1,
-          "to": 5
+          "to": 6
         }
       ]
     },
@@ -3056,25 +3219,92 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 4,
-          "symbol": "C",
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "D",
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 0,
+        "remove": 0
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror"
+      ],
+      "target": 3,
+      "targetExact": true,
+      "budget": 7,
+      "solution": [
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 4
+        }
+      ]
+    },
+    {
+      "id": "w3-13",
+      "recipeId": "w3",
+      "seed": 528149415,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 2,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 4,
           "symbol": "C",
           "locked": false,
           "wild": false
@@ -3086,112 +3316,26 @@
           "wild": false
         },
         {
-          "id": 5,
+          "id": 6,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
           "symbol": "D",
           "locked": false,
           "wild": false
-        }
-      ],
-      "hand": {
-        "wild": 0,
-        "remove": 0
-      },
-      "allowedOps": [
-        "swap",
-        "rotate",
-        "mirror"
-      ],
-      "target": 2,
-      "targetExact": true,
-      "budget": 6,
-      "solution": [
-        {
-          "type": "rotate",
-          "from": 2,
-          "to": 6,
-          "dir": "right"
         },
-        {
-          "type": "mirror",
-          "from": 0,
-          "to": 3
-        },
-        {
-          "type": "swap",
-          "a": 0,
-          "b": 1
-        },
-        {
-          "type": "rotate",
-          "from": 1,
-          "to": 6,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 2,
-          "to": 4,
-          "dir": "left"
-        }
-      ]
-    },
-    {
-      "id": "w3-13",
-      "recipeId": "w3",
-      "seed": 528149415,
-      "contentVersion": 1,
-      "tiles": [
         {
           "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
           "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -3205,37 +3349,35 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
           "type": "swap",
-          "a": 3,
-          "b": 4
+          "a": 4,
+          "b": 5
         },
         {
           "type": "mirror",
-          "from": 3,
-          "to": 6
-        },
-        {
-          "type": "rotate",
-          "from": 6,
-          "to": 7,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
-          "from": 4,
-          "to": 7,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
           "from": 0,
-          "to": 1,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
           "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
         }
       ]
     },
@@ -3252,37 +3394,7 @@
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 6,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
           "symbol": "C",
           "locked": false,
           "wild": false
@@ -3290,6 +3402,30 @@
         {
           "id": 5,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -3303,24 +3439,41 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
-          "type": "swap",
-          "a": 4,
-          "b": 5
-        },
-        {
-          "type": "swap",
-          "a": 5,
-          "b": 6
+          "type": "mirror",
+          "from": 1,
+          "to": 6
         },
         {
           "type": "mirror",
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
           "from": 5,
-          "to": 7
+          "to": 6,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 6
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
         }
       ]
     },
@@ -3331,44 +3484,50 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 1,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "D",
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "D",
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -3382,19 +3541,33 @@
         "rotate",
         "mirror"
       ],
-      "target": 2,
+      "target": 3,
       "targetExact": true,
-      "budget": 6,
+      "budget": 7,
       "solution": [
         {
-          "type": "rotate",
-          "from": 1,
-          "to": 3,
-          "dir": "left"
+          "type": "mirror",
+          "from": 0,
+          "to": 6
         },
         {
           "type": "mirror",
-          "from": 4,
+          "from": 1,
+          "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "mirror",
+          "from": 2,
           "to": 6
         }
       ]
@@ -3406,51 +3579,45 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
           "id": 3,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 0,
-          "symbol": "C",
+          "id": 5,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "D",
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "B",
-          "locked": true,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "C",
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "D",
-          "locked": false,
+          "symbol": "E",
+          "locked": true,
           "wild": false
         }
       ],
@@ -3463,40 +3630,47 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
-          "type": "swap",
-          "a": 6,
-          "b": 7
-        },
-        {
-          "type": "rotate",
-          "from": 0,
-          "to": 4,
-          "dir": "right"
-        },
         {
           "type": "mirror",
           "from": 2,
-          "to": 4
+          "to": 5
         },
         {
           "type": "mirror",
-          "from": 0,
-          "to": 3
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
         },
         {
           "type": "swap",
-          "a": 2,
-          "b": 3
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 3,
+          "to": 4,
+          "dir": "right"
         }
       ]
     },
@@ -3507,32 +3681,38 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 0,
-          "symbol": "C",
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 1,
           "symbol": "B",
           "locked": true,
           "wild": false
         },
         {
-          "id": 6,
-          "symbol": "B",
+          "id": 3,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "D",
+          "id": 6,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
@@ -3540,18 +3720,6 @@
           "id": 5,
           "symbol": "B",
           "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "C",
-          "locked": true,
           "wild": false
         }
       ],
@@ -3564,25 +3732,29 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
         {
-          "type": "mirror",
-          "from": 3,
-          "to": 6
+          "type": "swap",
+          "a": 5,
+          "b": 6
         },
         {
           "type": "swap",
-          "a": 0,
-          "b": 1
+          "a": 3,
+          "b": 4
         },
         {
-          "type": "rotate",
-          "from": 3,
-          "to": 5,
-          "dir": "right"
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 4,
+          "to": 6
         }
       ]
     },
@@ -3593,25 +3765,25 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
+          "id": 1,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "D",
-          "locked": true,
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
           "wild": false
         },
         {
           "id": 2,
-          "symbol": "D",
+          "symbol": "C",
           "locked": true,
           "wild": false
         },
         {
-          "id": 8,
+          "id": 3,
           "symbol": "D",
           "locked": false,
           "wild": false
@@ -3623,32 +3795,20 @@
           "wild": false
         },
         {
-          "id": 9,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 4,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "A",
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "A",
-          "locked": false,
+          "symbol": "B",
+          "locked": true,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "D",
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -3662,36 +3822,35 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
         {
           "type": "swap",
-          "a": 5,
-          "b": 6
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
         },
         {
           "type": "rotate",
-          "from": 6,
-          "to": 8,
-          "dir": "left"
-        },
-        {
-          "type": "mirror",
           "from": 3,
-          "to": 6
-        },
-        {
-          "type": "rotate",
-          "from": 6,
-          "to": 8,
+          "to": 5,
           "dir": "left"
-        },
-        {
-          "type": "mirror",
-          "from": 7,
-          "to": 9
         }
       ]
     },
@@ -3702,14 +3861,32 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "C",
+          "id": 0,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 0,
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -3721,37 +3898,19 @@
         },
         {
           "id": 5,
-          "symbol": "C",
+          "symbol": "B",
           "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "A",
-          "locked": true,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "C",
-          "locked": false,
+          "symbol": "D",
+          "locked": true,
           "wild": false
         },
         {
           "id": 8,
-          "symbol": "D",
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -3765,14 +3924,24 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
         {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "type": "swap",
+          "a": 1,
+          "b": 2
+        },
+        {
           "type": "rotate",
-          "from": 0,
-          "to": 4,
+          "from": 1,
+          "to": 2,
           "dir": "right"
         },
         {
@@ -3781,26 +3950,9 @@
           "b": 5
         },
         {
-          "type": "rotate",
-          "from": 1,
-          "to": 3,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 2,
-          "to": 5,
-          "dir": "right"
-        },
-        {
-          "type": "mirror",
-          "from": 2,
-          "to": 5
-        },
-        {
           "type": "swap",
-          "a": 0,
-          "b": 1
+          "a": 5,
+          "b": 6
         }
       ]
     },
@@ -3811,21 +3963,27 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
+          "id": 2,
           "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
-          "locked": true,
+          "id": 5,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
           "wild": false
         },
         {
@@ -3835,39 +3993,27 @@
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
+          "id": 1,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
-          "symbol": "E",
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 9,
-          "symbol": "E",
+          "id": 7,
+          "symbol": "C",
           "locked": true,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "C",
+          "locked": false,
           "wild": false
         }
       ],
@@ -3880,37 +4026,19 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
         {
           "type": "mirror",
-          "from": 3,
-          "to": 8
+          "from": 0,
+          "to": 4
         },
         {
           "type": "rotate",
           "from": 0,
-          "to": 1,
-          "dir": "right"
-        },
-        {
-          "type": "rotate",
-          "from": 5,
-          "to": 8,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 5,
           "to": 6,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 6,
-          "to": 7,
           "dir": "right"
         },
         {
@@ -3919,9 +4047,26 @@
           "b": 1
         },
         {
-          "type": "swap",
-          "a": 0,
-          "b": 1
+          "type": "rotate",
+          "from": 0,
+          "to": 2,
+          "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 4
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 6
         }
       ]
     },
@@ -3944,44 +4089,50 @@
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "D",
-          "locked": true,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 9,
           "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
           "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "D",
           "locked": false,
           "wild": false
         }
@@ -3995,41 +4146,24 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
-        {
-          "type": "mirror",
-          "from": 3,
-          "to": 7
-        },
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
         {
           "type": "swap",
           "a": 7,
           "b": 8
         },
         {
-          "type": "rotate",
-          "from": 5,
-          "to": 8,
-          "dir": "left"
+          "type": "swap",
+          "a": 2,
+          "b": 3
         },
         {
-          "type": "rotate",
-          "from": 5,
-          "to": 8,
-          "dir": "right"
+          "type": "mirror",
+          "from": 6,
+          "to": 9
         }
       ]
     },
@@ -4040,62 +4174,50 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
+          "id": 0,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
+          "id": 1,
+          "symbol": "D",
           "locked": true,
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "E",
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 8,
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 9,
+          "id": 4,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "E",
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "B",
+          "id": 3,
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -4109,34 +4231,37 @@
         "rotate",
         "mirror"
       ],
-      "target": 3,
+      "target": 2,
       "targetExact": true,
-      "budget": 7,
+      "budget": 6,
       "solution": [
         {
-          "type": "swap",
-          "a": 1,
-          "b": 2
+          "type": "rotate",
+          "from": 3,
+          "to": 7,
+          "dir": "left"
         },
         {
-          "type": "swap",
-          "a": 6,
-          "b": 7
-        },
-        {
-          "type": "swap",
-          "a": 0,
-          "b": 1
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "left"
         },
         {
           "type": "mirror",
-          "from": 7,
-          "to": 9
+          "from": 3,
+          "to": 7
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 7,
+          "dir": "left"
         },
         {
           "type": "mirror",
           "from": 5,
-          "to": 8
+          "to": 7
         },
         {
           "type": "swap",
@@ -5719,43 +5844,43 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 0,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 9,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 0,
-          "symbol": "B",
+          "id": 10,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
+          "id": 8,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "D",
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
           "symbol": "B",
           "locked": false,
           "wild": false
@@ -5767,8 +5892,14 @@
           "wild": false
         },
         {
-          "id": 8,
-          "symbol": "B",
+          "id": 3,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -5784,37 +5915,33 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
         {
-          "type": "remove",
-          "tileId": 9
-        },
-        {
           "type": "mirror",
-          "from": 4,
-          "to": 6
+          "from": 2,
+          "to": 9
         },
         {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
-          "type": "swap",
-          "a": 4,
-          "b": 5
+          "type": "remove",
+          "tileId": 10
         },
         {
           "type": "insertWild",
-          "at": 5
+          "at": 1
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 7,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
         }
       ]
     },
@@ -5825,38 +5952,38 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 1,
+          "id": 9,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 10,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
+          "id": 1,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "E",
+          "id": 7,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "D",
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -5867,20 +5994,14 @@
           "wild": false
         },
         {
-          "id": 8,
-          "symbol": "B",
+          "id": 3,
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 6,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "C",
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -5896,34 +6017,37 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
         {
-          "type": "remove",
-          "tileId": 10
-        },
-        {
-          "type": "rotate",
-          "from": 1,
-          "to": 2,
-          "dir": "right"
-        },
-        {
-          "type": "swap",
-          "a": 0,
-          "b": 1
-        },
-        {
-          "type": "rotate",
-          "from": 6,
-          "to": 7,
-          "dir": "right"
+          "type": "mirror",
+          "from": 2,
+          "to": 8
         },
         {
           "type": "insertWild",
-          "at": 7
+          "at": 1
+        },
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 8
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
         }
       ]
     },
@@ -5934,8 +6058,44 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 5,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 0,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
@@ -5947,31 +6107,7 @@
         },
         {
           "id": 1,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "C",
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -5987,43 +6123,37 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
         {
           "type": "mirror",
-          "from": 4,
-          "to": 6
+          "from": 3,
+          "to": 8
         },
         {
           "type": "swap",
-          "a": 4,
-          "b": 5
+          "a": 0,
+          "b": 1
         },
         {
           "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
-          "type": "insertWild",
-          "at": 5
-        },
-        {
-          "type": "rotate",
-          "from": 6,
-          "to": 7,
-          "dir": "right"
-        },
-        {
-          "type": "swap",
-          "a": 6,
-          "b": 7
+          "a": 3,
+          "b": 4
         },
         {
           "type": "remove",
-          "tileId": 7
+          "tileId": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 3
+        },
+        {
+          "type": "mirror",
+          "from": 1,
+          "to": 5
         }
       ]
     },
@@ -6034,37 +6164,31 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 10,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 9,
-          "symbol": "C",
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
-          "id": 7,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "D",
+          "id": 0,
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
-          "symbol": "D",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 1,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
           "symbol": "A",
           "locked": false,
           "wild": false
@@ -6076,20 +6200,26 @@
           "wild": false
         },
         {
-          "id": 1,
+          "id": 2,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 8,
+          "id": 6,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 0,
-          "symbol": "C",
+          "id": 7,
+          "symbol": "D",
           "locked": false,
           "wild": false
         }
@@ -6105,15 +6235,19 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
         {
           "type": "rotate",
-          "from": 6,
-          "to": 7,
-          "dir": "right"
+          "from": 2,
+          "to": 4,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 10
         },
         {
           "type": "remove",
@@ -6121,30 +6255,20 @@
         },
         {
           "type": "rotate",
-          "from": 3,
+          "from": 5,
           "to": 6,
           "dir": "right"
         },
         {
           "type": "rotate",
-          "from": 7,
-          "to": 8,
+          "from": 0,
+          "to": 9,
           "dir": "left"
         },
         {
           "type": "mirror",
-          "from": 0,
-          "to": 7
-        },
-        {
-          "type": "insertWild",
-          "at": 4
-        },
-        {
-          "type": "rotate",
-          "from": 8,
-          "to": 9,
-          "dir": "right"
+          "from": 2,
+          "to": 4
         }
       ]
     },
@@ -6155,7 +6279,31 @@
       "contentVersion": 1,
       "tiles": [
         {
+          "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
           "id": 0,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
           "symbol": "D",
           "locked": false,
           "wild": false
@@ -6167,44 +6315,20 @@
           "wild": false
         },
         {
-          "id": 8,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 3,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "D",
+          "id": 6,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 7,
-          "symbol": "D",
+          "id": 9,
+          "symbol": "E",
           "locked": false,
           "wild": false
         }
@@ -6220,39 +6344,38 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
-        {
-          "type": "swap",
-          "a": 2,
-          "b": 3
-        },
-        {
-          "type": "rotate",
-          "from": 3,
-          "to": 8,
-          "dir": "left"
-        },
-        {
-          "type": "rotate",
-          "from": 4,
-          "to": 5,
-          "dir": "left"
-        },
-        {
-          "type": "insertWild",
-          "at": 1
-        },
         {
           "type": "remove",
           "tileId": 9
         },
         {
           "type": "mirror",
-          "from": 1,
+          "from": 0,
+          "to": 2
+        },
+        {
+          "type": "insertWild",
+          "at": 8
+        },
+        {
+          "type": "mirror",
+          "from": 4,
           "to": 6
+        },
+        {
+          "type": "swap",
+          "a": 5,
+          "b": 6
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 8,
+          "dir": "left"
         }
       ]
     },
@@ -6380,25 +6503,13 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 1,
-          "symbol": "E",
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 6,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
+          "id": 3,
           "symbol": "A",
           "locked": false,
           "wild": false
@@ -6410,19 +6521,37 @@
           "wild": false
         },
         {
-          "id": 3,
-          "symbol": "D",
+          "id": 9,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 7,
-          "symbol": "D",
+          "id": 5,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 0,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
           "symbol": "E",
           "locked": false,
           "wild": false
@@ -6439,34 +6568,39 @@
         "insertWild",
         "remove"
       ],
-      "target": 3,
+      "target": 4,
       "targetExact": true,
-      "budget": 7,
+      "budget": 8,
       "solution": [
         {
           "type": "rotate",
-          "from": 6,
+          "from": 1,
+          "to": 4,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "remove",
+          "tileId": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 6
+        },
+        {
+          "type": "rotate",
+          "from": 0,
           "to": 7,
           "dir": "right"
         },
         {
-          "type": "insertWild",
-          "at": 3
-        },
-        {
-          "type": "rotate",
-          "from": 4,
-          "to": 7,
-          "dir": "left"
-        },
-        {
           "type": "mirror",
           "from": 2,
-          "to": 6
-        },
-        {
-          "type": "remove",
-          "tileId": 8
+          "to": 5
         }
       ]
     },
@@ -6478,43 +6612,160 @@
       "tiles": [
         {
           "id": 0,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
           "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 6,
+          "id": 5,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "A",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
+          "id": 6,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 10,
-          "symbol": "C",
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 7,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        }
+      ],
+      "hand": {
+        "wild": 1,
+        "remove": 1
+      },
+      "allowedOps": [
+        "swap",
+        "rotate",
+        "mirror",
+        "insertWild",
+        "remove"
+      ],
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
+      "solution": [
+        {
+          "type": "mirror",
+          "from": 6,
+          "to": 9
+        },
+        {
+          "type": "remove",
+          "tileId": 10
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "insertWild",
+          "at": 2
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        }
+      ]
+    },
+    {
+      "id": "w6-01",
+      "recipeId": "w6",
+      "seed": 564551157,
+      "contentVersion": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "B",
+          "id": 10,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -6525,14 +6776,32 @@
           "wild": false
         },
         {
-          "id": 8,
+          "id": 4,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 9,
-          "symbol": "A",
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "F",
           "locked": false,
           "wild": false
         }
@@ -6553,163 +6822,44 @@
       "budget": 7,
       "solution": [
         {
-          "type": "remove",
-          "tileId": 10
+          "type": "mirror",
+          "from": 8,
+          "to": 12
         },
         {
-          "type": "swap",
-          "a": 3,
-          "b": 4
+          "type": "rotate",
+          "from": 11,
+          "to": 12,
+          "dir": "left"
+        },
+        {
+          "type": "rotate",
+          "from": 5,
+          "to": 12,
+          "dir": "right"
         },
         {
           "type": "insertWild",
-          "at": 2
+          "at": 1
         },
-        {
-          "type": "mirror",
-          "from": 1,
-          "to": 6
-        }
-      ]
-    },
-    {
-      "id": "w6-01",
-      "recipeId": "w6",
-      "seed": 564551157,
-      "contentVersion": 1,
-      "tiles": [
-        {
-          "id": 0,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 13,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "D",
-          "locked": true,
-          "wild": false
-        },
-        {
-          "id": 12,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 10,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        }
-      ],
-      "hand": {
-        "wild": 1,
-        "remove": 1
-      },
-      "allowedOps": [
-        "swap",
-        "rotate",
-        "mirror",
-        "insertWild",
-        "remove"
-      ],
-      "target": 8,
-      "targetExact": false,
-      "budget": 12,
-      "solution": [
         {
           "type": "swap",
-          "a": 3,
-          "b": 4
-        },
-        {
-          "type": "mirror",
-          "from": 2,
-          "to": 7
+          "a": 5,
+          "b": 6
         },
         {
           "type": "remove",
           "tileId": 13
         },
         {
-          "type": "rotate",
-          "from": 10,
-          "to": 11,
-          "dir": "left"
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
           "type": "mirror",
-          "from": 5,
-          "to": 8
-        },
-        {
-          "type": "insertWild",
-          "at": 11
+          "from": 4,
+          "to": 12
         },
         {
           "type": "swap",
-          "a": 1,
-          "b": 2
+          "a": 7,
+          "b": 8
         }
       ]
     },
@@ -6809,9 +6959,9 @@
         "insertWild",
         "remove"
       ],
-      "target": 7,
-      "targetExact": false,
-      "budget": 11,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
         {
           "type": "insertWild",
@@ -6855,8 +7005,14 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 5,
-          "symbol": "A",
+          "id": 0,
+          "symbol": "F",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
@@ -6867,33 +7023,21 @@
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "E",
+          "id": 9,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "E",
+          "id": 10,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "B",
-          "locked": true,
+          "symbol": "E",
+          "locked": false,
           "wild": false
         },
         {
@@ -6903,20 +7047,38 @@
           "wild": false
         },
         {
-          "id": 9,
-          "symbol": "D",
+          "id": 6,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 10,
+          "id": 12,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 8,
+          "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
           "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -6937,43 +7099,55 @@
       "budget": 8,
       "solution": [
         {
-          "type": "remove",
-          "tileId": 11
-        },
-        {
-          "type": "mirror",
-          "from": 0,
-          "to": 3
-        },
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
-        {
-          "type": "mirror",
-          "from": 0,
-          "to": 3
-        },
-        {
-          "type": "insertWild",
-          "at": 1
-        },
-        {
-          "type": "swap",
-          "a": 9,
-          "b": 10
-        },
-        {
-          "type": "swap",
-          "a": 8,
-          "b": 9
+          "type": "rotate",
+          "from": 8,
+          "to": 11,
+          "dir": "right"
         },
         {
           "type": "rotate",
-          "from": 2,
-          "to": 4,
-          "dir": "right"
+          "from": 7,
+          "to": 9,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 5,
+          "to": 7
+        },
+        {
+          "type": "swap",
+          "a": 10,
+          "b": 11
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 12
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
+        },
+        {
+          "type": "rotate",
+          "from": 7,
+          "to": 8,
+          "dir": "left"
+        },
+        {
+          "type": "insertWild",
+          "at": 8
+        },
+        {
+          "type": "mirror",
+          "from": 9,
+          "to": 13
+        },
+        {
+          "type": "remove",
+          "tileId": 13
         }
       ]
     },
@@ -7073,9 +7247,9 @@
         "insertWild",
         "remove"
       ],
-      "target": 7,
-      "targetExact": false,
-      "budget": 11,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
         {
           "type": "remove",
@@ -7122,14 +7296,20 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 2,
-          "symbol": "F",
+          "id": 0,
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 1,
-          "symbol": "D",
+          "symbol": "A",
+          "locked": true,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
@@ -7140,50 +7320,56 @@
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "E",
+          "id": 4,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
-          "id": 4,
+          "id": 5,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "B",
+          "symbol": "F",
           "locked": true,
           "wild": false
         },
         {
-          "id": 11,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 10,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 7,
-          "symbol": "F",
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 9,
-          "symbol": "D",
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -7199,21 +7385,10 @@
         "insertWild",
         "remove"
       ],
-      "target": 4,
+      "target": 3,
       "targetExact": true,
-      "budget": 8,
+      "budget": 7,
       "solution": [
-        {
-          "type": "rotate",
-          "from": 7,
-          "to": 9,
-          "dir": "right"
-        },
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
         {
           "type": "rotate",
           "from": 9,
@@ -7221,18 +7396,49 @@
           "dir": "left"
         },
         {
-          "type": "rotate",
-          "from": 0,
-          "to": 1,
-          "dir": "left"
+          "type": "mirror",
+          "from": 8,
+          "to": 11
         },
         {
-          "type": "remove",
-          "tileId": 11
+          "type": "mirror",
+          "from": 9,
+          "to": 12
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 10,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "rotate",
+          "from": 9,
+          "to": 12,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 11,
+          "b": 12
         },
         {
           "type": "insertWild",
-          "at": 0
+          "at": 9
+        },
+        {
+          "type": "remove",
+          "tileId": 13
         }
       ]
     },
@@ -7243,39 +7449,51 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 5,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 0,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "D",
+          "id": 1,
+          "symbol": "F",
           "locked": false,
           "wild": false
         },
         {
-          "id": 6,
-          "symbol": "F",
+          "id": 4,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "B",
           "locked": true,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 9,
+          "symbol": "F",
+          "locked": false,
           "wild": false
         },
         {
@@ -7285,32 +7503,26 @@
           "wild": false
         },
         {
-          "id": 12,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 8,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 10,
-          "symbol": "B",
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 11,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
           "symbol": "D",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
           "locked": false,
           "wild": false
         }
@@ -7326,22 +7538,22 @@
         "insertWild",
         "remove"
       ],
-      "target": 4,
+      "target": 3,
       "targetExact": true,
-      "budget": 8,
+      "budget": 7,
       "solution": [
         {
           "type": "insertWild",
-          "at": 2
-        },
-        {
-          "type": "mirror",
-          "from": 0,
-          "to": 4
+          "at": 3
         },
         {
           "type": "remove",
-          "tileId": 12
+          "tileId": 13
+        },
+        {
+          "type": "swap",
+          "a": 11,
+          "b": 12
         },
         {
           "type": "swap",
@@ -7349,9 +7561,25 @@
           "b": 3
         },
         {
-          "type": "mirror",
-          "from": 2,
-          "to": 5
+          "type": "swap",
+          "a": 7,
+          "b": 8
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 11,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 3,
+          "b": 4
+        },
+        {
+          "type": "swap",
+          "a": 2,
+          "b": 3
         }
       ]
     },
@@ -7731,9 +7959,9 @@
         "insertWild",
         "remove"
       ],
-      "target": 9,
-      "targetExact": false,
-      "budget": 13,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
         {
           "type": "swap",
@@ -7796,74 +8024,68 @@
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 6,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 1,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 12,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 10,
-          "symbol": "A",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 11,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
-          "id": 8,
+          "id": 9,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
           "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 7,
-          "symbol": "E",
+          "symbol": "F",
           "locked": false,
           "wild": false
         },
         {
-          "id": 13,
-          "symbol": "B",
+          "id": 4,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 6,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 5,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 3,
+          "symbol": "B",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
           "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
+          "id": 12,
+          "symbol": "C",
           "locked": false,
           "wild": false
         }
@@ -7879,31 +8101,10 @@
         "insertWild",
         "remove"
       ],
-      "target": 9,
-      "targetExact": false,
-      "budget": 13,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
-        {
-          "type": "rotate",
-          "from": 7,
-          "to": 12,
-          "dir": "left"
-        },
-        {
-          "type": "remove",
-          "tileId": 13
-        },
-        {
-          "type": "mirror",
-          "from": 1,
-          "to": 3
-        },
-        {
-          "type": "rotate",
-          "from": 3,
-          "to": 9,
-          "dir": "right"
-        },
         {
           "type": "swap",
           "a": 3,
@@ -7911,23 +8112,44 @@
         },
         {
           "type": "mirror",
-          "from": 5,
+          "from": 8,
           "to": 10
-        },
-        {
-          "type": "insertWild",
-          "at": 4
         },
         {
           "type": "mirror",
           "from": 2,
-          "to": 6
+          "to": 8
         },
         {
           "type": "rotate",
-          "from": 11,
-          "to": 12,
+          "from": 1,
+          "to": 10,
+          "dir": "left"
+        },
+        {
+          "type": "mirror",
+          "from": 3,
+          "to": 5
+        },
+        {
+          "type": "rotate",
+          "from": 4,
+          "to": 8,
           "dir": "right"
+        },
+        {
+          "type": "rotate",
+          "from": 2,
+          "to": 5,
+          "dir": "left"
+        },
+        {
+          "type": "remove",
+          "tileId": 12
+        },
+        {
+          "type": "insertWild",
+          "at": 8
         }
       ]
     },
@@ -8079,80 +8301,62 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "D",
+          "id": 7,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 1,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 0,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 2,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 13,
+          "id": 9,
           "symbol": "B",
           "locked": false,
           "wild": false
         },
         {
           "id": 4,
-          "symbol": "A",
+          "symbol": "E",
           "locked": false,
           "wild": false
         },
         {
           "id": 5,
+          "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 2,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 1,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 8,
+          "symbol": "A",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
           "id": 6,
-          "symbol": "E",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 12,
-          "symbol": "C",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 10,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 11,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 7,
-          "symbol": "D",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "D",
+          "symbol": "F",
           "locked": false,
           "wild": false
         }
@@ -8168,43 +8372,50 @@
         "insertWild",
         "remove"
       ],
-      "target": 7,
-      "targetExact": false,
-      "budget": 11,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
         {
-          "type": "remove",
-          "tileId": 13
-        },
-        {
-          "type": "swap",
-          "a": 10,
-          "b": 11
-        },
-        {
           "type": "mirror",
-          "from": 7,
-          "to": 11
-        },
-        {
-          "type": "insertWild",
-          "at": 8
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
-        {
-          "type": "swap",
-          "a": 10,
-          "b": 11
+          "from": 0,
+          "to": 6
         },
         {
           "type": "rotate",
-          "from": 0,
-          "to": 3,
+          "from": 6,
+          "to": 9,
+          "dir": "right"
+        },
+        {
+          "type": "swap",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "type": "insertWild",
+          "at": 0
+        },
+        {
+          "type": "rotate",
+          "from": 6,
+          "to": 10,
           "dir": "left"
+        },
+        {
+          "type": "swap",
+          "a": 4,
+          "b": 5
+        },
+        {
+          "type": "rotate",
+          "from": 1,
+          "to": 8,
+          "dir": "right"
+        },
+        {
+          "type": "remove",
+          "tileId": 10
         }
       ]
     },
@@ -8304,9 +8515,9 @@
         "insertWild",
         "remove"
       ],
-      "target": 7,
-      "targetExact": false,
-      "budget": 11,
+      "target": 4,
+      "targetExact": true,
+      "budget": 8,
       "solution": [
         {
           "type": "mirror",
@@ -8351,14 +8562,8 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 0,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 3,
-          "symbol": "B",
+          "id": 9,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
@@ -8369,44 +8574,68 @@
           "wild": false
         },
         {
-          "id": 10,
-          "symbol": "A",
+          "id": 7,
+          "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 5,
-          "symbol": "F",
-          "locked": false,
-          "wild": false
-        },
-        {
-          "id": 4,
+          "id": 0,
           "symbol": "F",
           "locked": false,
           "wild": false
         },
         {
           "id": 1,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 12,
+          "symbol": "F",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 10,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 11,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 13,
           "symbol": "E",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 3,
+          "symbol": "C",
           "locked": false,
           "wild": false
         },
         {
           "id": 2,
+          "symbol": "C",
+          "locked": false,
+          "wild": false
+        },
+        {
+          "id": 4,
           "symbol": "D",
           "locked": false,
           "wild": false
         },
         {
-          "id": 8,
-          "symbol": "E",
-          "locked": true,
-          "wild": false
-        },
-        {
-          "id": 9,
-          "symbol": "F",
+          "id": 5,
+          "symbol": "D",
           "locked": false,
           "wild": false
         }
@@ -8428,53 +8657,55 @@
       "solution": [
         {
           "type": "mirror",
-          "from": 3,
-          "to": 5
+          "from": 5,
+          "to": 11
         },
         {
-          "type": "swap",
-          "a": 0,
-          "b": 1
+          "type": "insertWild",
+          "at": 2
         },
         {
-          "type": "swap",
-          "a": 0,
-          "b": 1
+          "type": "rotate",
+          "from": 9,
+          "to": 13,
+          "dir": "right"
+        },
+        {
+          "type": "mirror",
+          "from": 0,
+          "to": 10
+        },
+        {
+          "type": "rotate",
+          "from": 8,
+          "to": 9,
+          "dir": "left"
         },
         {
           "type": "mirror",
           "from": 1,
-          "to": 7
+          "to": 6
         },
         {
           "type": "rotate",
-          "from": 3,
-          "to": 4,
+          "from": 11,
+          "to": 12,
           "dir": "left"
         },
         {
           "type": "rotate",
           "from": 3,
-          "to": 6,
-          "dir": "right"
-        },
-        {
-          "type": "insertWild",
-          "at": 8
-        },
-        {
-          "type": "mirror",
-          "from": 3,
-          "to": 7
+          "to": 5,
+          "dir": "left"
         },
         {
           "type": "remove",
-          "tileId": 10
+          "tileId": 13
         },
         {
           "type": "swap",
-          "a": 1,
-          "b": 2
+          "a": 6,
+          "b": 7
         }
       ]
     },

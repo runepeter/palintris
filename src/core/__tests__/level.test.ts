@@ -101,6 +101,25 @@ describe('makeLevel', () => {
     expect(res.status).toBe('solved');
   });
 
+  it('requireExact forkaster kandidater der løseren gir opp', () => {
+    // Løsergrensen rekker ikke ned til mål 3 på lengde 9 med alle operasjoner,
+    // så løseren gir alltid 'unknown' her.
+    const blind: Recipe = {
+      ...lockWorld,
+      lengthRange: [9, 9],
+      allowedOps: ['swap', 'rotate', 'mirror', 'insertWild', 'remove'],
+      hand: { wild: 1, remove: 1 },
+      lockedRange: [0, 0],
+      movesRange: [3, 8],
+      scrambleRange: [3, 6],
+      solverStates: 200,
+    };
+    const loose = makeLevel(blind, { id: 'w4-07', contentVersion: 1, attempts: 20 });
+    expect(loose?.targetExact).toBe(false);
+    const strict = makeLevel(blind, { id: 'w4-07', contentVersion: 1, attempts: 20, requireExact: true });
+    expect(strict === null || strict.targetExact).toBe(true);
+  });
+
   it('gir null når ingen kandidat passerer', () => {
     const impossible: Recipe = { ...swapWorld, movesRange: [9, 9], scrambleRange: [1, 1] };
     expect(makeLevel(impossible, { id: 'x', contentVersion: 1, attempts: 5 })).toBeNull();
