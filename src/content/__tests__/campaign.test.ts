@@ -60,18 +60,15 @@ describe('campaign.v1.json', () => {
     }
   });
 
-  it('w1-01 kan regenereres identisk fra oppskrift', () => {
-    const recipe = WORLD_RECIPES[0];
-    expect(recipe).toBeDefined();
-    if (recipe === undefined) return;
-    expect(
-      makeLevel(rampedRecipe(recipe, 1), {
-        id: 'w1-01',
-        contentVersion: CONTENT_VERSION,
-        attempts: BUILD_ATTEMPTS,
-        requireExact: true,
-      })
-    ).toEqual(getCampaignLevel('w1-01'));
+  it('w1-01 viser et synlig nabobytte som løser brettet på ett trekk', () => {
+    const level = getCampaignLevel('w1-01');
+    expect(level).toBeDefined();
+    if (level === undefined) return;
+    expect(symbolKey(level.tiles)).toBe('ABAB');
+    expect(level.solution).toEqual([{ type: 'swap', a: 2, b: 3 }]);
+    expect(level.tiles[2]?.symbol).not.toBe(level.tiles[3]?.symbol);
+    expect(level.target).toBe(1);
+    expect(validateSolution(rulesFor(level), level)).toBe(true);
   });
 
   // Verden 6 utelates: nivåene der koster flere sekunder hver å regenerere.

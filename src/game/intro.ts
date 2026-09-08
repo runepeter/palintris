@@ -13,7 +13,7 @@ export interface IntroSpec {
 
 /** Første nivå i hver verden lærer bort én ting. Rekkefølgen er verdenes. */
 export const INTROS: readonly IntroSpec[] = [
-  { id: 'w1-01', mechanic: 'swap', title: 'Bytt naboer', text: 'Dra en brikke over på naboen', gesture: 'drag' },
+  { id: 'w1-01', mechanic: 'swap', title: 'Bytt naboer', text: 'Dra den tredje brikken mot høyre', gesture: 'drag' },
   {
     id: 'w2-01',
     mechanic: 'rotate',

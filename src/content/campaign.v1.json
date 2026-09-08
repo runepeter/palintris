@@ -8,14 +8,8 @@
       "contentVersion": 1,
       "tiles": [
         {
-          "id": 3,
-          "symbol": "B",
-          "locked": false,
-          "wild": false
-        },
-        {
           "id": 0,
-          "symbol": "B",
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
@@ -26,14 +20,14 @@
           "wild": false
         },
         {
-          "id": 4,
-          "symbol": "B",
+          "id": 2,
+          "symbol": "A",
           "locked": false,
           "wild": false
         },
         {
-          "id": 2,
-          "symbol": "A",
+          "id": 3,
+          "symbol": "B",
           "locked": false,
           "wild": false
         }
@@ -45,25 +39,10 @@
       "allowedOps": [
         "swap"
       ],
-      "target": 2,
+      "target": 1,
       "targetExact": true,
-      "budget": 6,
+      "budget": 5,
       "solution": [
-        {
-          "type": "swap",
-          "a": 0,
-          "b": 1
-        },
-        {
-          "type": "swap",
-          "a": 3,
-          "b": 4
-        },
-        {
-          "type": "swap",
-          "a": 1,
-          "b": 2
-        },
         {
           "type": "swap",
           "a": 2,

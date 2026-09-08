@@ -32,6 +32,10 @@ describe('INTROS', () => {
       expect(s.text.length).toBeGreaterThan(0);
     }
   });
+
+  it('peker ut det konkrete trekket på første nivå', () => {
+    expect(introFor('w1-01')?.text).toBe('Dra den tredje brikken mot høyre');
+  });
 });
 
 describe('introFor', () => {
