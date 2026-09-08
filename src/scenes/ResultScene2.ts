@@ -14,15 +14,19 @@ interface ResultData {
   readonly target: number;
 }
 
+const EMPTY_OUTCOME: SolvedOutcome = { stars: 0, previousStars: 0, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null };
+
 const STAR_FILLED = '★';
 const STAR_EMPTY = '☆';
 const STAR_SPACING = 64;
 
 export class ResultScene2 extends Phaser.Scene {
   private levelId = '';
-  private outcome: SolvedOutcome = { stars: 0, previousStars: 0, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null };
+  private outcome: SolvedOutcome = EMPTY_OUTCOME;
   private movesUsed = 0;
   private target = 0;
+  /** Sann etter første build; en resize skal tegne stjernene statisk uten å gjenta tweens/effekter. */
+  private celebrated = false;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
@@ -35,11 +39,12 @@ export class ResultScene2 extends Phaser.Scene {
   }
 
   /** Phaser gjenbruker sceneinstansen, så feltene må nullstilles her og ikke bare i initialiseringen. */
-  init(data: ResultData): void {
-    this.levelId = data.levelId;
-    this.outcome = data.outcome;
-    this.movesUsed = data.movesUsed;
-    this.target = data.target;
+  init(data: Partial<ResultData> = {}): void {
+    this.levelId = data.levelId ?? '';
+    this.outcome = data.outcome ?? EMPTY_OUTCOME;
+    this.movesUsed = data.movesUsed ?? 0;
+    this.target = data.target ?? 0;
+    this.celebrated = false;
   }
 
   create(): void {
@@ -66,8 +71,10 @@ export class ResultScene2 extends Phaser.Scene {
     const cx = this.scale.width / 2;
     const starsY = h * 0.32;
 
+    const animate = !this.celebrated;
     makeLabel(this, cx, h * 0.14, 'Løst!', { size: 40, color: accent, bold: true });
-    this.buildStars(cx, starsY, d, effects);
+    this.buildStars(cx, starsY, d, effects, animate);
+    this.celebrated = true;
     makeLabel(this, cx, starsY + 56, `${this.movesUsed} trekk · mål ${this.target}`, { size: 18, color: COLORS.inkMuted, font: 'body' });
     if (this.outcome.worldJustUnlocked !== null) {
       this.buildUnlockBanner(cx, starsY + 104, this.outcome.worldJustUnlocked);
@@ -91,17 +98,19 @@ export class ResultScene2 extends Phaser.Scene {
     });
   }
 
-  private buildStars(cx: number, y: number, d: ReturnType<typeof durations>, effects: Effects): void {
+  /** animate er usann ved en resize-ombygging: stjernene tegnes da i sluttilstand, uten å gjenta tweens eller seremonieffekter. */
+  private buildStars(cx: number, y: number, d: ReturnType<typeof durations>, effects: Effects, animate: boolean): void {
     for (let i = 0; i < 3; i++) {
       const filled = i < this.outcome.stars;
       const label = makeLabel(this, cx + (i - 1) * STAR_SPACING, y, filled ? STAR_FILLED : STAR_EMPTY, {
         size: 48, color: filled ? COLORS.star : COLORS.locked,
       });
       if (!filled) continue;
+      if (!animate) continue;
       label.setScale(0);
       this.tweens.add({ targets: label, scale: 1, duration: d.normal, ease: EASING.pop, delay: i * d.snap });
     }
-    if (this.outcome.stars === 3) {
+    if (animate && this.outcome.stars === 3) {
       effects.starFall(12);
       effects.confetti(cx, y, 60);
     }
