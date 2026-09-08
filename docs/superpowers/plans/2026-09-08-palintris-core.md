@@ -181,8 +181,10 @@ describe('isPalindrome', () => {
     ['ABA', true],
     ['ABBA', true],
     ['ABC', false],
-    ['A*C', true],
-    ['*BC*', true],
+    ['*BA', true],
+    ['AB*A', true],
+    ['A*C', false],
+    ['*BC*', false],
     ['aba', true],
     ['abc', false],
   ])('%s -> %s', (s, expected) => {
@@ -203,7 +205,7 @@ describe('mismatchCount', () => {
   it('teller par som ikke matcher', () => {
     expect(mismatchCount(tilesFromString('ABCD'))).toBe(2);
     expect(mismatchCount(tilesFromString('ABCBA'))).toBe(0);
-    expect(mismatchCount(tilesFromString('AB*CX'))).toBe(1);
+    expect(mismatchCount(tilesFromString('AB*BX'))).toBe(1);
   });
 });
 ```
