@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLORS, cssColor, DURATION, durations, symbolColor, WORLD_ACCENTS, worldAccent } from '../theme';
+import { COLORS, cssColor, DURATION, durations, PATTERNS, symbolColor, symbolPattern, WORLD_ACCENTS, worldAccent } from '../theme';
 
 describe('symbolColor', () => {
   it('gir seks ulike farger for A–F og sykler etter det', () => {
@@ -7,6 +7,16 @@ describe('symbolColor', () => {
     expect(new Set(six).size).toBe(6);
     expect(symbolColor('G')).toBe(symbolColor('A'));
     expect(symbolColor('*')).toBe(COLORS.wild);
+  });
+});
+
+describe('symbolPattern', () => {
+  it('gir seks ulike mønstre for A–F og sykler etter det', () => {
+    const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(symbolPattern);
+    expect(six).toEqual(PATTERNS);
+    expect(new Set(six).size).toBe(6);
+    expect(symbolPattern('G')).toBe(symbolPattern('A'));
+    expect(symbolPattern('*')).toBe('rings');
   });
 });
 

@@ -38,11 +38,23 @@ export const symbolColor = (symbol: string): number => {
   return COLORS.tiles[idx] ?? COLORS.tiles[0];
 };
 
+/** Fargeblind-modus legger dette mønsteret bak brikkefargen. */
+export type TilePattern = 'dots' | 'stripes' | 'rings' | 'cross' | 'checks' | 'waves';
+
+export const PATTERNS: readonly TilePattern[] = ['dots', 'stripes', 'rings', 'cross', 'checks', 'waves'];
+
+export const symbolPattern = (symbol: string): TilePattern => {
+  if (symbol === '*') return 'rings';
+  const i = symbol.charCodeAt(0) - ALPHA_BASE;
+  const idx = ((i % PATTERNS.length) + PATTERNS.length) % PATTERNS.length;
+  return PATTERNS[idx] ?? 'dots';
+};
+
 export const worldAccent = (world: number): number => WORLD_ACCENTS[world - 1] ?? WORLD_ACCENTS[0] ?? 0;
 
-export const durations = (reducedMotion: boolean): Readonly<typeof DURATION> =>
+export const durations = (reducedMotion: boolean): Readonly<Record<keyof typeof DURATION, number>> =>
   reducedMotion
-    ? ({ snap: DURATION.snap, normal: DURATION.snap, calm: DURATION.snap, ceremony: DURATION.snap } as unknown as Readonly<typeof DURATION>)
+    ? { snap: DURATION.snap, normal: DURATION.snap, calm: DURATION.snap, ceremony: DURATION.snap }
     : DURATION;
 
 export const cssColor = (n: number): string => `#${n.toString(16).padStart(6, '0')}`;
