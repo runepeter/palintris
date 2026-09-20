@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { dismissIntroIfVisible, drag, hook, tap } from './helpers';
+import { dismissIntroIfVisible, drag, hook, pauseAnimationClock, tap } from './helpers';
 
 type Cmd =
   | { type: 'swap'; a: number; b: number }
@@ -115,13 +115,15 @@ test('viser bare rotasjon før speiling er låst opp', async ({ page }) => {
 });
 
 test('angre og reset avbryter ikke en tydelig trekkanimasjon', async ({ page }) => {
+  await page.clock.install();
   await page.goto('/?level=w2-01');
   const h = hook(page);
   await page.waitForFunction(() => window.__palintris?.levelId === 'w2-01');
   await dismissIntroIfVisible(page);
+  await pauseAnimationClock(page);
 
   const rotateLeft = async (): Promise<void> => {
-    await h.waitIdle();
+    expect(await h.busy()).toBe(false);
     await tap(page, await h.slot(0));
     await tap(page, await h.slot(2));
     const action = (await h.menu())?.find((item) => item.action === 'rotateLeft');
@@ -132,12 +134,16 @@ test('angre og reset avbryter ikke en tydelig trekkanimasjon', async ({ page }) 
   await rotateLeft();
   expect(await h.busy()).toBe(true);
   await tap(page, (await h.zones()).undo);
-  await h.waitIdle();
+  expect(await h.busy()).toBe(true);
+  await page.clock.runFor(1000);
+  expect(await h.busy()).toBe(false);
   expect((await h.view()).movesUsed).toBe(1);
 
   await rotateLeft();
   expect(await h.busy()).toBe(true);
   await tap(page, (await h.zones()).reset);
-  await h.waitIdle();
+  expect(await h.busy()).toBe(true);
+  await page.clock.runFor(1000);
+  expect(await h.busy()).toBe(false);
   expect((await h.view()).movesUsed).toBe(2);
 });
