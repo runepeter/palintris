@@ -24,15 +24,7 @@ export class StickyLinks {
       const a = views.get(tile.id);
       const b = views.get(tile.bondedTo);
       if (a === undefined || b === undefined) return;
-      const lift = Math.max(a.width, b.width) * 0.75;
-      this.links.lineStyle(2, COLORS.glow, 0.7);
-      this.links.beginPath();
-      this.links.moveTo(a.x, a.y);
-      for (let i = 1; i <= 24; i++) {
-        const t = i / 24;
-        this.links.lineTo(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t - Math.sin(t * Math.PI) * lift);
-      }
-      this.links.strokePath();
+      this.chain(a, b);
     });
     if (from === null || to === null || from === to) return;
     const plan = planSwap(tiles, from, to);
@@ -52,6 +44,42 @@ export class StickyLinks {
       const y = Math.min(ap.y, bp.y) - Math.max(av.height, bv.height) * 0.65;
       this.arrow(ap.x, y, bp.x, y);
       this.arrow(bp.x, y - 10, ap.x, y - 10);
+    }
+  }
+
+  private chain(a: TileView, b: TileView): void {
+    const unit = Math.min(a.width, b.width) / 64;
+    const ax = a.x;
+    const ay = a.y - a.height * 0.48;
+    const bx = b.x;
+    const by = b.y - b.height * 0.48;
+    const lift = Math.min(32 * unit, Math.hypot(bx - ax, by - ay) * 0.18);
+    const count = Math.max(2, Math.ceil((Math.hypot(bx - ax, by - ay) + lift) / (8 * unit)));
+    for (let i = 0; i <= count; i++) {
+      const t = i / count;
+      const x = ax + (bx - ax) * t;
+      const y = ay + (by - ay) * t - Math.sin(t * Math.PI) * lift;
+      const angle = Math.atan2(by - ay - Math.PI * lift * Math.cos(t * Math.PI), bx - ax);
+      const rx = 5.6 * unit;
+      const ry = (i % 2 === 0 ? 2.8 : 1.5) * unit;
+      const points = Array.from({ length: 17 }, (_, step) => {
+        const theta = step / 16 * Math.PI * 2;
+        const px = Math.cos(theta) * rx;
+        const py = Math.sin(theta) * ry;
+        return { x: x + px * Math.cos(angle) - py * Math.sin(angle), y: y + px * Math.sin(angle) + py * Math.cos(angle) };
+      });
+      this.links.lineStyle(4 * unit, COLORS.shadow, 0.9);
+      this.links.strokePoints(points, true);
+      this.links.lineStyle(2.3 * unit, COLORS.gold, 1);
+      this.links.strokePoints(points, true);
+      this.links.lineStyle(0.9 * unit, COLORS.star, 0.95);
+      this.links.strokePoints(points.slice(8), false);
+    }
+    for (const p of [{ x: ax, y: ay }, { x: bx, y: by }]) {
+      this.links.fillStyle(COLORS.shadow, 1);
+      this.links.fillCircle(p.x, p.y, 4 * unit);
+      this.links.lineStyle(1.5 * unit, COLORS.star, 1);
+      this.links.strokeCircle(p.x, p.y, 3 * unit);
     }
   }
 

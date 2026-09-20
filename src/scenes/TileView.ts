@@ -194,7 +194,7 @@ export class TileView extends Phaser.GameObjects.Container {
       const y = -s / 2 + k * 1.7;
       this.lock.fillStyle(COLORS.panel, 1);
       this.lock.fillRoundedRect(x - k, y - k, k * 3.4, k * 2, k * 0.5);
-      this.lock.lineStyle(2, t.bondedTo !== undefined ? COLORS.glow : COLORS.star, 1);
+      this.lock.lineStyle(2, COLORS.star, t.bondedTo !== undefined ? 1 : 0.65);
       this.lock.strokeCircle(x, y, k * 0.65);
       this.lock.strokeCircle(x + k * 1.3, y, k * 0.65);
       if (t.bondedTo !== undefined) this.lock.lineBetween(x, y, x + k * 1.3, y);
