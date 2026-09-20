@@ -4,6 +4,7 @@ import type { BoardLayout } from '../game/layout';
 import { COLORS, cssColor, DURATION, durations, EASING, VICTORY, WORLD_ACCENTS } from '../theme/theme';
 import type { TileView } from './TileView';
 import { makeLabel } from './ui';
+import { drawEnergyLink } from './energyLink';
 
 /** Fem effekter fra spec §4. Alle respekterer redusert bevegelse. */
 export class Effects {
@@ -86,19 +87,51 @@ export class Effects {
     });
   }
 
-  clearBoard(tiles: readonly TileView[], clear: boolean, onComplete: () => void): void {
-    const timing = this.reduced ? VICTORY.reduced : clear ? VICTORY.clear : VICTORY.fast;
+  clearBoard(tiles: readonly TileView[], clear: boolean, onComplete: () => void, positionAt: (index: number) => { x: number; y: number } | undefined): void {
+    const standard = this.reduced ? VICTORY.reduced : clear ? VICTORY.clear : VICTORY.fast;
     let remaining = tiles.length;
     if (remaining === 0) {
-      this.scene.time.delayedCall(timing.hold + timing.rest, onComplete);
+      this.scene.time.delayedCall(standard.hold + standard.rest, onComplete);
       return;
     }
+    const energyPairs: { a: TileView; b: TileView; delay: number; timing: typeof standard | typeof VICTORY.energy }[] = [];
     tiles.forEach((tile, i) => {
+      const partner = tiles.find((other) => other.tileId === tile.bondedTo && other.bondedTo === tile.tileId);
+      const linked = partner !== undefined;
+      const timing = linked && clear && !this.reduced ? VICTORY.energy : standard;
       const pair = Math.floor(Math.abs(i - (tiles.length - 1) / 2));
       const delay = timing.hold + pair * timing.pairGap;
       if (!this.reduced) {
-        const light = tile.addClearGlow();
+        if (partner !== undefined && tile.tileId < partner.tileId) energyPairs.push({ a: tile, b: partner, delay, timing });
+        const light = tile.addClearGlow(linked);
         this.scene.tweens.add({ targets: light, alpha: 1, delay, duration: timing.glow, ease: EASING.fade });
+      }
+      const finish = (): void => {
+        tile.setAlpha(0).setVisible(false);
+        if (!linked) this.burst(tile.x, tile.y, COLORS.star);
+        remaining--;
+        if (remaining === 0) this.scene.time.delayedCall(timing.rest, onComplete);
+      };
+      if (partner !== undefined && !this.reduced) {
+        const state = { progress: 0 };
+        const partnerIndex = tiles.indexOf(partner);
+        this.scene.tweens.add({
+          targets: state,
+          progress: 1,
+          delay: delay + timing.glow,
+          duration: timing.dissolve,
+          ease: EASING.fade,
+          onUpdate: () => {
+            const a = positionAt(i);
+            const b = positionAt(partnerIndex);
+            if (a === undefined || b === undefined) return;
+            tile.setPosition(a.x + (b.x - a.x) * state.progress / 2, a.y + (b.y - a.y) * state.progress / 2);
+            tile.setScale(1 - state.progress * 0.96);
+            tile.setAlpha(1 - Phaser.Math.Clamp((state.progress - 0.55) / 0.45, 0, 1));
+          },
+          onComplete: finish,
+        });
+        return;
       }
       this.scene.tweens.add({
         targets: tile,
@@ -107,13 +140,45 @@ export class Effects {
         delay: delay + timing.glow,
         duration: timing.dissolve,
         ease: 'Cubic.easeIn',
-        onComplete: () => {
-          tile.setVisible(false);
-          this.burst(tile.x, tile.y, COLORS.star);
-          remaining--;
-          if (remaining === 0) this.scene.time.delayedCall(timing.rest, onComplete);
-        },
+        onComplete: finish,
       });
+    });
+    // Tegn etter brikketweenene, slik at trådene følger samme frame som brikkene.
+    for (const pair of energyPairs) this.clearEnergy(pair.a, pair.b, pair.delay, pair.timing);
+  }
+
+  private clearEnergy(a: TileView, b: TileView, delay: number, timing: typeof VICTORY[keyof typeof VICTORY]): void {
+    const energy = this.scene.add.graphics().setDepth(8).setBlendMode(Phaser.BlendModes.ADD);
+    const state = { elapsed: 0 };
+    const tail = timing.rest * 0.75;
+    this.scene.tweens.add({
+      targets: state,
+      elapsed: delay + timing.glow + timing.dissolve + tail,
+      duration: delay + timing.glow + timing.dissolve + tail,
+      onUpdate: () => {
+        energy.clear();
+        const elapsed = Math.max(0, state.elapsed - delay);
+        const charge = Math.min(1, elapsed / timing.glow);
+        const collapse = (1 - a.scaleX) / 0.96;
+        const after = Phaser.Math.Clamp((elapsed - timing.glow - timing.dissolve) / tail, 0, 1);
+        const anchor = (tile: TileView): { x: number; y: number; width: number; height: number } => ({
+          x: tile.x, y: tile.y, width: tile.width * Math.max(0.3, tile.scaleX), height: tile.displayHeight,
+        });
+        drawEnergyLink(energy, anchor(a), anchor(b), this.scene.time.now, (0.72 + charge * 0.13) * (1 - collapse * 0.5) * (1 - after));
+        const unit = Math.min(a.width, b.width) / 64;
+        const x = (a.x + b.x) / 2;
+        const y = (a.y + b.y) / 2;
+        const light = Math.pow(collapse, 4) * (1 - after);
+        for (const [radius, alpha] of [[24, 0.015], [14, 0.035], [6, 0.1], [2, 0.5]] as const) {
+          energy.fillStyle(COLORS.bond.core, alpha * light);
+          energy.fillCircle(x, y, radius * unit * (0.5 + collapse));
+        }
+        if (after > 0) {
+          energy.lineStyle(1.2 * unit, COLORS.bond.echo, (1 - after) * 0.45);
+          energy.strokeCircle(x, y, (8 + after * 22) * unit);
+        }
+      },
+      onComplete: () => energy.destroy(),
     });
   }
 

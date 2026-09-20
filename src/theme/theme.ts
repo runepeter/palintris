@@ -34,6 +34,7 @@ export const DURATION = { snap: 120, normal: 220, calm: 400, ceremony: 800 } as 
 
 export const VICTORY = {
   clear: { hold: 700, pairGap: 140, glow: 200, dissolve: 300, rest: 320 },
+  energy: { hold: 700, pairGap: 260, glow: 320, dissolve: 500, rest: 420 },
   fast: { hold: 180, pairGap: 60, glow: 100, dissolve: 180, rest: 160 },
   reduced: { hold: 700, pairGap: 0, glow: 0, dissolve: 220, rest: 240 },
 } as const;

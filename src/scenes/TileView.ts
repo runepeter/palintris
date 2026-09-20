@@ -77,6 +77,7 @@ export class TileView extends Phaser.GameObjects.Container {
   private readonly label: Phaser.GameObjects.Text;
   private readonly lock: Phaser.GameObjects.Graphics;
   private clearGlow: Phaser.GameObjects.Graphics | null = null;
+  private clearEnergyGlow = false;
 
   constructor(scene: Phaser.Scene, tile: Tile) {
     super(scene, 0, 0);
@@ -98,6 +99,10 @@ export class TileView extends Phaser.GameObjects.Container {
     return { ...this.current };
   }
 
+  get bondedTo(): number | undefined {
+    return this.tile.bondedTo;
+  }
+
   setTile(tile: Tile, size: number, colorBlind: boolean): void {
     this.tile = tile;
     this.tileId = tile.id;
@@ -108,9 +113,10 @@ export class TileView extends Phaser.GameObjects.Container {
     this.drawClearGlow();
   }
 
-  addClearGlow(): Phaser.GameObjects.Graphics {
+  addClearGlow(energy = false): Phaser.GameObjects.Graphics {
     const glow = this.scene.add.graphics().setAlpha(0);
     this.clearGlow = glow;
+    this.clearEnergyGlow = energy;
     this.add(glow);
     this.drawClearGlow();
     return glow;
@@ -120,8 +126,12 @@ export class TileView extends Phaser.GameObjects.Container {
     const glow = this.clearGlow;
     if (glow === null) return;
     glow.clear();
-    glow.fillStyle(COLORS.ink, 0.9);
+    glow.fillStyle(this.clearEnergyGlow ? COLORS.bond.thread : COLORS.ink, this.clearEnergyGlow ? 0.65 : 0.9);
     glow.fillRoundedRect(-this.size / 2, -this.size / 2, this.size, this.size, this.size * 0.12);
+    if (this.clearEnergyGlow) {
+      glow.lineStyle(2, COLORS.bond.core, 0.9);
+      glow.strokeRoundedRect(-this.size / 2, -this.size / 2, this.size, this.size, this.size * 0.12);
+    }
   }
 
   setFlags(f: Partial<TileFlags>): void {

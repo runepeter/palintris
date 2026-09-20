@@ -982,6 +982,9 @@ export class BoardScene extends Phaser.Scene {
       this.effects.clearBoard(tiles, services(this).settings().clearAnimations, () => {
         const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
         this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
+      }, (i) => {
+        const slot = this.layout.slots[i];
+        return slot === undefined ? undefined : this.screenPoint(slot.x, slot.y);
       });
     };
   }
@@ -1467,7 +1470,7 @@ export class BoardScene extends Phaser.Scene {
       zones: () => this.zones(),
       busy: () => this.inputLocked || this.pendingTweens > 0,
       stickyPreview: () => this.stickyLinks?.swaps ?? [],
-      renderedTiles: () => [...this.tiles.values()].map((tile) => ({ id: tile.tileId, alpha: tile.alpha, scaleY: tile.scaleY, size: tile.width })),
+      renderedTiles: () => [...this.tiles.values()].map((tile) => ({ id: tile.tileId, x: tile.x, y: tile.y, alpha: tile.alpha, scaleX: tile.scaleX, scaleY: tile.scaleY, size: tile.width })),
       state: () => this.machine.state,
       clockMs: () => (this.modeKind === 'blitz' ? this.clock.remainingMs : Math.round(this.elapsedMs)),
       bannerVisible: () => this.banner !== null,

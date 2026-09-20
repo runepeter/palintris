@@ -26,7 +26,7 @@ export interface TestHook {
   zones(): { readonly wild: ScreenPoint; readonly remove: ScreenPoint; readonly undo: ScreenPoint; readonly reset: ScreenPoint };
   busy(): boolean;
   stickyPreview(): readonly { a: number; b: number }[];
-  renderedTiles(): ReadonlyArray<{ id: number; alpha: number; scaleY: number; size: number }>;
+  renderedTiles(): ReadonlyArray<{ id: number; x: number; y: number; alpha: number; scaleX: number; scaleY: number; size: number }>;
   state(): GestureState;
   /** Blitz: tid igjen. Daglig: tid brukt. Ellers 0. */
   clockMs(): number;
