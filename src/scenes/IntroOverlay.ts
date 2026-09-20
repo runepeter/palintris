@@ -115,11 +115,12 @@ export class IntroOverlay extends Phaser.GameObjects.Container {
 
   private layoutFull(width: number, h: number): Phaser.GameObjects.Container {
     this.title.setVisible(true).setOrigin(0.5, 0.5).setPosition(0, -h / 2 + SPACE.xl);
-    this.glyphHolder.setVisible(true).setPosition(0, SPACE.md);
     this.blurb.setOrigin(0.5, 0.5);
     this.blurb.setText(this.spec.text);
     this.blurb.setWordWrapWidth(width - SPACE.xl * 2);
-    this.blurb.setPosition(0, -h / 2 + SPACE.xl + SPACE.xl);
+    const multiline = this.blurb.height > TEXT_SIZE * 1.5;
+    this.blurb.setPosition(0, -h / 2 + SPACE.xl * 2 + (multiline ? SPACE.sm : 0));
+    this.glyphHolder.setVisible(!multiline).setPosition(0, SPACE.md);
     return makeButton(this.host, {
       x: 0,
       y: h / 2 - SPACE.xl - SPACE.xs,

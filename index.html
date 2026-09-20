@@ -3,13 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Palintris - A palindrome puzzle game" />
+    <meta name="description" content="Finn harmonien i Palintris. Bytt brikker, løs speilgåter og utforsk seks magiske verdener." />
+    <meta name="theme-color" content="#061920" />
+    <meta property="og:title" content="Palintris – finn harmonien" />
+    <meta property="og:description" content="90 speilgåter, et nytt dagsbrett og raske Blitz-runder. Spill rett i nettleseren." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nb_NO" />
     <title>Palintris</title>
     <link rel="icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin />
     <style>
+      @font-face {
+        font-family: 'Cinzel';
+        font-style: normal;
+        font-weight: 400 700;
+        font-display: swap;
+        src: url('/fonts/cinzel-latin.woff2') format('woff2');
+      }
+
+      @font-face {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400 700;
+        font-display: swap;
+        src: url('/fonts/nunito-latin.woff2') format('woff2');
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -34,10 +54,46 @@
       canvas {
         display: block;
       }
+
+      #loading, .no-script {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: grid;
+        place-content: center;
+        gap: 20px;
+        padding: 24px;
+        text-align: center;
+        background: #061920;
+        color: #fff2d6;
+        font: 16px 'Nunito', sans-serif;
+      }
+
+      #loading h1 { font: 600 32px 'Cinzel', serif; letter-spacing: 4px; }
+      #loading p { color: #a8c2c5; }
+      #loading progress { width: 100%; height: 4px; accent-color: #8df5dd; }
+      #loading button {
+        min-height: 48px;
+        border: 1px solid #c39b53;
+        border-radius: 9px;
+        background: #102d37;
+        color: #fff2d6;
+        font: 700 16px 'Nunito', sans-serif;
+        cursor: pointer;
+      }
+      #loading button:focus-visible { outline: 2px solid #8df5dd; outline-offset: 4px; }
+      .no-script { z-index: 20; }
     </style>
   </head>
   <body>
-    <div id="game-container"></div>
+    <div id="loading" role="status" aria-live="polite">
+      <h1>Palintris</h1>
+      <p id="loading-message">Åpner speilverdenen…</p>
+      <progress id="loading-progress" max="1" value="0" aria-label="Laster spillet"></progress>
+      <button id="retry-loading" type="button" hidden>Prøv igjen</button>
+    </div>
+    <noscript><p class="no-script">Slå på JavaScript i nettleseren for å spille Palintris.</p></noscript>
+    <div id="game-container" aria-label="Palintris"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -66,7 +66,8 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private build(): void {
-    makeBackdrop(this, 'hero');
+    const landscape = screenHeight(this) < 560 && screenWidth(this) > screenHeight(this) * 1.25;
+    makeBackdrop(this, 'hero', landscape ? 720 : 480);
     const s = services(this);
     const reducedMotion = s.settings().reducedMotion;
     const d = durations(reducedMotion);
@@ -79,16 +80,16 @@ export class ResultScene extends Phaser.Scene {
     const h = screenHeight(this);
     const w = screenWidth(this);
     const cx = w / 2;
-    const landscape = w > h * 1.25;
     const summaryX = landscape ? cx - Math.min(170, w * 0.2) : cx;
     const summaryY = landscape ? h * 0.52 : h * 0.31;
+    const titleY = landscape ? 78 : Math.min(h * 0.165, summaryY - 120);
     const presentation = resultPresentation(this.outcome.stars, this.outcome.previousStars);
 
     const animate = !this.celebrated;
-    makeLabel(this, summaryX, landscape ? 42 : h * 0.105, this.resultEyebrow(world), {
+    makeLabel(this, summaryX, titleY - 36, this.resultEyebrow(world), {
       size: 10, color: COLORS.star, font: 'body', bold: true,
     }).setLetterSpacing(2.2);
-    const title = makeLabel(this, summaryX, landscape ? 78 : h * 0.165, presentation.title, {
+    const title = makeLabel(this, summaryX, titleY, presentation.title, {
       size: landscape ? 30 : Math.min(38, w * 0.095), color: COLORS.ink, bold: true,
     }).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
     const titleWidth = landscape ? Math.min(320, w / 2 - 36) : w - 40;
@@ -97,11 +98,11 @@ export class ResultScene extends Phaser.Scene {
     this.celebrated = true;
     makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  mål ${this.target}`, {
       size: 15, color: COLORS.inkMuted, font: 'body',
-    });
+    }).setStroke(cssColor(COLORS.shadow), 4);
     if (presentation.isPersonalBest) {
       makeLabel(this, summaryX, summaryY + 110, this.outcome.previousStars > 0 ? 'NY PERSONLIG BESTE' : 'FØRSTE SEIER', {
         size: 11, color: COLORS.success, font: 'body', bold: true,
-      }).setLetterSpacing(1.5);
+      }).setLetterSpacing(1.5).setStroke(cssColor(COLORS.shadow), 4);
     }
     if (this.mode === 'daily') this.buildDailyStats(summaryX, summaryY + (presentation.isPersonalBest ? 136 : 112));
     if (this.outcome.worldJustUnlocked !== null) {
@@ -152,7 +153,7 @@ export class ResultScene extends Phaser.Scene {
     const attempt = daily.attempts.filter((a) => a.puzzleId === this.levelId).length;
     makeLabel(this, cx, y, `Tid ${mmss(this.timeMs)} · forsøk ${attempt} · rekke ${daily.streak}`, {
       size: 16, color: COLORS.inkMuted, font: 'body',
-    });
+    }).setStroke(cssColor(COLORS.shadow), 4);
   }
 
   private buildDailyButtons(cx: number, top: number, accent: number, landscape: boolean): void {

@@ -12,6 +12,20 @@ et trekkbudsjett.
 - **Daglig** – ett felles brett per dag (UTC), med streak.
 - **Blitz** – tidsbegrenset kø av brett uten trekkgrense.
 - **Fri spilling** – uendelig genererte brett per verden, for øving.
+- **Sticky · prøv** – tre prøvebrett med koblede speilpar. Paret flyttes sammen og trekkes inn mot midten ved seier.
+
+## Slik spiller du
+
+Hele rekken skal være lik fra begge ender. Bytt nabobrikker ved å dra eller trykke på begge.
+Hold og dra over flere brikker for å velge et utsnitt når rotasjon eller speiling er tillatt.
+Tillatte verktøy vises på brettet. Angre og Reset lar deg prøve igjen; Meny avslutter brettet.
+
+På tastatur: piltaster flytter markøren, mellomrom velger, og neste pil bytter med naboen.
+Shift + pil velger utsnitt; Q/E roterer og W speiler. Z angrer, R tilbakestiller,
+J setter inn joker og X fjerner en brikke når verktøyet er tilgjengelig.
+
+Fremgang og innstillinger lagres i denne nettleseren. Ingen konto eller synkronisering.
+Ved blokkert lagring fungerer spillet, men fremgangen forsvinner ved omlasting eller når siden lukkes.
 
 ## Utvikling
 
@@ -23,6 +37,7 @@ npm run typecheck   # tsc --noEmit for app og node-config
 npm run lint        # ESLint over src, scripts og e2e
 npm run build        # tsc + vite build
 npm run e2e           # Playwright, ende-til-ende
+npm run e2e:release   # statisk produksjonsbuild i Chromium og WebKit
 npm run build:campaign  # regenerer kampanjenivåene
 ```
 
@@ -56,3 +71,9 @@ endres, slik at gamle lagrede fremskritt ikke blandes med nytt innhold.
 
 Prosjektet er satt opp for Vercel (`vercel.json`): `npm run build` bygger til `dist`,
 som serveres statisk.
+
+Installer testnettlesere med `npx playwright install chromium webkit` før lokal fullverifisering.
+CI kjører også produksjonstestene: oppstart, første seier, lagring, innstillinger og blokkert lokal lagring.
+Skrifter og grafikk ligger lokalt i `public`; skriftlisensene følger med.
+
+Se [utgivelsesstatus](docs/release-v1.md) for verifisering og siste publiseringssteg.

@@ -18,7 +18,7 @@ export const registerJewelFrames = (scene: Phaser.Scene): void => {
 export const jewelFrame = (symbol: string): number => ((symbol.charCodeAt(0) - 65) % 6 + 6) % 6;
 
 /** Bakgrunn og ramme gjenbygges samlet ved resize, uten egne event-lyttere. */
-export const makeBackdrop = (scene: Phaser.Scene, mode: 'hero' | 'board' | 'quiet' = 'quiet'): Phaser.GameObjects.Container => {
+export const makeBackdrop = (scene: Phaser.Scene, mode: 'hero' | 'board' | 'quiet' = 'quiet', frameWidth = 480): Phaser.GameObjects.Container => {
   prepareViewport(scene);
   const w = screenWidth(scene);
   const h = screenHeight(scene);
@@ -51,7 +51,7 @@ export const makeBackdrop = (scene: Phaser.Scene, mode: 'hero' | 'board' | 'quie
     shade.fillGradientStyle(COLORS.shadow, COLORS.shadow, COLORS.shadow, COLORS.shadow, 0.7, 0.7, 0, 0);
     shade.fillRect(0, 0, w, h * 0.25);
   }
-  const inset = Math.max(10, (w - 480) / 2);
+  const inset = Math.max(10, (w - frameWidth) / 2);
   shade.lineStyle(1, COLORS.gold, 0.35);
   shade.strokeRoundedRect(inset, 12, w - inset * 2, h - 24, 18);
   for (const x of [inset + 10, w - inset - 10]) {

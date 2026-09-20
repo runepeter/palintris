@@ -48,32 +48,33 @@ export class BlitzResultScene extends Phaser.Scene {
   }
 
   private build(): void {
-    makeBackdrop(this, 'hero');
+    const landscape = screenHeight(this) < 560 && screenWidth(this) > screenHeight(this) * 1.25;
+    makeBackdrop(this, 'hero', landscape ? 720 : 480);
     const w = screenWidth(this);
     const cx = w / 2;
     const h = screenHeight(this);
-    const landscape = w > h * 1.25;
     const summaryX = landscape ? cx - Math.min(170, w * 0.2) : cx;
     const summaryY = landscape ? h * 0.52 : h * 0.35;
+    const titleY = landscape ? 78 : Math.min(h * 0.165, summaryY - 132);
     const buttonsX = landscape ? cx + Math.min(170, w * 0.2) : cx;
     const accent = this.isNewBest ? COLORS.success : COLORS.danger;
     const reducedMotion = services(this).settings().reducedMotion;
     const animate = !this.celebrated;
 
-    makeLabel(this, summaryX, landscape ? 42 : h * 0.105, 'BLITZ  ·  TIDEN ER UTE', {
+    makeLabel(this, summaryX, titleY - 36, 'BLITZ  ·  TIDEN ER UTE', {
       size: 10, color: COLORS.star, font: 'body', bold: true,
     }).setLetterSpacing(2.2);
-    makeLabel(this, summaryX, landscape ? 78 : h * 0.165, this.isNewBest ? 'Ny rekord' : 'Sterk runde', {
+    makeLabel(this, summaryX, titleY, this.isNewBest ? 'Ny rekord' : 'Sterk runde', {
       size: landscape ? 32 : Math.min(40, w * 0.1), color: COLORS.ink, bold: true,
     }).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
     this.buildScoreSeal(summaryX, summaryY, accent, animate, reducedMotion);
     makeLabel(this, summaryX, summaryY + 102, `Personlig beste  ·  ${this.best}`, {
       size: 15, color: COLORS.inkMuted, font: 'body',
-    });
+    }).setStroke(cssColor(COLORS.shadow), 4);
     if (this.isNewBest) {
       makeLabel(this, summaryX, summaryY + 130, 'NY PERSONLIG BESTE', {
         size: 11, color: COLORS.success, font: 'body', bold: true,
-      }).setLetterSpacing(1.5);
+      }).setLetterSpacing(1.5).setStroke(cssColor(COLORS.shadow), 4);
     }
 
     const buttonsTop = landscape ? h * 0.43 : h * 0.68;

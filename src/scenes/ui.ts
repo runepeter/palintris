@@ -71,7 +71,7 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
     bold: true,
   });
   const c = scene.add.container(opts.x, opts.y, [g, label]);
-  c.setSize(opts.width, opts.height);
+  c.setSize(Math.max(44, opts.width), Math.max(44, opts.height));
   if (enabled) {
     c.setInteractive({ useHandCursor: true });
     // Phaser fyrer pointerup på knappen uansett hvor pointerdown skjedde. Uten armeringen

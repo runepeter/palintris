@@ -16,17 +16,33 @@ const loadFonts = async (): Promise<void> => {
 };
 
 export class BootScene extends Phaser.Scene {
+  private assetFailed = false;
+
   constructor() {
     super(SCENE.boot);
   }
 
   preload(): void {
+    this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, () => { this.assetFailed = true; });
+    this.load.on(Phaser.Loader.Events.PROGRESS, (value: number) => {
+      const progress = document.getElementById('loading-progress') as HTMLProgressElement | null;
+      if (progress !== null) progress.value = value;
+    });
     this.load.image(ART.realm, 'assets/mirror-realm.webp');
     this.load.image(ART.jewels, 'assets/jewel-tiles.webp');
     this.load.image(ART.wild, 'assets/wild-jewel.webp');
   }
 
   create(): void {
+    if (this.assetFailed) {
+      const message = document.getElementById('loading-message');
+      if (message !== null) message.textContent = 'Kunne ikke laste spillet. Sjekk forbindelsen og prøv igjen.';
+      document.getElementById('loading-progress')?.setAttribute('hidden', '');
+      const retry = document.getElementById('retry-loading');
+      retry?.removeAttribute('hidden');
+      retry?.addEventListener('click', () => window.location.reload(), { once: true });
+      return;
+    }
     registerJewelFrames(this);
     this.cameras.main.setBackgroundColor(cssColor(COLORS.background));
     const s = createServices();
@@ -36,6 +52,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   private next(): void {
+    document.getElementById('loading')?.remove();
     const params = import.meta.env.DEV ? new URLSearchParams(window.location.search) : null;
     const hasBoard = this.scene.get(SCENE.board) !== null;
     const mode = params?.get('mode') ?? null;
