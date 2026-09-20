@@ -50,7 +50,11 @@ const newBlitz = (store: SaveStore): BlitzMode =>
   new BlitzMode(store, new BlitzQueue(hashString(String(Date.now())), CONTENT_VERSION));
 
 export const createServices = (): Services => {
-  const store = new SaveStore(window.localStorage);
+  // Også getter-tilgangen kan kaste; les den innenfor lagringens feilhåndtering.
+  const store = new SaveStore({
+    getItem: (key) => window.localStorage.getItem(key),
+    setItem: (key, value) => window.localStorage.setItem(key, value),
+  });
   const worker = new Worker(new URL('../core/solver.worker.ts', import.meta.url), { type: 'module' });
   const modes: Modes = {
     campaign: new CampaignMode(store),

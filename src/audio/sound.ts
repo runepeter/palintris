@@ -99,6 +99,12 @@ class ChiptuneEngine {
 
     osc.connect(gain);
     gain.connect(master);
+    osc.onended = (): void => {
+      this.activeOscillators = this.activeOscillators.filter((active) => active !== osc);
+      osc.disconnect();
+      gain.disconnect();
+      osc.onended = null;
+    };
 
     osc.start(now);
     osc.stop(now + duration);
