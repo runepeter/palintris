@@ -72,6 +72,9 @@ endres, slik at gamle lagrede fremskritt ikke blandes med nytt innhold.
 Prosjektet er satt opp for Vercel (`vercel.json`): `npm run build` bygger til `dist`,
 som serveres statisk.
 
+Vercel-prosjektet `cyclaw/palintris` er koblet til `runepeter/palintris` på GitHub.
+Push til `main` publiserer automatisk på [palintris.vercel.app](https://palintris.vercel.app/).
+
 Installer testnettlesere med `npx playwright install chromium webkit` før lokal fullverifisering.
 CI kjører også produksjonstestene: oppstart, første seier, lagring, innstillinger og blokkert lokal lagring.
 Skrifter og grafikk ligger lokalt i `public`; skriftlisensene følger med.

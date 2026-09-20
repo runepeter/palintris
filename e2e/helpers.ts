@@ -89,7 +89,8 @@ export const hook = (page: Page): Hook => ({
 export const drag = async (page: Page, from: { x: number; y: number }, to: { x: number; y: number }): Promise<void> => {
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  await page.mouse.move(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2, { steps: 4 });
+  // Kryss dragterskelen før små steg kan tolkes som et langt trykk på trege maskiner.
+  await page.mouse.move(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2);
   await page.mouse.move(to.x, to.y, { steps: 4 });
   await page.mouse.up();
 };
