@@ -9,6 +9,7 @@ import { BlitzMode } from '../game/modes/blitz';
 import { CampaignMode } from '../game/modes/campaign';
 import { DailyMode } from '../game/modes/daily';
 import { FreeMode } from '../game/modes/free';
+import { StickyMode } from '../game/modes/sticky';
 import { SaveStore } from '../game/saveStore';
 import type { SolverPort } from '../game/session';
 
@@ -19,6 +20,7 @@ export interface Modes {
   /** Byttes ut ved hver ny blitz-omgang; se restartBlitz. */
   blitz: BlitzMode;
   readonly free: FreeMode;
+  readonly sticky: StickyMode;
 }
 
 export interface Services {
@@ -55,6 +57,7 @@ export const createServices = (): Services => {
     daily: new DailyMode(store, CONTENT_VERSION, () => new Date()),
     blitz: newBlitz(store),
     free: new FreeMode(CONTENT_VERSION, createRng(Date.now() >>> 0)),
+    sticky: new StickyMode(),
   };
   return {
     store,

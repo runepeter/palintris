@@ -188,6 +188,17 @@ export class TileView extends Phaser.GameObjects.Container {
     this.label.setStroke(cssColor(COLORS.shadow), hasSprite ? 3 : 0);
 
     this.lock.clear();
+    if (t.sticky === true || t.bondedTo !== undefined) {
+      const k = s * 0.105;
+      const x = -s / 2 + k * 1.5;
+      const y = -s / 2 + k * 1.7;
+      this.lock.fillStyle(COLORS.panel, 1);
+      this.lock.fillRoundedRect(x - k, y - k, k * 3.4, k * 2, k * 0.5);
+      this.lock.lineStyle(2, t.bondedTo !== undefined ? COLORS.glow : COLORS.star, 1);
+      this.lock.strokeCircle(x, y, k * 0.65);
+      this.lock.strokeCircle(x + k * 1.3, y, k * 0.65);
+      if (t.bondedTo !== undefined) this.lock.lineBetween(x, y, x + k * 1.3, y);
+    }
     if (t.locked) {
       const k = s * 0.14;
       this.lock.fillStyle(COLORS.star, 1);

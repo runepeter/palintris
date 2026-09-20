@@ -1,6 +1,7 @@
 import type { MoveCommand, RejectReason, Result } from './commands';
 import { ok, reject } from './commands';
 import type { Rules } from './rules';
+import { bindStickyPairs, planSwap } from './sticky';
 import type { Snapshot, Tile } from './tiles';
 import { makeTile, WILD_SYMBOL } from './tiles';
 
@@ -13,16 +14,16 @@ const withTiles = (snap: Snapshot, tiles: readonly Tile[]): Snapshot => ({
 });
 
 const swap = (_rules: Rules, snap: Snapshot, a: number, b: number): Result<Snapshot, RejectReason> => {
-  const n = snap.tiles.length;
-  if (!inRange(a, n) || !inRange(b, n)) return reject('outOfRange');
-  if (Math.abs(a - b) !== 1) return reject('notAdjacent');
-  const ta = snap.tiles[a];
-  const tb = snap.tiles[b];
-  if (ta === undefined || tb === undefined) return reject('outOfRange');
-  if (ta.locked || tb.locked) return reject('locked');
+  const plan = planSwap(snap.tiles, a, b);
+  if (!plan.ok) return plan;
   const tiles = [...snap.tiles];
-  tiles[a] = tb;
-  tiles[b] = ta;
+  for (const pair of plan.value) {
+    const aTile = tiles[pair.a];
+    const bTile = tiles[pair.b];
+    if (aTile === undefined || bTile === undefined) return reject('outOfRange');
+    tiles[pair.a] = bTile;
+    tiles[pair.b] = aTile;
+  }
   return ok(withTiles(snap, tiles));
 };
 
@@ -102,7 +103,7 @@ const remove = (rules: Rules, snap: Snapshot, tileId: number): Result<Snapshot, 
   });
 };
 
-export const applyMove = (
+const dispatchMove = (
   rules: Rules,
   snap: Snapshot,
   cmd: MoveCommand
@@ -120,4 +121,18 @@ export const applyMove = (
     case 'remove':
       return remove(rules, snap, cmd.tileId);
   }
+};
+
+export const applyMove = (
+  rules: Rules,
+  snap: Snapshot,
+  cmd: MoveCommand
+): Result<Snapshot, RejectReason> => {
+  const result = dispatchMove(rules, snap, cmd);
+  if (!result.ok) return result;
+  if (cmd.type !== 'swap' && snap.tiles.some((t, i) => t.bondedTo !== undefined &&
+    (snap.tiles.length !== result.value.tiles.length || result.value.tiles[i]?.id !== t.id))) {
+    return reject('stickyConflict');
+  }
+  return ok({ ...result.value, tiles: bindStickyPairs(result.value.tiles) });
 };

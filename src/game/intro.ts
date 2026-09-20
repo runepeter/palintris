@@ -8,6 +8,7 @@ export interface IntroSpec {
   readonly mechanic: IntroMechanic;
   readonly title: string;
   readonly text: string;
+  readonly compactText?: string;
   readonly gesture: 'drag' | 'hold' | 'tap' | 'dragHand';
 }
 

@@ -34,7 +34,7 @@ export interface SolvedInfo {
 
 /** Brettet vet ingenting om modus. Modusen leverer brett og avgjør hva som skjer ved løsning. */
 export interface BoardMode {
-  readonly kind: 'campaign' | 'daily' | 'blitz' | 'free';
+  readonly kind: 'campaign' | 'daily' | 'blitz' | 'free' | 'sticky';
   load(levelId: string): ModeLevel | null;
   isUnlocked(levelId: string): boolean;
   onSolved(levelId: string, movesUsed: number, info?: SolvedInfo): SolvedOutcome;

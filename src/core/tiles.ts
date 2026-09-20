@@ -1,3 +1,5 @@
+import { bindStickyPairs } from './sticky';
+
 export const WILD_SYMBOL = '*';
 
 export interface Tile {
@@ -5,6 +7,8 @@ export interface Tile {
   readonly symbol: string;
   readonly locked: boolean;
   readonly wild: boolean;
+  readonly sticky?: boolean;
+  readonly bondedTo?: number;
 }
 
 export interface Hand {
@@ -22,7 +26,7 @@ export interface Snapshot {
 export const makeTile = (
   id: number,
   symbol: string,
-  opts: { locked?: boolean; wild?: boolean } = {}
+  opts: { locked?: boolean; wild?: boolean; sticky?: boolean } = {}
 ): Tile => {
   const wild = opts.wild === true;
   const locked = opts.locked === true;
@@ -34,6 +38,7 @@ export const makeTile = (
     symbol: wild ? WILD_SYMBOL : symbol,
     locked,
     wild,
+    ...(opts.sticky === true ? { sticky: true } : {}),
   };
 };
 
@@ -52,7 +57,7 @@ export const symbolKey = (tiles: readonly Tile[]): string =>
     .join('');
 
 export const makeSnapshot = (tiles: readonly Tile[], hand: Hand): Snapshot => ({
-  tiles,
+  tiles: bindStickyPairs(tiles),
   hand,
   movesUsed: 0,
   nextId: tiles.reduce((max, t) => Math.max(max, t.id), -1) + 1,

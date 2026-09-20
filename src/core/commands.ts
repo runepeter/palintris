@@ -12,6 +12,7 @@ export type MoveCommand = Exclude<Command, { type: 'undo' } | { type: 'reset' }>
 export type RejectReason =
   | 'notAllowed'
   | 'locked'
+  | 'stickyConflict'
   | 'notAdjacent'
   | 'segmentTooShort'
   | 'segmentContainsLocked'

@@ -120,7 +120,7 @@ export class ResultScene extends Phaser.Scene {
     const toWorldMap = this.mode === 'campaign' || isFree;
     makeButton(this, {
       x: buttonsX, y: buttonsTop, width: 268, height: 58,
-      label: canContinue ? 'Neste speil  →' : toWorldMap ? 'Til verdenskartet  →' : 'Til menyen  →', accent,
+      label: canContinue ? (this.mode === 'sticky' ? 'Neste prøvebrett  →' : 'Neste speil  →') : toWorldMap ? 'Til verdenskartet  →' : 'Til menyen  →', accent,
       onClick: () => {
         if (canContinue && nextLevel !== null) {
           this.scene.start(SCENE.board, { mode: this.mode, levelId: nextLevel });
@@ -228,6 +228,7 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private resultEyebrow(world: number): string {
+    if (this.mode === 'sticky') return `STICKY  ·  PRØVEBRETT ${this.levelId.slice(-2)}/03`;
     if (this.mode === 'daily') return 'DAGENS SPEIL ER ÅPNET';
     if (this.mode === 'free') return `FRI SPILLING  ·  VERDEN ${world}`;
     return `SPEIL ${this.levelId.toUpperCase()}  ·  VERDEN ${world}`;

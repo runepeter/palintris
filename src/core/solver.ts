@@ -2,6 +2,7 @@ import type { MoveCommand } from './commands';
 import { isPalindrome } from './palindrome';
 import type { Rules } from './rules';
 import { applyMove } from './step';
+import { planSwap } from './sticky';
 import type { Hand, Snapshot, Tile } from './tiles';
 import { makeSnapshot, symbolKey } from './tiles';
 
@@ -19,8 +20,11 @@ export type SolveResult =
   | { readonly status: 'unknown' }
   | { readonly status: 'cancelled' };
 
-export const stateKey = (tiles: readonly Tile[], hand: Hand): string =>
-  `${symbolKey(tiles)}|${hand.wild}|${hand.remove}`;
+export const stateKey = (tiles: readonly Tile[], hand: Hand): string => {
+  const base = `${symbolKey(tiles)}|${hand.wild}|${hand.remove}`;
+  if (!tiles.some((t) => t.sticky === true || t.bondedTo !== undefined)) return base;
+  return `${base}|${tiles.map((t) => `${t.sticky === true ? 1 : 0}:${t.bondedTo === undefined ? '' : tiles.findIndex((p) => p.id === t.bondedTo)}`).join(',')}`;
+};
 
 export const legalMoves = (rules: Rules, snap: Snapshot): MoveCommand[] => {
   const n = snap.tiles.length;
@@ -30,7 +34,7 @@ export const legalMoves = (rules: Rules, snap: Snapshot): MoveCommand[] => {
 
   if (ops.has('swap')) {
     for (let i = 0; i + 1 < n; i++) {
-      if (locked[i] === false && locked[i + 1] === false) moves.push({ type: 'swap', a: i, b: i + 1 });
+      if (planSwap(snap.tiles, i, i + 1).ok) moves.push({ type: 'swap', a: i, b: i + 1 });
     }
   }
   if (ops.has('rotate') || ops.has('mirror')) {

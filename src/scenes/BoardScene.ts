@@ -23,6 +23,7 @@ import { computeLayout, hitGap, hitTile } from '../game/layout';
 import { BLITZ_NEXT } from '../game/modes/blitz';
 import type { BoardMode, ModeLevel } from '../game/modes/types';
 import { moveAnimationFor, type MoveAnimation } from '../game/moveAnimation';
+import { STICKY_LEVELS } from '../game/modes/sticky';
 import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
@@ -32,6 +33,7 @@ import { SegmentMenu } from './SegmentMenu';
 import { services, type Services } from './services';
 import { installHook, removeHook } from './testHook';
 import { TileView } from './TileView';
+import { StickyLinks } from './StickyLinks';
 import { contentLeft, contentWidth, makeButton, makeLabel, SCENE } from './ui';
 
 export type ModeKind = BoardMode['kind'];
@@ -93,6 +95,7 @@ const KEY_MAP: Readonly<Record<string, KeyCode>> = {
 };
 
 const HINT_TEXT: Readonly<Record<HintReason | SessionReject, string>> = {
+  stickyConflict: 'Paret må ha plass til å flyttes sammen',
   locked: 'Låst brikke',
   segmentContainsLocked: 'Segmentet inneholder låst brikke',
   segmentTooShort: 'Segment må ha minst 3',
@@ -173,6 +176,7 @@ export class BoardScene extends Phaser.Scene {
   private d = durations(false);
   private pendingVictory: (() => void) | null = null;
   private clearingVictory = false;
+  private stickyLinks: StickyLinks | null = null;
   /** Sann mens fanen er skjult: begge klokkene står stille. */
   private paused = false;
   /** Daglig: tid brukt, kommandologg og starttidspunkt for gjenopptakelse. */
@@ -259,6 +263,7 @@ export class BoardScene extends Phaser.Scene {
     this.pendingCommand = null;
     this.pendingVictory = null;
     this.clearingVictory = false;
+    this.stickyLinks = null;
     this.handCache = null;
     this.banner = null;
     this.hint = null;
@@ -323,6 +328,7 @@ export class BoardScene extends Phaser.Scene {
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
     this.startBoard(level);
+    if (this.modeKind === 'sticky') this.stickyLinks = new StickyLinks(this);
     if (this.modeKind === 'blitz') this.clock.start();
     this.paused = document.hidden;
     // Starter omgangen på en skjult fane, ville klokken ellers tikket til fanen ble sett.
@@ -468,6 +474,20 @@ export class BoardScene extends Phaser.Scene {
       begin();
     }
     this.tickClock(delta);
+    this.drawStickyLinks();
+  }
+
+  private drawStickyLinks(): void {
+    if (this.stickyLinks === null) return;
+    const state = this.machine.state;
+    const from = state.name === 'dragTile' || state.name === 'selected' || state.name === 'pending'
+      ? state.index : this.keyboardActive ? this.keyboard.state.selected : null;
+    const pointer = this.input.activePointer;
+    const target = this.keyboardActive ? this.keyboard.state.cursor : hitTile(this.layout,
+      (pointer.x / PIXEL_RATIO - this.originX) / this.layout.scale,
+      (pointer.y / PIXEL_RATIO - this.originY) / this.layout.scale);
+    const slots = this.layout.slots.map((slot) => this.screenPoint(slot.x, slot.y));
+    this.stickyLinks.draw(this.view.tiles, this.tiles, slots, from, target, this.clearingVictory);
   }
 
   /** Begge klokkene mates fra spilløkka, aldri fra setInterval: en skjult fane står stille. */
@@ -621,8 +641,8 @@ export class BoardScene extends Phaser.Scene {
   private resolveTarget(x: number, y: number): Target {
     const action = this.menu.hitAction(x, y);
     if (action !== null) return { kind: 'menu', action };
-    if (this.near(this.zoneCache.wild, x, y)) return { kind: 'hand', item: 'wild' };
-    if (this.near(this.zoneCache.remove, x, y)) return { kind: 'hand', item: 'remove' };
+    if (this.modeKind !== 'sticky' && this.near(this.zoneCache.wild, x, y)) return { kind: 'hand', item: 'wild' };
+    if (this.modeKind !== 'sticky' && this.near(this.zoneCache.remove, x, y)) return { kind: 'hand', item: 'remove' };
     const lx = (x - this.originX) / this.layout.scale;
     const ly = (y - this.originY) / this.layout.scale;
     // Brikketreff er ubrukt under joker-drag, og mellomrommene mellom to brikker er bare GAP
@@ -1017,6 +1037,13 @@ export class BoardScene extends Phaser.Scene {
 
   /** Kun kampanjen underviser, og hver intro vises én gang per spiller. */
   private maybeShowIntro(): void {
+    if (this.modeKind === 'sticky') {
+      const level = STICKY_LEVELS.find((item) => item.id === this.levelId);
+      if (level === undefined) return;
+      this.introSpec = { id: level.id, title: level.title, text: level.text, compactText: level.compactText, mechanic: 'swap', gesture: 'drag' };
+      this.intro = new IntroOverlay(this, this.introSpec, services(this).settings().reducedMotion, () => this.dismissIntro());
+      return;
+    }
     if (this.modeKind !== 'campaign') return;
     const spec = introFor(this.levelId);
     if (spec === null) return;
@@ -1036,6 +1063,7 @@ export class BoardScene extends Phaser.Scene {
 
   /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
   private checkIntro(cmd: Command): void {
+    if (this.modeKind === 'sticky') return;
     if (this.introSpec !== null && introSatisfiedBy(this.introSpec, cmd)) this.dismissIntro();
   }
 
@@ -1043,7 +1071,7 @@ export class BoardScene extends Phaser.Scene {
     const spec = this.introSpec;
     if (spec === null) return;
     this.destroyIntro();
-    services(this).store.update((d) => markIntroSeen(d, spec.id));
+    if (this.modeKind !== 'sticky') services(this).store.update((d) => markIntroSeen(d, spec.id));
     // Brettflaten vokser igjen; onResize er nøyaktig den omleggingen, tween-opprydding inkludert.
     this.onResize();
   }
@@ -1218,6 +1246,10 @@ export class BoardScene extends Phaser.Scene {
     this.keyboard.clampCursor();
     const animation = command.type === 'undo' || command.type === 'reset' ? undefined : this.moveAnimation(command.type);
     this.render(true, animation);
+    if (this.modeKind === 'sticky' && command.type === 'swap' && v.tiles.some((tile) =>
+      tile.bondedTo !== undefined && previous.tiles.find((old) => old.id === tile.id)?.bondedTo === undefined)) {
+      this.effects.reward(contentLeft(this) + contentWidth(this) / 2, this.originY + 28, 'Koblet! Paret flyttes sammen', COLORS.glow);
+    }
     if (this.lastGain > 0) this.celebrateMove(newMatchedIndexes);
     if (v.solved) {
       this.onSolved();
@@ -1279,6 +1311,8 @@ export class BoardScene extends Phaser.Scene {
       ? `Trekk ${this.view.movesUsed} / mål ${this.level.target}`
       : `Trekk ${this.view.movesUsed} · mål ukjent`;
     switch (this.modeKind) {
+      case 'sticky':
+        return { top: moves, topSize: HUD_TOP, bottom: `Sticky ${this.level.n}/3 · ${this.view.budgetLeft} igjen`, harmony: this.harmonyText(), operations: 'Nabobytte · Lenkede par flyttes sammen' };
       case 'daily':
         return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       case 'blitz': {
@@ -1355,7 +1389,9 @@ export class BoardScene extends Phaser.Scene {
     tray.lineBetween(left + 20, screenHeight(this) - HAND_HEIGHT, left + w - 20, screenHeight(this) - HAND_HEIGHT);
     this.hand.add(tray);
 
-    this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
+    if (this.modeKind === 'sticky') {
+      this.hand.add(makeLabel(this, left + w / 4, cy, 'Lenkede brikker\nflyttes sammen.', { size: 13, color: COLORS.glow, font: 'body', bold: true }));
+    } else this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
     // Ladet joker har ingen spøkelse å vise, så sonen får en ring i stedet.
     const ring = this.add.graphics();
     ring.lineStyle(3, COLORS.ink, 1);
@@ -1363,7 +1399,7 @@ export class BoardScene extends Phaser.Scene {
     ring.setVisible(this.machine.state.name === 'wildArmed');
     this.hand.add(ring);
     this.armedRing = ring;
-    this.hand.add(this.makeZone(centerOf(1), cy, zoneW, `Fjern ×${this.view.hand.remove}`, this.view.hand.remove > 0));
+    if (this.modeKind !== 'sticky') this.hand.add(this.makeZone(centerOf(1), cy, zoneW, `Fjern ×${this.view.hand.remove}`, this.view.hand.remove > 0));
     this.hand.add(
       makeButton(this, {
         x: centerOf(2),
@@ -1430,6 +1466,7 @@ export class BoardScene extends Phaser.Scene {
       menu: () => (this.menu.visible ? this.menu.positions() : null),
       zones: () => this.zones(),
       busy: () => this.inputLocked || this.pendingTweens > 0,
+      stickyPreview: () => this.stickyLinks?.swaps ?? [],
       renderedTiles: () => [...this.tiles.values()].map((tile) => ({ id: tile.tileId, alpha: tile.alpha, scaleY: tile.scaleY, size: tile.width })),
       state: () => this.machine.state,
       clockMs: () => (this.modeKind === 'blitz' ? this.clock.remainingMs : Math.round(this.elapsedMs)),

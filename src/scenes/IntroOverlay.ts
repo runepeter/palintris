@@ -142,7 +142,7 @@ export class IntroOverlay extends Phaser.GameObjects.Container {
     // Ombrytingen fra det høye panelet må vekk: én linje er hele plassen, så teksten forkortes.
     this.blurb.setWordWrapWidth(null);
     this.blurb.setPosition(-width / 2 + SPACE.lg, 0);
-    elide(this.blurb, this.spec.text, width - SPACE.lg * 2 - COMPACT_BUTTON_W - SPACE.md);
+    elide(this.blurb, this.spec.compactText ?? this.spec.text, width - SPACE.lg * 2 - COMPACT_BUTTON_W - SPACE.md);
     return makeButton(this.host, {
       x: width / 2 - SPACE.lg - COMPACT_BUTTON_W / 2,
       y: 0,

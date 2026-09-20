@@ -39,6 +39,10 @@ export class BootScene extends Phaser.Scene {
     const params = import.meta.env.DEV ? new URLSearchParams(window.location.search) : null;
     const hasBoard = this.scene.get(SCENE.board) !== null;
     const mode = params?.get('mode') ?? null;
+    if (mode === 'sticky' && hasBoard) {
+      this.scene.start(SCENE.board, { mode, levelId: params?.get('level') ?? '' });
+      return;
+    }
     if ((mode === 'daily' || mode === 'blitz') && hasBoard) {
       this.scene.start(SCENE.board, { mode });
       return;
