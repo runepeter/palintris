@@ -25,6 +25,7 @@ export interface TestHook {
   menu(): ReadonlyArray<ScreenPoint & { action: SegmentAction }> | null;
   zones(): { readonly wild: ScreenPoint; readonly remove: ScreenPoint; readonly undo: ScreenPoint; readonly reset: ScreenPoint };
   busy(): boolean;
+  renderedTiles(): ReadonlyArray<{ id: number; alpha: number; scaleY: number; size: number }>;
   state(): GestureState;
   /** Blitz: tid igjen. Daglig: tid brukt. Ellers 0. */
   clockMs(): number;

@@ -171,8 +171,8 @@ export class BoardScene extends Phaser.Scene {
   private lastGain = 0;
   private pendingCommand: Command | null = null;
   private d = durations(false);
-  /** Ekstra tid resultatseremonien må vente på en pågående tydelig trekkanimasjon. */
-  private activeMoveMs = 0;
+  private pendingVictory: (() => void) | null = null;
+  private clearingVictory = false;
   /** Sann mens fanen er skjult: begge klokkene står stille. */
   private paused = false;
   /** Daglig: tid brukt, kommandologg og starttidspunkt for gjenopptakelse. */
@@ -192,6 +192,22 @@ export class BoardScene extends Phaser.Scene {
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
+    if (this.clearingVictory) {
+      this.relayout();
+      this.refreshChrome(true);
+      this.view.tiles.forEach((tile, i) => {
+        const slot = this.layout.slots[i];
+        if (slot === undefined) return;
+        const p = this.screenPoint(slot.x, slot.y);
+        const rendered = this.tiles.get(tile.id);
+        if (rendered === undefined) return;
+        const alpha = rendered.alpha;
+        rendered.setTile(tile, this.layout.tile * this.layout.scale, services(this).settings().colorBlind);
+        rendered.setAlpha(alpha).setPosition(p.x, p.y);
+      });
+      this.lastSize = { w: screenWidth(this), h: screenHeight(this) };
+      return;
+    }
     for (const v of this.tiles.values()) {
       this.tweens.killTweensOf(v);
       v.setScale(1);
@@ -241,7 +257,8 @@ export class BoardScene extends Phaser.Scene {
     this.flow = 0;
     this.lastGain = 0;
     this.pendingCommand = null;
-    this.activeMoveMs = 0;
+    this.pendingVictory = null;
+    this.clearingVictory = false;
     this.handCache = null;
     this.banner = null;
     this.hint = null;
@@ -444,7 +461,12 @@ export class BoardScene extends Phaser.Scene {
     this.machine.tick(time);
     // tick() er stille, så hold-overgangen fanges bare ved å sammenligne tilstanden.
     if (this.machine.state !== this.lastState) this.syncGestureVisuals();
-    if (this.inputLocked && this.pendingTweens === 0) this.inputLocked = false;
+    if (this.inputLocked && this.pendingTweens === 0 && !this.solvedFired) this.inputLocked = false;
+    if (this.pendingVictory !== null && this.pendingTweens === 0) {
+      const begin = this.pendingVictory;
+      this.pendingVictory = null;
+      begin();
+    }
     this.tickClock(delta);
   }
 
@@ -917,23 +939,31 @@ export class BoardScene extends Phaser.Scene {
     this.timerRunning = false;
     this.hideBanner();
     this.menu.hide();
-    if (this.modeKind === 'blitz') audio.playSuccess();
-    else if (this.view.stars === 3) audio.playVictoryJingle();
-    else audio.playPalindrome();
-    this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
-    this.effects.flash(COLORS.success, 0.2);
     const movesUsed = this.view.movesUsed;
     if (this.modeKind === 'blitz') {
+      audio.playSuccess();
+      this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
+      this.effects.flash(COLORS.success, 0.2);
       this.blitzSolved(movesUsed);
       return;
     }
     const timeMs = Math.round(this.elapsedMs);
     const outcome = this.mode.onSolved(this.levelId, movesUsed, this.modeKind === 'daily' ? { timeMs } : undefined);
-    const resultDelay = Math.max(this.d.ceremony, this.activeMoveMs === 0 ? 0 : this.activeMoveMs + this.d.normal);
-    this.time.delayedCall(resultDelay, () => {
-      const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
-      this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
-    });
+    // Vent på at siste trekk faktisk lander, også når spilleren slipper en dratt brikke.
+    this.pendingVictory = (): void => {
+      this.clearingVictory = true;
+      if (this.view.stars === 3) audio.playVictoryJingle();
+      else audio.playPalindrome();
+      this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
+      const tiles = this.view.tiles.flatMap((tile) => {
+        const rendered = this.tiles.get(tile.id);
+        return rendered === undefined ? [] : [rendered];
+      });
+      this.effects.clearBoard(tiles, services(this).settings().clearAnimations, () => {
+        const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
+        this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
+      });
+    };
   }
 
   /** Bonusen legges på før klokken leses, så et brett løst på målstreken teller. */
@@ -1064,7 +1094,6 @@ export class BoardScene extends Phaser.Scene {
 
   /** Tegner alt fra this.view. En MoveAnimation styrer bare selve trekket, ikke resten av scenen. */
   private render(animate: boolean, animation?: MoveAnimation): void {
-    this.activeMoveMs = animation?.detailed === true ? animation.totalMs : 0;
     if (animation?.detailed === true) this.inputLocked = true;
     this.relayout();
     const resized = this.lastSize === null || this.lastSize.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this);
@@ -1401,6 +1430,7 @@ export class BoardScene extends Phaser.Scene {
       menu: () => (this.menu.visible ? this.menu.positions() : null),
       zones: () => this.zones(),
       busy: () => this.inputLocked || this.pendingTweens > 0,
+      renderedTiles: () => [...this.tiles.values()].map((tile) => ({ id: tile.tileId, alpha: tile.alpha, scaleY: tile.scaleY, size: tile.width })),
       state: () => this.machine.state,
       clockMs: () => (this.modeKind === 'blitz' ? this.clock.remainingMs : Math.round(this.elapsedMs)),
       bannerVisible: () => this.banner !== null,

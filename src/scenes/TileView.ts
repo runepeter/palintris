@@ -76,6 +76,7 @@ export class TileView extends Phaser.GameObjects.Container {
   private readonly ring: Phaser.GameObjects.Graphics;
   private readonly label: Phaser.GameObjects.Text;
   private readonly lock: Phaser.GameObjects.Graphics;
+  private clearGlow: Phaser.GameObjects.Graphics | null = null;
 
   constructor(scene: Phaser.Scene, tile: Tile) {
     super(scene, 0, 0);
@@ -101,8 +102,26 @@ export class TileView extends Phaser.GameObjects.Container {
     this.tile = tile;
     this.tileId = tile.id;
     this.size = size;
+    this.setSize(size, size);
     this.colorBlind = colorBlind;
     this.redraw();
+    this.drawClearGlow();
+  }
+
+  addClearGlow(): Phaser.GameObjects.Graphics {
+    const glow = this.scene.add.graphics().setAlpha(0);
+    this.clearGlow = glow;
+    this.add(glow);
+    this.drawClearGlow();
+    return glow;
+  }
+
+  private drawClearGlow(): void {
+    const glow = this.clearGlow;
+    if (glow === null) return;
+    glow.clear();
+    glow.fillStyle(COLORS.ink, 0.9);
+    glow.fillRoundedRect(-this.size / 2, -this.size / 2, this.size, this.size, this.size * 0.12);
   }
 
   setFlags(f: Partial<TileFlags>): void {

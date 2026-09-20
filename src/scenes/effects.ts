@@ -1,7 +1,8 @@
 import { screenWidth, screenHeight, PIXEL_RATIO } from './viewport';
 import Phaser from 'phaser';
 import type { BoardLayout } from '../game/layout';
-import { COLORS, cssColor, DURATION, durations, EASING, WORLD_ACCENTS } from '../theme/theme';
+import { COLORS, cssColor, DURATION, durations, EASING, VICTORY, WORLD_ACCENTS } from '../theme/theme';
+import type { TileView } from './TileView';
 import { makeLabel } from './ui';
 
 /** Fem effekter fra spec §4. Alle respekterer redusert bevegelse. */
@@ -82,6 +83,37 @@ export class Effects {
       duration: DURATION.normal,
       ease: EASING.fade,
       onComplete: () => text.destroy(),
+    });
+  }
+
+  clearBoard(tiles: readonly TileView[], clear: boolean, onComplete: () => void): void {
+    const timing = this.reduced ? VICTORY.reduced : clear ? VICTORY.clear : VICTORY.fast;
+    let remaining = tiles.length;
+    if (remaining === 0) {
+      this.scene.time.delayedCall(timing.hold + timing.rest, onComplete);
+      return;
+    }
+    tiles.forEach((tile, i) => {
+      const pair = Math.floor(Math.abs(i - (tiles.length - 1) / 2));
+      const delay = timing.hold + pair * timing.pairGap;
+      if (!this.reduced) {
+        const light = tile.addClearGlow();
+        this.scene.tweens.add({ targets: light, alpha: 1, delay, duration: timing.glow, ease: EASING.fade });
+      }
+      this.scene.tweens.add({
+        targets: tile,
+        alpha: 0,
+        ...(this.reduced ? {} : { scaleY: 0.04, scaleX: 1.12 }),
+        delay: delay + timing.glow,
+        duration: timing.dissolve,
+        ease: 'Cubic.easeIn',
+        onComplete: () => {
+          tile.setVisible(false);
+          this.burst(tile.x, tile.y, COLORS.star);
+          remaining--;
+          if (remaining === 0) this.scene.time.delayedCall(timing.rest, onComplete);
+        },
+      });
     });
   }
 

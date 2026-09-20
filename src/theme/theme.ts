@@ -31,6 +31,12 @@ export const RADIUS = { tile: 9, button: 10, panel: 16 } as const;
 
 export const DURATION = { snap: 120, normal: 220, calm: 400, ceremony: 800 } as const;
 
+export const VICTORY = {
+  clear: { hold: 700, pairGap: 140, glow: 200, dissolve: 300, rest: 320 },
+  fast: { hold: 180, pairGap: 60, glow: 100, dissolve: 180, rest: 160 },
+  reduced: { hold: 700, pairGap: 0, glow: 0, dissolve: 220, rest: 240 },
+} as const;
+
 /** Phaser-easing som strenger, så tema-fila ikke importerer Phaser. */
 export const EASING = { move: 'Cubic.easeOut', pop: 'Back.easeOut', fade: 'Sine.easeInOut' } as const;
 

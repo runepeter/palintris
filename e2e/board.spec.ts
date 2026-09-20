@@ -94,7 +94,7 @@ test('langt drag på byttebrett blir fortsatt nabobytte', async ({ page }) => {
   await page.waitForTimeout(350);
   await page.mouse.move(to.x, to.y, { steps: 8 });
   await page.mouse.up();
-  await h.waitIdle();
+  await page.waitForFunction(() => window.__palintris?.view().movesUsed === 1);
 
   expect((await h.view()).movesUsed).toBe(1);
   expect(await h.menu()).toBeNull();
