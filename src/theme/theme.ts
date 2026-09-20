@@ -15,6 +15,7 @@ export const COLORS = {
   gold: 0xc39b53,
   shadow: 0x020d14,
   glow: 0x6ddcda,
+  bond: { aura: 0x27bda8, thread: 0x8df5dd, echo: 0xab8cf2, core: 0xe0fff5 },
   white: 0xffffff,
 } as const;
 

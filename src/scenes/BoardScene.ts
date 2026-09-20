@@ -328,7 +328,7 @@ export class BoardScene extends Phaser.Scene {
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
     this.startBoard(level);
-    if (this.modeKind === 'sticky') this.stickyLinks = new StickyLinks(this);
+    if (this.modeKind === 'sticky') this.stickyLinks = new StickyLinks(this, s.settings().reducedMotion);
     if (this.modeKind === 'blitz') this.clock.start();
     this.paused = document.hidden;
     // Starter omgangen på en skjult fane, ville klokken ellers tikket til fanen ble sett.

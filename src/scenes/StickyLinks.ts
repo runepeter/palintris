@@ -9,8 +9,8 @@ export class StickyLinks {
   private readonly preview: Phaser.GameObjects.Graphics;
   swaps: readonly { a: number; b: number }[] = [];
 
-  constructor(scene: Phaser.Scene) {
-    this.links = scene.add.graphics().setDepth(4);
+  constructor(private readonly scene: Phaser.Scene, private readonly reduced: boolean) {
+    this.links = scene.add.graphics().setDepth(4).setBlendMode(Phaser.BlendModes.ADD);
     this.preview = scene.add.graphics().setDepth(18);
   }
 
@@ -24,7 +24,7 @@ export class StickyLinks {
       const a = views.get(tile.id);
       const b = views.get(tile.bondedTo);
       if (a === undefined || b === undefined) return;
-      this.chain(a, b);
+      this.energy(a, b, tiles[from ?? -1]?.id === tile.id || tiles[from ?? -1]?.id === tile.bondedTo);
     });
     if (from === null || to === null || from === to) return;
     const plan = planSwap(tiles, from, to);
@@ -47,39 +47,47 @@ export class StickyLinks {
     }
   }
 
-  private chain(a: TileView, b: TileView): void {
+  private energy(a: TileView, b: TileView, active: boolean): void {
     const unit = Math.min(a.width, b.width) / 64;
-    const ax = a.x;
-    const ay = a.y - a.height * 0.48;
-    const bx = b.x;
-    const by = b.y - b.height * 0.48;
-    const lift = Math.min(32 * unit, Math.hypot(bx - ax, by - ay) * 0.18);
-    const count = Math.max(2, Math.ceil((Math.hypot(bx - ax, by - ay) + lift) / (8 * unit)));
-    for (let i = 0; i <= count; i++) {
-      const t = i / count;
-      const x = ax + (bx - ax) * t;
-      const y = ay + (by - ay) * t - Math.sin(t * Math.PI) * lift;
-      const angle = Math.atan2(by - ay - Math.PI * lift * Math.cos(t * Math.PI), bx - ax);
-      const rx = 5.6 * unit;
-      const ry = (i % 2 === 0 ? 2.8 : 1.5) * unit;
-      const points = Array.from({ length: 17 }, (_, step) => {
-        const theta = step / 16 * Math.PI * 2;
-        const px = Math.cos(theta) * rx;
-        const py = Math.sin(theta) * ry;
-        return { x: x + px * Math.cos(angle) - py * Math.sin(angle), y: y + px * Math.sin(angle) + py * Math.cos(angle) };
-      });
-      this.links.lineStyle(4 * unit, COLORS.shadow, 0.9);
-      this.links.strokePoints(points, true);
-      this.links.lineStyle(2.3 * unit, COLORS.gold, 1);
-      this.links.strokePoints(points, true);
-      this.links.lineStyle(0.9 * unit, COLORS.star, 0.95);
-      this.links.strokePoints(points.slice(8), false);
+    const time = this.reduced ? 0 : this.scene.time.now;
+    const phase = time / 1800;
+    const strength = (active ? 1 : 0.72) * (0.9 + Math.sin(phase) * 0.1);
+    const lift = Math.min(64 * unit, Math.hypot(b.x - a.x, b.y - a.y) * 0.3);
+    const at = (t: number, lane: number): { x: number; y: number } => {
+      const envelope = Math.sin(t * Math.PI);
+      return {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y - a.height * 0.44 + (b.y - b.height * 0.44 - a.y + a.height * 0.44) * t
+          - envelope * lift + Math.sin(t * Math.PI * 4 + phase + lane * 2) * envelope * (lane === 0 ? 2 : 7) * unit,
+      };
+    };
+    const center = Array.from({ length: 49 }, (_, i) => at(i / 48, 0));
+    for (const [width, opacity] of [[20, 0.025], [10, 0.065], [4, 0.16], [1.2, 0.8]] as const) {
+      this.links.lineStyle(width * unit, COLORS.bond.thread, opacity * strength);
+      this.links.strokePoints(center, false);
     }
-    for (const p of [{ x: ax, y: ay }, { x: bx, y: by }]) {
-      this.links.fillStyle(COLORS.shadow, 1);
-      this.links.fillCircle(p.x, p.y, 4 * unit);
-      this.links.lineStyle(1.5 * unit, COLORS.star, 1);
-      this.links.strokeCircle(p.x, p.y, 3 * unit);
+    for (const lane of [-1, 1]) {
+      const points = Array.from({ length: 49 }, (_, i) => at(i / 48, lane));
+      this.links.lineStyle(5 * unit, COLORS.bond.echo, 0.045 * strength);
+      this.links.strokePoints(points, false);
+      this.links.lineStyle(0.8 * unit, COLORS.bond.echo, 0.5 * strength);
+      this.links.strokePoints(points, false);
+    }
+    for (let i = 0; i < 12; i++) {
+      const t = (i / 12 + time / 14000) % 1;
+      const p = at(t, i % 2 === 0 ? -1 : 1);
+      const shimmer = Math.sin(Math.PI * t) * strength;
+      const drift = Math.sin(phase + i * 2.4) * 6 * unit;
+      this.links.fillStyle(COLORS.bond.aura, shimmer * 0.08);
+      this.links.fillCircle(p.x, p.y + drift, 5 * unit);
+      this.links.fillStyle(i % 3 === 0 ? COLORS.bond.echo : COLORS.bond.core, shimmer * 0.8);
+      this.links.fillCircle(p.x, p.y + drift, (i % 3 === 0 ? 1.4 : 0.8) * unit);
+    }
+    for (const p of [at(0, 0), at(1, 0)]) {
+      for (const [radius, opacity] of [[15, 0.04], [9, 0.1], [4, 0.45], [1.5, 0.9]] as const) {
+        this.links.fillStyle(COLORS.bond.thread, opacity * strength);
+        this.links.fillCircle(p.x, p.y, radius * unit);
+      }
     }
   }
 

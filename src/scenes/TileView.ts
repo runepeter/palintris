@@ -190,14 +190,19 @@ export class TileView extends Phaser.GameObjects.Container {
     this.lock.clear();
     if (t.sticky === true || t.bondedTo !== undefined) {
       const k = s * 0.105;
-      const x = -s / 2 + k * 1.5;
-      const y = -s / 2 + k * 1.7;
-      this.lock.fillStyle(COLORS.panel, 1);
-      this.lock.fillRoundedRect(x - k, y - k, k * 3.4, k * 2, k * 0.5);
-      this.lock.lineStyle(2, COLORS.star, t.bondedTo !== undefined ? 1 : 0.65);
-      this.lock.strokeCircle(x, y, k * 0.65);
-      this.lock.strokeCircle(x + k * 1.3, y, k * 0.65);
-      if (t.bondedTo !== undefined) this.lock.lineBetween(x, y, x + k * 1.3, y);
+      const x = 0;
+      const y = -s * 0.4;
+      const bound = t.bondedTo !== undefined;
+      this.lock.fillStyle(COLORS.panel, 0.9);
+      this.lock.fillCircle(x, y, k * 1.2);
+      this.lock.lineStyle(1, bound ? COLORS.bond.echo : COLORS.star, 0.8);
+      this.lock.strokeCircle(x, y, k);
+      this.lock.lineStyle(1.5, bound ? COLORS.bond.thread : COLORS.star, 1);
+      this.lock.strokePoints([{ x, y: y - k * 0.7 }, { x: x + k * 0.5, y }, { x, y: y + k * 0.7 }, { x: x - k * 0.5, y }], true);
+      if (bound) {
+        this.lock.fillStyle(COLORS.bond.core, 1);
+        this.lock.fillCircle(x, y, k * 0.2);
+      }
     }
     if (t.locked) {
       const k = s * 0.14;
