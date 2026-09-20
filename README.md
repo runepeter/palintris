@@ -12,7 +12,7 @@ et trekkbudsjett.
 - **Daglig** – ett felles brett per dag (UTC), med streak.
 - **Blitz** – tidsbegrenset kø av brett uten trekkgrense.
 - **Fri spilling** – uendelig genererte brett per verden, for øving.
-- **Sticky · prøv** – tre prøvebrett med koblede speilpar. Paret flyttes sammen og trekkes inn mot midten ved seier.
+- **Sticky-prototype (kun lokal utvikling)** – tre prøvebrett med koblede speilpar. Paret flyttes sammen og trekkes inn mot midten ved seier.
 
 ## Slik spiller du
 

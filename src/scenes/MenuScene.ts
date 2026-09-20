@@ -75,9 +75,11 @@ export class MenuScene extends Phaser.Scene {
     makeButton(this, { x: cx + (half + 12) / 2, y: secondaryY, width: half, height: 46, label: 'ϟ  Blitz',
       accent: COLORS.danger, onClick: () => this.scene.start(SCENE.board, { mode: 'blitz' }) });
     const bottomY = secondaryY + (compact ? 50 : 58);
-    makeButton(this, { x: cx - (half + 12) / 2, y: bottomY, width: half, height: 44, label: 'Sticky · prøv', labelSize: 13,
-      accent: COLORS.glow, onClick: () => this.scene.start(SCENE.board, { mode: 'sticky' }) });
-    makeButton(this, { x: cx + (half + 12) / 2, y: bottomY, width: half, height: 44, label: 'Innstillinger', labelSize: 13,
+    if (import.meta.env.DEV) {
+      makeButton(this, { x: cx - (half + 12) / 2, y: bottomY, width: half, height: 44, label: 'Sticky · prøv', labelSize: 13,
+        accent: COLORS.glow, onClick: () => this.scene.start(SCENE.board, { mode: 'sticky' }) });
+    }
+    makeButton(this, { x: import.meta.env.DEV ? cx + (half + 12) / 2 : cx, y: bottomY, width: import.meta.env.DEV ? half : width, height: 44, label: 'Innstillinger', labelSize: 13,
       accent: COLORS.line, onClick: () => this.scene.start(SCENE.settings) });
     if (!compact) makeLabel(this, cx, h - 40, 'Bytt. Speil. Finn harmonien.', { size: 11, color: COLORS.inkMuted, font: 'body' });
   }

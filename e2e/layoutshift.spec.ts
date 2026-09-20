@@ -11,6 +11,7 @@ const level = campaign.levels
 if (level === undefined) throw new Error('fant ikke et w5-nivå med 7 brikker og fjern i hånden');
 
 test('fjerning av en brikke bryter hårnål-layout om til rad', async ({ page }) => {
+  await page.clock.install();
   await page.goto(`/?level=${level.id}`);
   const h = hook(page);
   await page.waitForFunction((id) => window.__palintris?.levelId === id, level.id);

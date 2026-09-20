@@ -2,7 +2,7 @@
 
 ## Omfang
 
-90 kampanjenivåer over seks verdener, daglig brett (nytt ved midnatt UTC), Blitz og fri spilling. Sticky er et valgfritt forsøk med tre brett; det er ikke del av kampanjeprogresjonen.
+90 kampanjenivåer over seks verdener, daglig brett (nytt ved midnatt UTC), Blitz og fri spilling. Sticky-prototypen med tre brett er bare tilgjengelig under lokal utvikling.
 
 Fremgang og innstillinger lagres lokalt i nettleseren. Ingen konto, skysynk, kjøp eller toppliste. Spillet krever nett for første innlasting; det har ikke en installert offline-cache.
 
@@ -34,10 +34,16 @@ Produksjonstesten bygger `dist` og bruker port 4173, uten utviklingskroker eller
 
 Visuell gjennomgang: 360×640, 390×844, 844×390 og 1440×900. Nettleseremulering erstatter ikke en kort sjekk på faktiske telefoner.
 
-## Siste steg
+## Publisering
+
+Publisert 2026-09-20 på [palintris.vercel.app](https://palintris.vercel.app/).
+Vercel-prosjektet `cyclaw/palintris` er koblet til GitHub; push til `main` publiserer automatisk.
+Offentlig prøverunde verifiserte oppstart, første seier med drag, tre stjerner og bevart fremgang etter omlasting. Ingen feil i nettleserkonsollen.
+
+## Gjenstår
 
 1. Gjør en kort prøverunde på fysisk iPhone og Android, særlig dra/hold, lyd og rotasjon av skjermen.
-2. Velg fast offentlig adresse og publiser det verifiserte bygget via Vercel. `vercel.json` er klart; ingen publisering er gjort i denne runden.
-3. Gjenta oppstart, første seier og omlasting på den offentlige adressen. Fremgang på localhost følger ikke med til et nytt domene.
+
+Fremgang på localhost følger ikke med til et nytt domene.
 
 Første utgave er en nettutgave. Appbutikkpakking og ytterligere innhold kan komme senere.

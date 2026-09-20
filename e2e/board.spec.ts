@@ -42,6 +42,7 @@ const perform = async (page: Page, cmd: Cmd): Promise<void> => {
 };
 
 test('løser et hårnålnivå med drag og trykk, angrer underveis, får stjerner', async ({ page }) => {
+  await page.clock.install();
   await page.goto(`/?level=${LEVEL_ID}`);
   const h = hook(page);
   await page.waitForFunction(() => window.__palintris?.levelId === 'w3-02');
@@ -69,6 +70,7 @@ test('løser et hårnålnivå med drag og trykk, angrer underveis, får stjerner
 });
 
 test('første trekk fyller harmonimåleren og bygger flyt', async ({ page }) => {
+  await page.clock.install();
   await page.goto('/?level=w1-01');
   const h = hook(page);
   await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');

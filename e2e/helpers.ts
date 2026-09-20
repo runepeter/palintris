@@ -86,13 +86,26 @@ export const hook = (page: Page): Hook => ({
   waitIdle: () => page.waitForFunction(() => window.__palintris !== undefined && !window.__palintris.busy()),
 });
 
+export const pauseAnimationClock = async (page: Page): Promise<void> => {
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.runFor(32);
+};
+
 export const drag = async (page: Page, from: { x: number; y: number }, to: { x: number; y: number }): Promise<void> => {
-  await page.mouse.move(from.x, from.y);
-  await page.mouse.down();
-  // Kryss dragterskelen før små steg kan tolkes som et langt trykk på trege maskiner.
-  await page.mouse.move(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2);
-  await page.mouse.move(to.x, to.y, { steps: 4 });
-  await page.mouse.up();
+  // Klokken installeres før sidelast. Native input skal ikke bli langtrykk på treg CI-GPU.
+  await pauseAnimationClock(page);
+  try {
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.clock.runFor(16);
+    await page.mouse.move(from.x + (to.x - from.x) / 2, from.y + (to.y - from.y) / 2);
+    await page.clock.runFor(16);
+    await page.mouse.move(to.x, to.y, { steps: 4 });
+    await page.clock.runFor(16);
+    await page.mouse.up();
+  } finally {
+    await page.clock.resume();
+  }
 };
 
 export const tap = async (page: Page, p: { x: number; y: number }): Promise<void> => {

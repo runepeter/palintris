@@ -4,6 +4,7 @@ import { dismissIntroIfVisible, drag, hook, tap } from './helpers';
 const LEVEL_ID = 'w1-02';
 
 test('blindvei ved tomt budsjett viser banner; angre fjerner den', async ({ page }) => {
+  await page.clock.install();
   await page.goto(`/?level=${LEVEL_ID}`);
   const h = hook(page);
   await page.waitForFunction((id) => window.__palintris?.levelId === id, LEVEL_ID);

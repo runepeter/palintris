@@ -19,6 +19,7 @@ const pickLevelId = (): string => {
 const LEVEL_ID = pickLevelId();
 
 test('joker inn i mellomrom og brikke ut i hånden', async ({ page }) => {
+  await page.clock.install();
   await page.goto(`/?level=${LEVEL_ID}`);
   const h = hook(page);
   await page.waitForFunction((id) => window.__palintris?.levelId === id, LEVEL_ID);

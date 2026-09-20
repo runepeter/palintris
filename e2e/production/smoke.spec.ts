@@ -17,7 +17,7 @@ test('produksjonsbygget starter, løser første speil og beholder fremgangen', a
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
   page.on('request', (request) => { if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') external.push(request.url()); });
-  await page.goto('/?level=w6-15');
+  await page.goto('/?mode=sticky&level=w6-15');
   await expect(page.getByRole('status')).toBeHidden();
   await expect(page.locator('canvas')).toBeVisible();
   expect(await page.evaluate(() => '__palintris' in window)).toBe(false);
@@ -34,7 +34,7 @@ test('produksjonsbygget starter, løser første speil og beholder fremgangen', a
   await expect(page.getByRole('status')).toBeHidden();
   expect((await save()).stars['w1-01']?.stars).toBe(3);
   await nextFrame(page);
-  await click(page, 278, 645);
+  await click(page, 111, 645);
   await click(page, 295, 130);
   await expect.poll(async () => (await save()).settings?.sound).toBe(false);
   await page.reload();

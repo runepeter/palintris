@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { hook } from './helpers';
 import { STICKY_LEVELS } from '../src/game/modes/sticky';
-import { dismissIntroIfVisible, tap } from './helpers';
+import { dismissIntroIfVisible, pauseAnimationClock, tap } from './helpers';
 
 test('sticky-forsøket kan åpnes fra menyen', async ({ page }) => {
   await page.goto('/');
@@ -58,19 +58,21 @@ test('spiller alle tre prøvebrett og går tilbake til menyen', async ({ page })
 });
 
 test('bare koblede par trekkes sammen ved sletting', async ({ page }) => {
+  await page.clock.install();
   await page.goto('/?mode=sticky');
   await page.waitForFunction(() => window.__palintris?.levelId === 'sticky-01');
   await dismissIntroIfVisible(page);
   const h = hook(page);
   const level = STICKY_LEVELS[0];
   if (level === undefined) throw new Error('Mangler sticky-01');
-  for (const cmd of level.solution) {
+  for (const [index, cmd] of level.solution.entries()) {
     await h.waitIdle();
+    if (index === level.solution.length - 1) await pauseAnimationClock(page);
     await tap(page, await h.slot(cmd.a));
     await tap(page, await h.slot(cmd.b));
   }
-  await page.waitForFunction(() => window.__palintris?.view().solved);
-  const samples = await page.evaluate(() => new Promise<{ bound: number[]; plain: number[]; landed: number[] }>((resolve) => {
+  expect((await h.view()).solved).toBe(true);
+  const sampling = page.evaluate(() => new Promise<{ bound: number[]; plain: number[]; landed: number[] }>((resolve) => {
     const initial = window.__palintris;
     if (initial === undefined) throw new Error('Mangler brettet før sletting');
     const bound = new Set(initial.view().tiles.filter((tile) => tile.bondedTo !== undefined).map((tile) => tile.id));
@@ -88,6 +90,8 @@ test('bare koblede par trekkes sammen ved sletting', async ({ page }) => {
     };
     collect();
   }));
+  await page.clock.runFor(4000);
+  const samples = await sampling;
   expect(samples.bound.length).toBeGreaterThan(0);
   expect(samples.plain.length).toBeGreaterThan(0);
   expect(samples.bound.every((scale) => scale < 1)).toBe(true);
