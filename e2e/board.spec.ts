@@ -111,3 +111,31 @@ test('viser bare rotasjon før speiling er låst opp', async ({ page }) => {
   const actions = (await h.menu())?.map((item) => item.action);
   expect(actions).toEqual(['rotateLeft', 'rotateRight']);
 });
+
+test('angre og reset avbryter ikke en tydelig trekkanimasjon', async ({ page }) => {
+  await page.goto('/?level=w2-01');
+  const h = hook(page);
+  await page.waitForFunction(() => window.__palintris?.levelId === 'w2-01');
+  await dismissIntroIfVisible(page);
+
+  const rotateLeft = async (): Promise<void> => {
+    await h.waitIdle();
+    await tap(page, await h.slot(0));
+    await tap(page, await h.slot(2));
+    const action = (await h.menu())?.find((item) => item.action === 'rotateLeft');
+    if (action === undefined) throw new Error('venstrerotasjon mangler');
+    await tap(page, action);
+  };
+
+  await rotateLeft();
+  expect(await h.busy()).toBe(true);
+  await tap(page, (await h.zones()).undo);
+  await h.waitIdle();
+  expect((await h.view()).movesUsed).toBe(1);
+
+  await rotateLeft();
+  expect(await h.busy()).toBe(true);
+  await tap(page, (await h.zones()).reset);
+  await h.waitIdle();
+  expect((await h.view()).movesUsed).toBe(2);
+});

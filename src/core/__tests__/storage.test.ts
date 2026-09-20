@@ -27,6 +27,7 @@ const memStorage = (init: Record<string, string> = {}): StorageLike & { data: Ma
 describe('loadSave', () => {
   it('gir default når ingenting er lagret', () => {
     expect(loadSave(memStorage())).toEqual(defaultSave());
+    expect(defaultSave().settings.clearAnimations).toBe(true);
   });
 
   it('leser lagret data', () => {
@@ -41,7 +42,7 @@ describe('loadSave', () => {
       [LEGACY_SETTINGS_KEY]: JSON.stringify({ soundEnabled: false, musicEnabled: true, particlesEnabled: false, colorBlindMode: true }),
     });
     const data = loadSave(s);
-    expect(data.settings).toEqual({ sound: false, music: true, reducedMotion: true, colorBlind: true });
+    expect(data.settings).toEqual({ sound: false, music: true, reducedMotion: true, colorBlind: true, clearAnimations: true });
     expect(data.stars).toEqual({});
   });
 
@@ -102,6 +103,7 @@ describe('parseSave', () => {
     expect(d?.introsSeen).toEqual([]);
     expect(d?.contentVersion).toBe(1);
     expect(d?.daily.inProgress).toBeUndefined();
+    expect(d?.settings.clearAnimations).toBe(true);
   });
   it('avviser feil form på stars', () => {
     expect(parseSave({ saveVersion: 1, stars: { 'w1-01': 'oops' } })).toBeNull();

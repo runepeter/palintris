@@ -3,7 +3,7 @@ import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import type { Settings } from '../core/storage';
 import { audio } from '../audio/sound';
-import { COLORS, SPACE, worldAccent } from '../theme/theme';
+import { COLORS, worldAccent } from '../theme/theme';
 import { services } from './services';
 import { makeButton, makeLabel, SCENE } from './ui';
 
@@ -11,6 +11,7 @@ const ROWS: ReadonlyArray<{ key: keyof Settings; label: string }> = [
   { key: 'sound', label: 'Lyd' },
   { key: 'music', label: 'Musikk' },
   { key: 'reducedMotion', label: 'Redusert bevegelse' },
+  { key: 'clearAnimations', label: 'Tydelige trekk' },
   { key: 'colorBlind', label: 'Fargeblind-mønster' },
 ];
 
@@ -37,13 +38,18 @@ export class SettingsScene extends Phaser.Scene {
     makeBackdrop(this);
     const s = services(this);
     const cx = screenWidth(this) / 2;
-    makeLabel(this, cx, 60, 'Innstillinger', { size: 32, bold: true });
+    const compact = screenHeight(this) < 560;
+    const titleY = compact ? 34 : 60;
+    const rowTop = compact ? 82 : 130;
+    const rowGap = compact ? 44 : 64;
+    const rowHeight = compact ? 34 : 40;
+    makeLabel(this, cx, titleY, 'Innstillinger', { size: compact ? 25 : 32, bold: true });
     ROWS.forEach((row, i) => {
-      const y = 130 + i * (48 + SPACE.lg);
+      const y = rowTop + i * rowGap;
       const on = s.settings()[row.key];
-      makeLabel(this, cx - 120, y, row.label, { size: 18, font: 'body', align: 'left' });
+      makeLabel(this, cx - 120, y, row.label, { size: compact ? 15 : 18, font: 'body', align: 'left' });
       makeButton(this, {
-        x: cx + 100, y, width: 96, height: 40, label: on ? 'På' : 'Av', accent: on ? COLORS.success : COLORS.locked,
+        x: cx + 100, y, width: 96, height: rowHeight, label: on ? 'På' : 'Av', accent: on ? COLORS.success : COLORS.locked,
         onClick: () => {
           s.store.setSettings({ [row.key]: !on });
           audio.configure({ sound: s.settings().sound, music: s.settings().music });
@@ -51,6 +57,6 @@ export class SettingsScene extends Phaser.Scene {
         },
       });
     });
-    makeButton(this, { x: cx, y: screenHeight(this) - 80, width: 180, height: 48, label: 'Tilbake', accent: worldAccent(1), onClick: () => this.scene.start(SCENE.menu) });
+    makeButton(this, { x: cx, y: screenHeight(this) - (compact ? 48 : 80), width: 180, height: 48, label: 'Tilbake', accent: worldAccent(1), onClick: () => this.scene.start(SCENE.menu) });
   }
 }

@@ -22,7 +22,7 @@ describe('SaveStore', () => {
     const s = mem();
     const store = new SaveStore(s);
     store.setSettings({ reducedMotion: true });
-    expect(store.data.settings).toEqual({ sound: true, music: true, reducedMotion: true, colorBlind: false });
+    expect(store.data.settings).toEqual({ sound: true, music: true, reducedMotion: true, colorBlind: false, clearAnimations: true });
     expect(new SaveStore(s).data.settings.reducedMotion).toBe(true);
   });
 });

@@ -6,6 +6,7 @@ export interface Settings {
   music: boolean;
   reducedMotion: boolean;
   colorBlind: boolean;
+  clearAnimations: boolean;
 }
 
 export interface StarRecord {
@@ -53,7 +54,7 @@ export const defaultSave = (): SaveData => ({
   stars: {},
   daily: { attempts: [], streak: 0 },
   blitz: { best: 0 },
-  settings: { sound: true, music: true, reducedMotion: false, colorBlind: false },
+  settings: { sound: true, music: true, reducedMotion: false, colorBlind: false, clearAnimations: true },
   introsSeen: [],
 });
 
@@ -145,6 +146,7 @@ const parseSettings = (raw: unknown): Settings => {
     music: isBoolean(raw['music']) ? raw['music'] : base.music,
     reducedMotion: isBoolean(raw['reducedMotion']) ? raw['reducedMotion'] : base.reducedMotion,
     colorBlind: isBoolean(raw['colorBlind']) ? raw['colorBlind'] : base.colorBlind,
+    clearAnimations: isBoolean(raw['clearAnimations']) ? raw['clearAnimations'] : base.clearAnimations,
   };
 };
 
@@ -194,6 +196,7 @@ const migrateLegacy = (storage: StorageLike): SaveData => {
       music: bool('musicEnabled', true),
       reducedMotion: !bool('particlesEnabled', true),
       colorBlind: bool('colorBlindMode', false),
+      clearAnimations: true,
     },
   };
 };

@@ -70,6 +70,21 @@ export class Effects {
     });
   }
 
+  /** Kort handlingsnavn som gjør retning og verktøy lesbart mens brikkene flytter seg. */
+  toolCue(x: number, y: number, label: string, color: number, duration: number): void {
+    const text = makeLabel(this.scene, x, y, label, { size: 16, color, font: 'body', bold: true })
+      .setStroke(cssColor(COLORS.shadow), 6)
+      .setDepth(850);
+    this.scene.tweens.add({
+      targets: text,
+      alpha: 0,
+      delay: Math.max(0, duration - DURATION.normal),
+      duration: DURATION.normal,
+      ease: EASING.fade,
+      onComplete: () => text.destroy(),
+    });
+  }
+
   confetti(x: number, y: number, count = 40): void {
     if (this.reduced) return;
     for (let i = 0; i < count; i++) {
@@ -91,7 +106,7 @@ export class Effects {
   }
 
   /** Bølge fra speillinja og ut, i skjermkoordinater. */
-  mirrorWave(layout: BoardLayout, originX: number, originY: number, scale: number): void {
+  mirrorWave(layout: BoardLayout, originX: number, originY: number, scale: number, duration?: number): void {
     const m = layout.mirror;
     const x1 = originX + m.x1 * scale;
     const y1 = originY + m.y1 * scale;
@@ -107,7 +122,7 @@ export class Effects {
       targets: bar,
       ...(horizontal ? { scaleY: grow / 6 } : { scaleX: grow / 6 }),
       alpha: 0,
-      duration: this.reduced ? this.d.snap : this.d.calm,
+      duration: duration ?? (this.reduced ? this.d.snap : this.d.calm),
       ease: EASING.fade,
       onComplete: () => bar.destroy(),
     });

@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { makeBackdrop } from './art';
 import { audio } from '../audio/sound';
 import type { BoardState } from '../core/board';
-import type { Command, Result } from '../core/commands';
+import type { Command, MoveCommand, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
 import { markIntroSeen, setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
@@ -22,6 +22,7 @@ import type { BoardLayout, LayoutKind } from '../game/layout';
 import { computeLayout, hitGap, hitTile } from '../game/layout';
 import { BLITZ_NEXT } from '../game/modes/blitz';
 import type { BoardMode, ModeLevel } from '../game/modes/types';
+import { moveAnimationFor, type MoveAnimation } from '../game/moveAnimation';
 import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
@@ -170,6 +171,8 @@ export class BoardScene extends Phaser.Scene {
   private lastGain = 0;
   private pendingCommand: Command | null = null;
   private d = durations(false);
+  /** Ekstra tid resultatseremonien må vente på en pågående tydelig trekkanimasjon. */
+  private activeMoveMs = 0;
   /** Sann mens fanen er skjult: begge klokkene står stille. */
   private paused = false;
   /** Daglig: tid brukt, kommandologg og starttidspunkt for gjenopptakelse. */
@@ -238,6 +241,7 @@ export class BoardScene extends Phaser.Scene {
     this.flow = 0;
     this.lastGain = 0;
     this.pendingCommand = null;
+    this.activeMoveMs = 0;
     this.handCache = null;
     this.banner = null;
     this.hint = null;
@@ -637,6 +641,30 @@ export class BoardScene extends Phaser.Scene {
     }
   }
 
+  private moveAnimation(type: MoveCommand['type']): MoveAnimation {
+    const settings = services(this).settings();
+    return moveAnimationFor(type, {
+      clear: settings.clearAnimations,
+      reduced: settings.reducedMotion,
+      timed: this.modeKind === 'blitz',
+    });
+  }
+
+  private moveCue(cmd: MoveCommand): string {
+    switch (cmd.type) {
+      case 'swap':
+        return 'Bytter naboer';
+      case 'rotate':
+        return cmd.dir === 'left' ? '⟲ Roterer mot venstre' : 'Roterer mot høyre ⟳';
+      case 'mirror':
+        return '⇋ Speiler segmentet';
+      case 'insertWild':
+        return 'Åpner plass til Joker';
+      case 'remove':
+        return 'Fjerner brikken';
+    }
+  }
+
   private applyIntents(intents: readonly Intent[]): void {
     for (const intent of intents) {
       if (intent.type === 'hint') {
@@ -661,8 +689,23 @@ export class BoardScene extends Phaser.Scene {
       else if (intent.type !== 'segment') audio.playSelect();
       else if (intent.action === 'mirror') audio.playMirror();
       else audio.playRotate();
-      if (at !== null) this.effects.burst(at.x, at.y, this.accent());
-      this.effects.nudge();
+      if (cmd.type === 'undo' || cmd.type === 'reset') continue;
+      const animation = this.moveAnimation(cmd.type);
+      const feedback = (): void => {
+        if (!this.scene.isActive()) return;
+        if (at !== null) this.effects.burst(at.x, at.y, this.accent());
+        this.effects.nudge();
+      };
+      if (!animation.detailed) {
+        feedback();
+        continue;
+      }
+      if (at !== null) {
+        const y = at.y - this.layout.tile * this.layout.scale * 0.9;
+        this.effects.toolCue(at.x, y, this.moveCue(cmd), this.accent(), animation.totalMs);
+      }
+      if (cmd.type === 'mirror') this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale, animation.totalMs);
+      this.time.delayedCall(animation.totalMs, feedback);
     }
   }
 
@@ -886,7 +929,8 @@ export class BoardScene extends Phaser.Scene {
     }
     const timeMs = Math.round(this.elapsedMs);
     const outcome = this.mode.onSolved(this.levelId, movesUsed, this.modeKind === 'daily' ? { timeMs } : undefined);
-    this.time.delayedCall(this.d.ceremony, () => {
+    const resultDelay = Math.max(this.d.ceremony, this.activeMoveMs === 0 ? 0 : this.activeMoveMs + this.d.normal);
+    this.time.delayedCall(resultDelay, () => {
       const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
       this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
     });
@@ -1018,8 +1062,10 @@ export class BoardScene extends Phaser.Scene {
     }
   }
 
-  /** Tegner alt fra this.view: brikker (opprett/oppdater/fjern etter id), speillinje, HUD, hånd. animate styrer om brikker tweenes til plass. */
-  private render(animate: boolean): void {
+  /** Tegner alt fra this.view. En MoveAnimation styrer bare selve trekket, ikke resten av scenen. */
+  private render(animate: boolean, animation?: MoveAnimation): void {
+    this.activeMoveMs = animation?.detailed === true ? animation.totalMs : 0;
+    if (animation?.detailed === true) this.inputLocked = true;
     this.relayout();
     const resized = this.lastSize === null || this.lastSize.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this);
     this.lastSize = { w: screenWidth(this), h: screenHeight(this) };
@@ -1027,6 +1073,11 @@ export class BoardScene extends Phaser.Scene {
     const colorBlind = services(this).settings().colorBlind;
     const size = this.layout.tile * this.layout.scale;
     const live = new Set<number>();
+    const moveMs = animation?.moveMs ?? this.d.normal;
+    const moveDelayMs = animation?.moveDelayMs ?? 0;
+    const enterMs = animation?.enterMs ?? this.d.normal;
+    const enterDelayMs = animation?.enterDelayMs ?? 0;
+    const exitMs = animation?.exitMs ?? this.d.snap;
 
     this.view.tiles.forEach((tile, i) => {
       const slot = this.layout.slots[i];
@@ -1042,7 +1093,7 @@ export class BoardScene extends Phaser.Scene {
         if (animate) {
           v.setScale(0);
           this.pendingTweens++;
-          this.tweens.add({ targets: v, scale: 1, duration: this.d.normal, ease: EASING.pop, onComplete: () => this.tweenDone() });
+          this.tweens.add({ targets: v, scale: 1, delay: enterDelayMs, duration: enterMs, ease: EASING.pop, onComplete: () => this.tweenDone() });
         }
       }
       v.setTile(tile, size, colorBlind);
@@ -1055,7 +1106,8 @@ export class BoardScene extends Phaser.Scene {
           targets: v,
           x: p.x,
           y: p.y,
-          duration: this.d.normal,
+          delay: moveDelayMs,
+          duration: moveMs,
           ease: EASING.move,
           onComplete: () => this.tweenDone(),
         });
@@ -1077,7 +1129,7 @@ export class BoardScene extends Phaser.Scene {
         targets: v,
         scale: 0,
         alpha: 0,
-        duration: this.d.snap,
+        duration: exitMs,
         ease: EASING.move,
         onComplete: () => {
           this.fadingTiles.delete(v);
@@ -1113,6 +1165,15 @@ export class BoardScene extends Phaser.Scene {
     this.view = v;
     // Avspilling tegner én gang til slutt; hver mellomtilstand ville gitt en animasjon.
     if (this.replaying) return;
+    // Løseren sender samme brett en gang til med bare ny status. En ny render her ville
+    // avbrutt den langsomme trekkanimasjonen ved å tween-e fra mellomposisjonen på nytt.
+    if (command === null) {
+      this.refreshChrome(false);
+      if (v.solveStatus.kind === 'deadEnd') this.showDeadEnd();
+      else this.hideBanner();
+      this.syncGestureVisuals();
+      return;
+    }
     let newMatchedIndexes: readonly number[] = [];
     if (command !== null && command.type !== 'undo' && command.type !== 'reset' && v.movesUsed > previous.movesUsed) {
       const feedback = moveFeedback(previous.tiles, v.tiles, this.flow);
@@ -1126,7 +1187,8 @@ export class BoardScene extends Phaser.Scene {
       if (command?.type === 'undo' || command?.type === 'reset') this.flow = 0;
     }
     this.keyboard.clampCursor();
-    this.render(true);
+    const animation = command.type === 'undo' || command.type === 'reset' ? undefined : this.moveAnimation(command.type);
+    this.render(true, animation);
     if (this.lastGain > 0) this.celebrateMove(newMatchedIndexes);
     if (v.solved) {
       this.onSolved();
@@ -1283,6 +1345,7 @@ export class BoardScene extends Phaser.Scene {
         accent: COLORS.inkMuted,
         enabled: this.view.canUndo,
         onClick: () => {
+          if (this.inputLocked || this.pendingTweens > 0) return;
           this.dispatch({ type: 'undo' });
           audio.playUndo();
         },
@@ -1299,6 +1362,7 @@ export class BoardScene extends Phaser.Scene {
         labelSize: skip ? SKIP_LABEL : undefined,
         accent: COLORS.danger,
         onClick: () => {
+          if (this.inputLocked || this.pendingTweens > 0) return;
           if (skip) this.skipBlitz();
           else this.dispatch({ type: 'reset' });
         },
