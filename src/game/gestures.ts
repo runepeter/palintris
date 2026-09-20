@@ -18,7 +18,7 @@ export interface PointerEvt {
   readonly target: Target;
 }
 
-export type HintReason = 'locked' | 'segmentContainsLocked' | 'segmentTooShort' | 'handEmpty';
+export type HintReason = 'locked' | 'segmentContainsLocked' | 'segmentTooShort' | 'handEmpty' | 'notAdjacent';
 
 export type Intent =
   | { readonly type: 'swap'; readonly a: number; readonly b: number }
@@ -43,6 +43,8 @@ export interface GestureEnv {
   hasWild(): boolean;
   /** Sann når hånden har en fjern-ladning. Lengdegrensen sjekkes av kjernen, ikke her. */
   canRemove(): boolean;
+  /** Om brettet tilbyr rotasjon eller speiling. Utelatt betyr aktivt for eldre kallere. */
+  canSegment?(): boolean;
 }
 
 const IDLE: GestureState = { name: 'idle' };
@@ -65,9 +67,13 @@ export class GestureMachine {
   /** Kalles hver frame med nåtid, så hold kan oppdages uten bevegelse. */
   tick(t: number): void {
     const s = this.state;
-    if (s.name === 'pending' && t - s.t >= HOLD_MS) {
+    if (s.name === 'pending' && t - s.t >= HOLD_MS && this.canSegment()) {
       this.state = { name: 'segment', anchor: s.index, end: s.index };
     }
+  }
+
+  private canSegment(): boolean {
+    return this.env.canSegment?.() ?? true;
   }
 
   handle(evt: PointerEvt): Intent[] {
@@ -118,7 +124,7 @@ export class GestureMachine {
 
   private fromPending(evt: PointerEvt, s: Extract<GestureState, { name: 'pending' }>): Intent[] {
     if (evt.type === 'move') {
-      if (evt.t - s.t >= HOLD_MS) {
+      if (evt.t - s.t >= HOLD_MS && this.canSegment()) {
         const seg: Extract<GestureState, { name: 'segment' }> = { name: 'segment', anchor: s.index, end: s.index };
         this.state = seg;
         return this.fromSegment(evt, seg);
@@ -129,7 +135,7 @@ export class GestureMachine {
       return [];
     }
     if (evt.type === 'up') {
-      this.state = evt.t - s.t >= HOLD_MS ? IDLE : { name: 'selected', index: s.index };
+      this.state = evt.t - s.t >= HOLD_MS && this.canSegment() ? IDLE : { name: 'selected', index: s.index };
       return [];
     }
     return [];
@@ -196,6 +202,7 @@ export class GestureMachine {
         if (this.env.isLocked(t.index)) return [hint('locked')];
         return [{ type: 'swap', a: s.index, b: t.index }];
       }
+      if (!this.canSegment()) return [hint('notAdjacent')];
       const from = Math.min(s.index, t.index);
       const to = Math.max(s.index, t.index);
       if (this.segmentHasLocked(from, to)) return [hint('segmentContainsLocked')];

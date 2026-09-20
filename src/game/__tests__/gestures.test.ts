@@ -10,12 +10,13 @@ const menu = (action: 'rotateLeft' | 'mirror' | 'rotateRight'): Target => ({ kin
 
 const ev = (type: PointerEvt['type'], target: Target, x = 0, y = 0, t = 0): PointerEvt => ({ type, target, x, y, t });
 
-const machine = (opts: Partial<{ count: number; locked: number[]; wild: boolean; remove: boolean }> = {}): GestureMachine =>
+const machine = (opts: Partial<{ count: number; locked: number[]; wild: boolean; remove: boolean; segments: boolean }> = {}): GestureMachine =>
   new GestureMachine({
     count: () => opts.count ?? 8,
     isLocked: (i) => (opts.locked ?? []).includes(i),
     hasWild: () => opts.wild ?? true,
     canRemove: () => opts.remove ?? true,
+    canSegment: () => opts.segments ?? true,
   });
 
 describe('drag swap', () => {
@@ -73,6 +74,16 @@ describe('drag swap', () => {
     const m = machine({ locked: [2] });
     expect(m.handle(ev('down', tile(2), 0, 0, 0))).toEqual([{ type: 'hint', reason: 'locked' }]);
     expect(m.state.name).toBe('idle');
+  });
+
+  it('langt hold blir fortsatt nabobytte når segmentoperasjoner ikke finnes', () => {
+    const m = machine({ segments: false });
+    m.handle(ev('down', tile(3), 100, 100, 0));
+    m.tick(HOLD_MS);
+    expect(m.state.name).toBe('pending');
+    m.handle(ev('move', tile(3), 100 + DRAG_THRESHOLD + 1, 100, HOLD_MS + 20));
+    expect(m.state.name).toBe('dragTile');
+    expect(m.handle(ev('up', tile(2), 50, 100, HOLD_MS + 80))).toEqual([{ type: 'swap', a: 3, b: 2 }]);
   });
 });
 
@@ -180,6 +191,14 @@ describe('trykkalternativ', () => {
     m.handle(ev('up', tile(5), 0, 0, 80));
     expect(m.handle(ev('down', tile(2), 0, 0, 200))).toEqual([]);
     expect(m.state).toEqual({ name: 'menu', from: 2, to: 5 });
+  });
+
+  it('trykk på ikke-nabo forklares uten segmentmeny når segmentoperasjoner ikke finnes', () => {
+    const m = machine({ segments: false });
+    m.handle(ev('down', tile(0), 0, 0, 0));
+    m.handle(ev('up', tile(0), 0, 0, 80));
+    expect(m.handle(ev('down', tile(3), 0, 0, 200))).toEqual([{ type: 'hint', reason: 'notAdjacent' }]);
+    expect(m.state.name).toBe('idle');
   });
 
   it('trykk-segment med låst brikke i mellom gir hint', () => {

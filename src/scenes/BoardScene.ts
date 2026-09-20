@@ -15,6 +15,7 @@ import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
 import type { IntroSpec } from '../game/intro';
 import { introFor, introSatisfiedBy } from '../game/intro';
+import { operationSummary, segmentOptions } from '../game/operations';
 import type { KeyCode } from '../game/keyboard';
 import { KeyboardController } from '../game/keyboard';
 import type { BoardLayout, LayoutKind } from '../game/layout';
@@ -46,6 +47,7 @@ interface HudLines {
   readonly topSize: number;
   readonly bottom: string;
   readonly harmony: string;
+  readonly operations: string;
   readonly topColor?: number;
   readonly urgent?: boolean;
 }
@@ -282,6 +284,7 @@ export class BoardScene extends Phaser.Scene {
       isLocked: (i: number) => this.view.tiles[i]?.locked === true,
       hasWild: () => this.view.hand.wild > 0,
       canRemove: () => this.view.hand.remove > 0,
+      canSegment: () => this.level.rules.allowedOps.has('rotate') || this.level.rules.allowedOps.has('mirror'),
     };
     this.machine = new GestureMachine(env);
     this.keyboard = new KeyboardController(env);
@@ -647,7 +650,10 @@ export class BoardScene extends Phaser.Scene {
       const at = this.intentPoint(intent);
       const r = this.dispatch(cmd);
       if (!r.ok) {
-        this.showHint(r.reason, at ?? undefined);
+        const message = r.reason === 'notAllowed'
+          ? `Ikke på dette brettet · ${operationSummary(this.level.rules.allowedOps)}`
+          : undefined;
+        this.showHint(r.reason, at ?? undefined, message);
         audio.playError();
         continue;
       }
@@ -700,7 +706,7 @@ export class BoardScene extends Phaser.Scene {
     this.armedRing?.setVisible(s.name === 'wildArmed');
     if (s.name === 'menu') {
       const p = this.segmentAnchor(s.from, s.to);
-      this.menu.show(p.x, p.y, s.to - s.from + 1 >= 3);
+      this.menu.show(p.x, p.y, segmentOptions(this.level.rules.allowedOps, s.to - s.from + 1));
     } else {
       this.menu.hide();
     }
@@ -814,16 +820,17 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /** Med kjent posisjon vises årsaken like over brikka; ellers faller den tilbake til under HUD. */
-  private showHint(reason: HintReason | SessionReject, at?: { x: number; y: number }): void {
+  private showHint(reason: HintReason | SessionReject, at?: { x: number; y: number }, message?: string): void {
     this.hint?.destroy();
     const x = at?.x ?? contentLeft(this) + contentWidth(this) / 2;
     const y = at === undefined ? HUD_HEIGHT + SPACE.lg : at.y - this.layout.tile * this.layout.scale * 0.9;
-    const text = makeLabel(this, x, y, HINT_TEXT[reason], {
+    const text = makeLabel(this, x, y, message ?? HINT_TEXT[reason], {
       size: 16,
       color: COLORS.danger,
       font: 'body',
       bold: true,
     });
+    text.setScale(Math.min(1, (contentWidth(this) - SPACE.xl) / text.width));
     text.setDepth(30);
     this.hint = text;
     this.tweens.add({
@@ -998,7 +1005,7 @@ export class BoardScene extends Phaser.Scene {
    */
   private refreshChrome(resized: boolean): void {
     const lines = this.hudLines();
-    const text = `${lines.top}|${lines.bottom}|${lines.harmony}`;
+    const text = `${lines.top}|${lines.bottom}|${lines.harmony}|${lines.operations}`;
     if (resized || this.hudText !== text) {
       this.hudText = text;
       this.buildHud(lines);
@@ -1182,7 +1189,7 @@ export class BoardScene extends Phaser.Scene {
       : `Trekk ${this.view.movesUsed} · mål ukjent`;
     switch (this.modeKind) {
       case 'daily':
-        return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}`, harmony: this.harmonyText() };
+        return { top: moves, topSize: HUD_TOP, bottom: `Daglig · ${mmss(this.elapsedMs)}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       case 'blitz': {
         const urgent = blitzUrgency(this.clock.remainingMs);
         return {
@@ -1190,15 +1197,16 @@ export class BoardScene extends Phaser.Scene {
           topSize: HUD_CLOCK,
           bottom: urgent ? `SISTE SEKUNDER · Løst ${services(this).modes.blitz.solved}` : `Løst ${services(this).modes.blitz.solved} · ${moves}`,
           harmony: this.harmonyText(),
+          operations: operationSummary(this.level.rules.allowedOps),
           topColor: urgent ? COLORS.danger : COLORS.ink,
           urgent,
         };
       }
       case 'free':
-        return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}`, harmony: this.harmonyText() };
+        return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       case 'campaign': {
         const budget = this.level.showBudget ? ` · Budsjett ${this.view.budgetLeft}` : '';
-        return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}`, harmony: this.harmonyText() };
+        return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       }
     }
   }
@@ -1232,14 +1240,13 @@ export class BoardScene extends Phaser.Scene {
     const title = makeLabel(this, cx + 38, y - SPACE.md, lines.top, { size: lines.topSize, color: lines.topColor, bold: true });
     title.setScale(Math.min(1, (w - 100) / title.width));
     this.hud.add(title);
-    this.hud.add(
-      makeLabel(this, cx, y + SPACE.lg, lines.bottom, {
-        size: 14,
-        color: COLORS.inkMuted,
-        font: 'body',
-      })
-    );
-    this.hud.add(makeLabel(this, cx, HUD_HEIGHT - SPACE.md, lines.harmony, { size: 11, color: this.accent(), font: 'body', bold: true }));
+    const harmony = makeLabel(this, left + w * 0.25, y + SPACE.lg, lines.harmony, { size: 11, color: this.accent(), font: 'body', bold: true });
+    harmony.setScale(Math.min(1, (w * 0.44) / harmony.width));
+    const context = makeLabel(this, left + w * 0.75, y + SPACE.lg, lines.bottom, { size: 12, color: COLORS.inkMuted, font: 'body' });
+    context.setScale(Math.min(1, (w * 0.44) / context.width));
+    const operations = makeLabel(this, cx, HUD_HEIGHT - SPACE.md, lines.operations, { size: 11, color: COLORS.inkMuted, font: 'body', bold: true });
+    operations.setScale(Math.min(1, (w - SPACE.xl * 2) / operations.width));
+    this.hud.add([harmony, context, operations]);
   }
 
   private buildHand(): void {

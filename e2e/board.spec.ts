@@ -80,3 +80,34 @@ test('første trekk fyller harmonimåleren og bygger flyt', async ({ page }) => 
   await page.waitForFunction(() => window.__palintris?.feedback().matched === 2);
   expect(await h.feedback()).toEqual({ matched: 2, total: 2, gained: 2, flow: 1 });
 });
+
+test('langt drag på byttebrett blir fortsatt nabobytte', async ({ page }) => {
+  await page.goto('/?level=w1-02');
+  const h = hook(page);
+  await page.waitForFunction(() => window.__palintris?.levelId === 'w1-02');
+  await dismissIntroIfVisible(page);
+
+  const from = await h.slot(3);
+  const to = await h.slot(2);
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  await page.waitForTimeout(350);
+  await page.mouse.move(to.x, to.y, { steps: 8 });
+  await page.mouse.up();
+  await h.waitIdle();
+
+  expect((await h.view()).movesUsed).toBe(1);
+  expect(await h.menu()).toBeNull();
+});
+
+test('viser bare rotasjon før speiling er låst opp', async ({ page }) => {
+  await page.goto('/?level=w2-01');
+  const h = hook(page);
+  await page.waitForFunction(() => window.__palintris?.levelId === 'w2-01');
+  await dismissIntroIfVisible(page);
+
+  await tap(page, await h.slot(0));
+  await tap(page, await h.slot(2));
+  const actions = (await h.menu())?.map((item) => item.action);
+  expect(actions).toEqual(['rotateLeft', 'rotateRight']);
+});
