@@ -21,7 +21,7 @@ test('smale innstillingsknapper har minst 44 pikslers treffhøyde', async ({ pag
   await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');
   await page.mouse.click(224, 30);
   await page.waitForFunction(() => window.__palintris === undefined);
-  await page.mouse.click(507, 342);
+  await page.mouse.click(608, 300);
   await page.mouse.click(522, 103);
   await expect.poll(() => page.evaluate((key) => {
     const save = localStorage.getItem(key);

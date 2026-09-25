@@ -3,6 +3,8 @@ import Phaser from 'phaser';
 import { makeBackdrop } from './art';
 import { audio } from '../audio/sound';
 import type { BoardState } from '../core/board';
+import { reject } from '../core/commands';
+import { RELICS } from '../game/modes/expedition';
 import type { Command, MoveCommand, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
 import { markIntroSeen, setDailyProgress } from '../core/storage';
@@ -193,9 +195,12 @@ export class BoardScene extends Phaser.Scene {
   /** Introen for nivået, når det har en og den ikke er sett før. */
   private intro: IntroOverlay | null = null;
   private introSpec: IntroSpec | null = null;
+  private sacrificePrompt: Phaser.GameObjects.Container | null = null;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
+    this.sacrificePrompt?.destroy();
+    this.sacrificePrompt = null;
     if (this.clearingVictory) {
       this.relayout();
       this.refreshChrome(true);
@@ -286,6 +291,7 @@ export class BoardScene extends Phaser.Scene {
     this.blitzDone = false;
     this.intro = null;
     this.introSpec = null;
+    this.sacrificePrompt = null;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
@@ -345,6 +351,7 @@ export class BoardScene extends Phaser.Scene {
   private startId(s: Services): string {
     if (this.modeKind === 'daily') return s.modes.daily.todayId();
     if (this.modeKind === 'blitz') return BLITZ_NEXT;
+    if (this.modeKind === 'expedition') return 'current';
     return this.levelId;
   }
 
@@ -381,6 +388,13 @@ export class BoardScene extends Phaser.Scene {
       this.elapsedMs = 0;
       this.startedAt = '';
       s.store.update((d) => setDailyProgress(d, undefined));
+    }
+    if (this.modeKind === 'expedition') {
+      this.replaying = true;
+      for (const command of s.modes.expedition.state?.commands ?? []) this.session.dispatch(command);
+      this.replaying = false;
+      this.view = this.session.view();
+      this.harmony = harmonyProgress(this.view.tiles);
     }
     this.maybeShowIntro();
     this.render(false);
@@ -524,6 +538,7 @@ export class BoardScene extends Phaser.Scene {
    * og tiden lagres etter hvert trekk, og tiden starter ved det første.
    */
   private dispatch(cmd: Command): Result<BoardState, SessionReject> {
+    if (this.modeKind === 'expedition' && (cmd.type === 'undo' || cmd.type === 'reset' || this.view.budgetLeft <= 0 || this.sacrificePrompt !== null)) return reject('notAllowed');
     this.pendingCommand = cmd;
     const r = this.session.dispatch(cmd);
     this.pendingCommand = null;
@@ -607,6 +622,7 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private pointer(type: 'down' | 'move' | 'up', p: Phaser.Input.Pointer): void {
+    if (this.sacrificePrompt !== null) return;
     const x = p.x / PIXEL_RATIO;
     const y = p.y / PIXEL_RATIO;
     // Panelet spiser bare sitt eget trykk; et drag som alt er i gang må kunne slippes over det.
@@ -882,7 +898,7 @@ export class BoardScene extends Phaser.Scene {
     // event-objektet kan leveres flere ganger. Auto-repeat skal heller ikke telle som trekk.
     if (e.repeat || e === this.lastKeyEvent) return;
     this.lastKeyEvent = e;
-    if (this.inputLocked || this.view.solved) return;
+    if (this.inputLocked || this.view.solved || this.sacrificePrompt !== null) return;
     const code = KEY_MAP[e.code];
     if (code === undefined) return;
     if (this.banner !== null && code !== 'KeyZ' && code !== 'KeyR') return;
@@ -942,7 +958,7 @@ export class BoardScene extends Phaser.Scene {
     g.lineStyle(3, COLORS.danger, 1);
     g.strokeRoundedRect(-w / 2, -BANNER_H / 2, w, BANNER_H, RADIUS.panel);
     const title = makeLabel(this, 0, -SPACE.md, 'Ingen vei videre herfra', { size: 20, color: COLORS.danger, bold: true });
-    const sub = makeLabel(this, 0, SPACE.lg, 'Angre eller start på nytt', { size: 15, color: COLORS.inkMuted, font: 'body' });
+    const sub = makeLabel(this, 0, SPACE.lg, this.modeKind === 'expedition' ? 'Ofre ett liv for å prøve rommet igjen' : 'Angre eller start på nytt', { size: 15, color: COLORS.inkMuted, font: 'body' });
     const x = contentLeft(this) + contentWidth(this) / 2;
     this.banner = this.add.container(x, HUD_HEIGHT + SPACE.xl + BANNER_H / 2, [g, title, sub]).setDepth(25);
   }
@@ -980,7 +996,7 @@ export class BoardScene extends Phaser.Scene {
         return rendered === undefined ? [] : [rendered];
       });
       this.effects.clearBoard(tiles, services(this).settings().clearAnimations, () => {
-        const next = this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
+        const next = this.modeKind === 'expedition' ? SCENE.expedition : this.scene.get(SCENE.result) !== null ? SCENE.result : SCENE.menu;
         this.scene.start(next, { mode: this.modeKind, levelId: this.levelId, outcome, movesUsed, target: this.level.target, timeMs });
       }, (i) => {
         const slot = this.layout.slots[i];
@@ -1225,6 +1241,7 @@ export class BoardScene extends Phaser.Scene {
     this.view = v;
     // Avspilling tegner én gang til slutt; hver mellomtilstand ville gitt en animasjon.
     if (this.replaying) return;
+    if (this.modeKind === 'expedition' && command !== null) services(this).modes.expedition.recordCommand(command);
     // Løseren sender samme brett en gang til med bare ny status. En ny render her ville
     // avbrutt den langsomme trekkanimasjonen ved å tween-e fra mellomposisjonen på nytt.
     if (command === null) {
@@ -1314,6 +1331,13 @@ export class BoardScene extends Phaser.Scene {
       ? `Trekk ${this.view.movesUsed} / mål ${this.level.target}`
       : `Trekk ${this.view.movesUsed} · mål ukjent`;
     switch (this.modeKind) {
+      case 'expedition': {
+        const run = services(this).modes.expedition.state;
+        return { top: `${this.view.budgetLeft} trekk igjen`, topSize: HUD_TOP,
+          bottom: `Rom ${run?.floor ?? 1}/9 · ${run?.lives ?? 0} liv · ${run?.score ?? 0} p`,
+          harmony: `${this.harmonyText()} · Mål ${this.level.target}`,
+          operations: operationSummary(this.level.rules.allowedOps), topColor: this.view.budgetLeft <= 1 ? COLORS.danger : COLORS.star };
+      }
       case 'sticky':
         return { top: moves, topSize: HUD_TOP, bottom: `Sticky ${this.level.n}/3 · ${this.view.budgetLeft} igjen`, harmony: this.harmonyText(), operations: 'Nabobytte · Lenkede par flyttes sammen' };
       case 'daily':
@@ -1392,6 +1416,23 @@ export class BoardScene extends Phaser.Scene {
     tray.lineBetween(left + 20, screenHeight(this) - HAND_HEIGHT, left + w - 20, screenHeight(this) - HAND_HEIGHT);
     this.hand.add(tray);
 
+    if (this.modeKind === 'expedition') {
+      const relics = services(this).modes.expedition.state?.relics ?? [];
+      const text = relics.length === 0 ? 'Hvert trekk er bindende' : relics.map((id) => RELICS[id].glyph + ' ' + RELICS[id].name).join(' · ');
+      const label = makeLabel(this, left + w / 2, cy - 31, text, { size: 12, color: COLORS.glow, font: 'body' });
+      label.setScale(Math.min(1, (w - 32) / label.width));
+      this.hand.add(label);
+      const tools = [this.level.rules.allowedOps.has('rotate') ? 'Q/E roterer' : '', this.level.rules.allowedOps.has('mirror') ? 'W speiler' : ''].filter(Boolean);
+      const description = tools.length > 0 ? `Hold og dra for utsnitt · ${tools.join(' · ')}` : 'Bytt naboer · Ingen angre eller reset';
+      const help = makeLabel(this, left + w / 2, cy - 10, description, { size: 11, color: COLORS.inkMuted, font: 'body' });
+      help.setScale(Math.min(1, (w - 24) / help.width));
+      this.hand.add(help);
+      this.hand.add(makeButton(this, { x: left + w / 2, y: cy + 29, width: Math.min(250, w - 40), height: 44,
+        label: 'Ofre ett liv · prøv rommet igjen', labelSize: 13, accent: COLORS.danger,
+        onClick: () => this.confirmSacrifice() }));
+      this.zoneCache = { wild: { x: -100, y: -100 }, remove: { x: -100, y: -100 }, undo: { x: -100, y: -100 }, reset: { x: left + w / 2, y: cy + 29 } };
+      return;
+    }
     if (this.modeKind === 'sticky') {
       this.hand.add(makeLabel(this, left + w / 4, cy, 'Lenkede brikker\nflyttes sammen.', { size: 13, color: COLORS.glow, font: 'body', bold: true }));
     } else this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
@@ -1443,6 +1484,31 @@ export class BoardScene extends Phaser.Scene {
       undo: { x: centerOf(2), y: cy },
       reset: { x: centerOf(3), y: cy },
     };
+  }
+
+  private confirmSacrifice(): void {
+    if (this.inputLocked || this.pendingTweens > 0 || this.solvedFired || this.sacrificePrompt !== null) return;
+    this.machine.reset();
+    this.keyboard.reset();
+    this.menu.hide();
+    this.syncGestureVisuals();
+    const cx = contentLeft(this) + contentWidth(this) / 2;
+    const cy = screenHeight(this) / 2;
+    const width = Math.min(352, contentWidth(this) - 24);
+    const blocker = this.add.zone(screenWidth(this) / 2, cy, screenWidth(this), screenHeight(this)).setInteractive();
+    const panel = this.add.graphics();
+    panel.fillStyle(COLORS.shadow, 0.8).fillRect(0, 0, screenWidth(this), screenHeight(this));
+    panel.fillStyle(COLORS.panel, 1).fillRoundedRect(cx - width / 2, cy - 100, width, 200, 16);
+    panel.lineStyle(1, COLORS.danger, 0.8).strokeRoundedRect(cx - width / 2, cy - 100, width, 200, 16);
+    const title = makeLabel(this, cx, cy - 65, 'Ofre ett liv?', { size: 23, color: COLORS.danger, bold: true });
+    const lives = services(this).modes.expedition.state?.lives ?? 0;
+    const text = makeLabel(this, cx, cy - 18, lives === 1 ? 'Dette er siste liv. Reisen avsluttes.' : 'Rommet starter på nytt. Poengene beholdes.', { size: 13, font: 'body', color: COLORS.inkMuted });
+    text.setScale(Math.min(1, (width - 24) / text.width));
+    const cancel = makeButton(this, { x: cx - width / 4, y: cy + 53, width: width / 2 - 18, height: 46, label: 'Fortsett', accent: COLORS.glow,
+      onClick: () => { this.sacrificePrompt?.destroy(); this.sacrificePrompt = null; } });
+    const confirm = makeButton(this, { x: cx + width / 4, y: cy + 53, width: width / 2 - 18, height: 46, label: 'Ofre liv', accent: COLORS.danger,
+      onClick: () => { services(this).modes.expedition.fail(); audio.playFailure(); this.scene.start(SCENE.expedition); } });
+    this.sacrificePrompt = this.add.container(0, 0, [panel, blocker, title, text, cancel, confirm]).setDepth(100);
   }
 
   private makeZone(x: number, y: number, w: number, label: string, active: boolean): Phaser.GameObjects.Container {

@@ -59,3 +59,34 @@ test('produksjonsbygget åpner også når nettleseren blokkerer lokal lagring', 
   await click(page, 295, 130);
   expect(errors).toEqual([]);
 });
+
+test('ekspedisjon kan startes og gjenopptas i produksjon uten utviklingskroker', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.getByRole('status')).toBeHidden();
+  await nextFrame(page);
+  await click(page, 195, 415);
+  await click(page, 195, 717);
+  await click(page, 195, 457);
+  const run = (): Promise<{phase:string;commands:unknown[];lives:number}> => page.evaluate(() =>
+    (JSON.parse(localStorage.getItem('palintris.expedition.v1') ?? '{}') as {state:{phase:string;commands:unknown[];lives:number}}).state);
+  await expect.poll(async () => (await run())?.phase).toBe('board');
+  expect(await page.evaluate(() => '__palintris' in window || '__expedition' in window)).toBe(false);
+  for (const key of ['ArrowRight', 'Space', 'ArrowRight']) { await page.keyboard.press(key); await nextFrame(page); }
+  const before = await run();
+  await page.reload();
+  await expect(page.getByRole('status')).toBeHidden();
+  await nextFrame(page);
+  await click(page, 195, 415);
+  if (before.phase === 'board') {
+    await click(page, 195, 717);
+    expect(await run()).toEqual(before);
+    await click(page, 195, 813);
+    await click(page, 283, 475);
+    await expect.poll(async () => (await run()).lives).toBe(2);
+  } else {
+    expect(await run()).toEqual(before);
+  }
+  expect(errors).toEqual([]);
+});

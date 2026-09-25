@@ -12,6 +12,7 @@ export const SCENE = {
   daily: 'Daily',
   blitzResult: 'BlitzResult',
   settings: 'Settings',
+  expedition: 'Expedition',
 } as const;
 
 export interface LabelOpts {

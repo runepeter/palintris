@@ -9,6 +9,7 @@ import { BlitzMode } from '../game/modes/blitz';
 import { CampaignMode } from '../game/modes/campaign';
 import { DailyMode } from '../game/modes/daily';
 import { FreeMode } from '../game/modes/free';
+import { ExpeditionMode } from '../game/modes/expedition';
 import { StickyMode } from '../game/modes/sticky';
 import { SaveStore } from '../game/saveStore';
 import type { SolverPort } from '../game/session';
@@ -21,6 +22,7 @@ export interface Modes {
   blitz: BlitzMode;
   readonly free: FreeMode;
   readonly sticky: StickyMode;
+  readonly expedition: ExpeditionMode;
 }
 
 export interface Services {
@@ -62,6 +64,10 @@ export const createServices = (): Services => {
     blitz: newBlitz(store),
     free: new FreeMode(CONTENT_VERSION, createRng(Date.now() >>> 0)),
     sticky: new StickyMode(),
+    expedition: new ExpeditionMode({
+      getItem: (key) => window.localStorage.getItem(key),
+      setItem: (key, value) => window.localStorage.setItem(key, value),
+    }),
   };
   return {
     store,

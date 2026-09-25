@@ -37,8 +37,14 @@ export interface TestHook {
   dismissIntro(): void;
 }
 
+export interface ExpeditionUi {
+  readonly phase: string;
+  readonly buttons: readonly { id: string; x: number; y: number }[];
+}
+
 declare global {
   interface Window {
     __palintris?: TestHook;
+    __expedition?: ExpeditionUi;
   }
 }
