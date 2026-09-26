@@ -13,7 +13,7 @@ Teknologi: eksisterende TypeScript/Phaser/Vitest/Playwright/worker; ingen ny avh
 Spec: docs/superpowers/specs/2026-09-26-speilglimt-design.md.
 
 ## Før implementasjon
-- [ ] Vent på avsluttet sidecar runtimefrys og publisert nattretting av mestringsfeedback. Bekreft gitstatus og ingen overlappende agenter/prosesser.
+- [x] Vent på avsluttet sidecar runtimefrys og publisert nattretting av mestringsfeedback. Bekreft gitstatus og ingen overlappende agenter/prosesser.
 - [ ] Les faktisk HEAD og oppdater kontrakt hvis scenens hånd-/rotasjonslayout krever et annet grensesnitt. Ingen ny UI før førbilder.
 
 ## 1. BFS og worker: bevisbart neste trekk
