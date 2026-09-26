@@ -42,8 +42,8 @@ Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src
 
 ## Leveranse 3: Helbrettrotasjon
 Filer: src/scenes/BoardScene.ts, faktisk bevegelsesrenderer, src/game/moveAnimation.ts og tester/E2E.
-- [ ] Reproduserende test: helbrettknapp lager `{type:'rotate',from:0,to:n-1,dir:'left'}` og gir forventet ID-rekkefølge. Låste brikker avviser hele trekket. Input under animasjon skal ikke doble trekket.
-- [ ] Gjenbruk motoren, legg til synlige knapper etter introduksjon. Vis kantbrikkens bane til motsatt ende og de øvrige brikkenes forskyvning. Redusert bevegelse skal fortsatt vise retningen.
+- [x] Reproduserende test: helbrettknapp lager `{type:'rotate',from:0,to:n-1,dir:'left'}` og gir forventet ID-rekkefølge. Låste brikker avviser hele trekket. Input under animasjon skal ikke doble trekket.
+- [x] Gjenbruk motoren, legg til synlige knapper etter introduksjon. Vis kantbrikkens bane til motsatt ende og de øvrige brikkenes forskyvning. Redusert bevegelse skal fortsatt vise retningen.
 - [ ] Review, mobil-/animasjonskontroll, tester, commit og verifisert deploy.
 
 ## Leveranse 4: Kvote og midtbonus i reisen

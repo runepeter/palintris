@@ -25,7 +25,7 @@ import type { BoardLayout, LayoutKind } from '../game/layout';
 import { computeLayout, hitGap, hitTile } from '../game/layout';
 import { BLITZ_NEXT } from '../game/modes/blitz';
 import type { BoardMode, ModeLevel } from '../game/modes/types';
-import { moveAnimationFor, type MoveAnimation } from '../game/moveAnimation';
+import { moveAnimationFor, rotationControlsLayout, wholeRotationPath, rotationPoint, type MoveAnimation, type RotationPath } from '../game/moveAnimation';
 import { STICKY_LEVELS } from '../game/modes/sticky';
 import type { SessionReject, SessionView } from '../game/session';
 import { BoardSession } from '../game/session';
@@ -199,10 +199,16 @@ export class BoardScene extends Phaser.Scene {
   /** Introen for nivået, når det har en og den ikke er sett før. */
   private intro: IntroOverlay | null = null;
   private introSpec: IntroSpec | null = null;
+  private rotationControls!: Phaser.GameObjects.Container;
+  private rotationTrail!: Phaser.GameObjects.Graphics;
+  private rotationTween: Phaser.Tweens.Tween | null = null;
+  private rotationLanding: Phaser.Time.TimerEvent | null = null;
+  private deferredIntro = false;
   private sacrificePrompt: Phaser.GameObjects.Container | null = null;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
+    this.clearRotation();
     this.sacrificePrompt?.destroy();
     this.sacrificePrompt = null;
     if (this.clearingVictory) {
@@ -223,7 +229,7 @@ export class BoardScene extends Phaser.Scene {
     }
     for (const v of this.tiles.values()) {
       this.tweens.killTweensOf(v);
-      v.setScale(1);
+      v.setScale(1).setDepth(5);
     }
     // killTweensOf fyrer ikke onComplete, så de fadende brikkene rydder vi selv i stedet
     // for å la dem henge igjen som usynlig etterslep etter at telleren nullstilles under.
@@ -303,6 +309,9 @@ export class BoardScene extends Phaser.Scene {
     this.blitzDone = false;
     this.intro = null;
     this.introSpec = null;
+    this.deferredIntro = false;
+    this.rotationTween = null;
+    this.rotationLanding = null;
     this.sacrificePrompt = null;
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
@@ -355,6 +364,7 @@ export class BoardScene extends Phaser.Scene {
       s.modes.campaign.beginAttempt(level.id, this.devPreview);
       this.elapsedMs = campaignProgress(s.store.data).firstAttempts[level.id]?.activeMs ?? 0;
     }
+    this.createRotationControls();
     this.startBoard(level);
     if (this.modeKind === 'sticky') this.stickyLinks = new StickyLinks(this, s.settings().reducedMotion);
     if (this.modeKind === 'blitz') this.clock.start();
@@ -477,6 +487,7 @@ export class BoardScene extends Phaser.Scene {
 
   /** Neste brett i samme scene: uten scene.start, som ville nullstilt klokken og modusen. */
   private loadBoard(level: ModeLevel): void {
+    this.clearRotation();
     this.destroyIntro();
     this.session.dispose();
     for (const v of this.tiles.values()) {
@@ -502,6 +513,8 @@ export class BoardScene extends Phaser.Scene {
 
   override update(time: number, delta: number): void {
     if (this.aborted) return;
+    this.rotationControls.setVisible(this.rotationAvailable() && !this.view.solved && this.sacrificePrompt === null);
+    if (this.deferredIntro && this.pendingTweens === 0) this.dismissIntro();
     this.machine.tick(time);
     // tick() er stille, så hold-overgangen fanges bare ved å sammenligne tilstanden.
     if (this.machine.state !== this.lastState) this.syncGestureVisuals();
@@ -621,6 +634,7 @@ export class BoardScene extends Phaser.Scene {
     this.suspendCampaign();
     if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
+    this.clearRotation();
     this.destroyIntro();
     removeHook();
     this.session.dispose();
@@ -798,8 +812,10 @@ export class BoardScene extends Phaser.Scene {
         continue;
       }
       if (at !== null) {
+        const whole = cmd.type === 'rotate' && cmd.from === 0 && cmd.to === this.view.tiles.length - 1;
         const y = at.y - this.layout.tile * this.layout.scale * 0.9;
-        this.effects.toolCue(at.x, y, this.moveCue(cmd), this.accent(), animation.totalMs);
+        this.effects.toolCue(whole ? screenWidth(this) / 2 : at.x, whole ? Math.max(HUD_HEIGHT + 16, y) : y,
+          this.moveCue(cmd), this.accent(), animation.totalMs);
       }
       if (cmd.type === 'mirror') this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale, animation.totalMs);
       this.time.delayedCall(animation.totalMs, feedback);
@@ -1122,7 +1138,12 @@ export class BoardScene extends Phaser.Scene {
   /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
   private checkIntro(cmd: Command): void {
     if (this.modeKind === 'sticky') return;
-    if (this.introSpec !== null && introSatisfiedBy(this.introSpec, cmd)) this.dismissIntro();
+    if (this.introSpec === null || !introSatisfiedBy(this.introSpec, cmd)) return;
+    if (cmd.type === 'rotate' && this.pendingTweens > 0) {
+      const id = this.introSpec.id;
+      services(this).store.update((d) => markIntroSeen(d, id));
+      this.deferredIntro = true;
+    } else this.dismissIntro();
   }
 
   private dismissIntro(): void {
@@ -1135,9 +1156,70 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private destroyIntro(): void {
+    this.deferredIntro = false;
     this.intro?.destroy();
     this.intro = null;
     this.introSpec = null;
+  }
+
+  private rotationAvailable(): boolean {
+    const save = services(this).store.data;
+    return this.level.rules.allowedOps.has('rotate') && this.intro === null &&
+      (save.introsSeen.includes('w2-01') || (save.stars['w2-01']?.stars ?? 0) > 0);
+  }
+
+  private createRotationControls(): void {
+    this.rotationTrail = this.add.graphics().setDepth(8).setName('rotation-trail');
+    const buttons = (['rotateLeft', 'rotateRight'] as const).map((action, i) => makeButton(this, {
+      x: 0, y: 0, width: 152, height: 44, label: `Hele brettet ${i === 0 ? '←' : '→'}`, labelSize: 14, accent: this.accent(),
+      onClick: () => {
+        if (this.inputLocked || this.pendingTweens > 0 || this.view.solved || this.sacrificePrompt !== null || !this.rotationAvailable()) return;
+        this.applyIntents([{ type: 'segment', from: 0, to: this.view.tiles.length - 1, action }]);
+      },
+    }));
+    this.rotationControls = this.add.container(0, 0, buttons).setDepth(15).setName('rotation-controls');
+  }
+
+  private clearRotation(): void {
+    this.rotationTween?.remove();
+    this.rotationTween = null;
+    this.rotationLanding?.remove();
+    this.rotationLanding = null;
+    this.rotationTrail?.clear();
+  }
+
+  private animateRotation(tile: TileView, path: RotationPath, duration: number): void {
+    this.clearRotation();
+    const trail = this.rotationTrail;
+    trail.lineStyle(3, this.accent(), 0.65);
+    trail.beginPath();
+    trail.moveTo(path.start.x, path.start.y);
+    for (let i = 1; i <= 32; i++) {
+      const point = rotationPoint(path, i / 32);
+      trail.lineTo(point.x, point.y);
+    }
+    trail.strokePath();
+    const arrow = rotationPoint(path, .65);
+    const before = rotationPoint(path, .60);
+    const angle = Math.atan2(arrow.y - before.y, arrow.x - before.x);
+    for (const offset of [-.6, .6]) trail.lineBetween(arrow.x, arrow.y,
+      arrow.x - 12 * Math.cos(angle + offset), arrow.y - 12 * Math.sin(angle + offset));
+    tile.setDepth(9);
+    const reduced = services(this).settings().reducedMotion;
+    this.rotationTween = this.tweens.addCounter({ from: 0, to: 1, duration, ease: EASING.move,
+      onUpdate: (tween) => {
+        const t = tween.getValue() ?? 0;
+        const point = reduced ? { x: path.start.x + (path.end.x - path.start.x) * t, y: path.start.y + (path.end.y - path.start.y) * t } : rotationPoint(path, t);
+        tile.setPosition(point.x, point.y);
+      },
+      onComplete: () => {
+        tile.setPosition(path.end.x, path.end.y).setDepth(5);
+        this.rotationTween = null;
+        trail.clear().lineStyle(3, this.accent(), .9).strokeCircle(path.end.x, path.end.y, this.layout.tile * this.layout.scale * .55);
+        this.rotationLanding = this.time.delayedCall(350, () => { trail.clear(); this.rotationLanding = null; });
+        this.tweenDone();
+      },
+    });
   }
 
   /** Brettområdet: mellom HUD og hånd, maks 480 bredt, sentrert. Kun geometri og speillinje. */
@@ -1150,8 +1232,14 @@ export class BoardScene extends Phaser.Scene {
       makeBackdrop(this, 'board');
     }
     this.intro?.layout(w - SPACE.xl, screenHeight(this) - HAND_HEIGHT - SPACE.md);
-    const boardTop = HUD_HEIGHT;
-    const boardHeight = Math.max(MIN_BOARD, screenHeight(this) - HUD_HEIGHT - HAND_HEIGHT - this.introSpace());
+    const controls = rotationControlsLayout(screenWidth(this), screenHeight(this));
+    const boardTop = this.rotationAvailable() ? controls.boardTop : HUD_HEIGHT;
+    this.rotationControls.list.forEach((child, i) => {
+      const point = i === 0 ? controls.left : controls.right;
+      (child as Phaser.GameObjects.Container).setPosition(point.x, point.y);
+    });
+    this.rotationControls.setVisible(this.rotationAvailable() && !this.view.solved && this.sacrificePrompt === null);
+    const boardHeight = Math.max(MIN_BOARD, screenHeight(this) - boardTop - HAND_HEIGHT - this.introSpace());
     this.layout = computeLayout({ count: this.view.tiles.length, width: w, height: boardHeight });
     this.originX = left + (w - this.layout.width * this.layout.scale) / 2;
     this.originY = boardTop + (boardHeight - this.layout.height * this.layout.scale) / 2;
@@ -1179,8 +1267,8 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /** Tegner alt fra this.view. En MoveAnimation styrer bare selve trekket, ikke resten av scenen. */
-  private render(animate: boolean, animation?: MoveAnimation): void {
-    if (animation?.detailed === true) this.inputLocked = true;
+  private render(animate: boolean, animation?: MoveAnimation, wrap?: { id: number; dir: 'left' | 'right' }): void {
+    if (animation?.detailed === true || wrap !== undefined) this.inputLocked = true;
     this.relayout();
     const resized = this.lastSize === null || this.lastSize.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this);
     this.lastSize = { w: screenWidth(this), h: screenHeight(this) };
@@ -1217,6 +1305,12 @@ export class BoardScene extends Phaser.Scene {
       if (tile.id === this.dragId) return;
       if (animate && (v.x !== p.x || v.y !== p.y)) {
         this.pendingTweens++;
+        if (wrap?.id === tile.id) {
+          const path = wholeRotationPath(this.layout, { x: this.originX, y: this.originY }, wrap.dir,
+            { left: 0, right: screenWidth(this), top: this.originY, bottom: screenHeight(this) - HAND_HEIGHT });
+          this.animateRotation(v, path, moveMs);
+          return;
+        }
         this.tweens.add({
           targets: v,
           x: p.x,
@@ -1308,7 +1402,10 @@ export class BoardScene extends Phaser.Scene {
     }
     this.keyboard.clampCursor();
     const animation = command.type === 'undo' || command.type === 'reset' ? undefined : this.moveAnimation(command.type);
-    this.render(true, animation);
+    const wrapTile = previous.tiles[command.type === 'rotate' && command.dir === 'right' ? previous.tiles.length - 1 : 0];
+    const wrap = wrapTile !== undefined && command.type === 'rotate' && command.from === 0 && command.to === previous.tiles.length - 1
+      ? { id: wrapTile.id, dir: command.dir } : undefined;
+    this.render(true, animation, wrap);
     if (this.modeKind === 'sticky' && command.type === 'swap' && v.tiles.some((tile) =>
       tile.bondedTo !== undefined && previous.tiles.find((old) => old.id === tile.id)?.bondedTo === undefined)) {
       this.effects.reward(contentLeft(this) + contentWidth(this) / 2, this.originY + 28, 'Koblet! Paret flyttes sammen', COLORS.glow);

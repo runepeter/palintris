@@ -78,5 +78,15 @@ Kjør på én stabil kildekodetilstand: unit/type/lint, relevante E2E og e2e:rel
 - Uavhengig game/session-review PASS (/tmp/palintris-sidecar-domain-review.md). Root kontrollerte driver/CLI, lokalendpoint, modell-digest, strukturertvalg, kumulativ --from-beskyttelse. Funn om mutable historikk, filnavn og tom smoke rettet med røde/grønne tester. Krasj mellom spillfil/state gjenbruker fullført spill.
 - Faktisk Ollama gemma4:e4b-mlx: første smoke timeout60s,0spill,1kall, ingen reserveagent. Ny smoke med180sfrist fullførte; første respons166.53s,neste0.31s. Intern årsak ikke fastslått; ingen modellprosesser restartet.
 - Én full runde: sidecar-runs/2026-09-26-round-1,14spill,19modellkall, exit0, lås fjernet. Dev1/3 for begge strategier, lik reward0.3667; ingen forbedring påvist, gammel strategi beholdt. Separat holdout1/3 for initial/beholdt. Faktisk resume hadde fortsatt19kall/14spill og ingen ny generering.
-- Kommando: npm run sidecar -- --output sidecar-runs/2026-09-26-round-1 --minutes20 --max-calls40 --timeout-ms180000 (bruk mellomrom mellom flagg og verdier som i docs/sidecar.md).
+- Kommando: npm run sidecar -- --output sidecar-runs/2026-09-26-round-1 --minutes 20 --max-calls 40 --timeout-ms 180000.
 - Samlet stabil kilde:426/426tester, typecheck/lint grønne. Inkluderer foreløpig rotasjonskode; full66E2E pågår separat. Resultatrapporten er lokal/ignorert, kildekode og brukerdokumentasjon committes.
+
+
+## Leveranse3 — klar kandidat
+- Helbrettknapper44px, synlig wrapbue/retning/landing, inputvern i rask/redusert animasjon, utsatt introrelayout og resizeopprydding.
+- TDD reproduserte manglende knapper, intro som avbrøt tween, klippet retningstekst og knapp/brikkeoverlapp360×500. Alle rettet.24rene domenetester,17nye sceneE2E.
+- Samlet426/426unit, typecheck/lint/diff-check,66/66E2E grønne. Produksjonssuite pågår; ingen annen Playwright eller produktredigering.
+- Uavhengig code-review PASS (/tmp/palintris-rotation-code-review.md), visuell PASS (/tmp/palintris-rotation-visual-review.md). Fire førbilder, fire kontrollviewporter og24animasjonssamples kontrollert. Førbildene har høyere pikselratio enn etter, så sammenlign layout/innhold, ikke pikselidentisk skarphet.
+- Root CUA390×844: intro skjulte knappene; Skjønner viste dem; venstre/høyre ga ett trekk hver og gjenopprettet opprinnelig ID/symbolrekkefølge etter to motsatte rotasjoner. Wrapbuen og retningspilen observert under begge faktiske trykk.
+- Lokalt skjermbildearkiv har nå03-rotation/{before,after},4førPNG+JSON og36etterPNG. Sidecar er signert commitf5ed212. Ingen sidecarprosesser aktive.
+- Neste leveranse4 har grensekontrakt i .superpowers/sdd/2026-09-26-journey-progression/delivery4-api-plan.md og eksisterende mechanics-contract. Vent til rotasjonsartifact er pakket før nye src-endringer.
