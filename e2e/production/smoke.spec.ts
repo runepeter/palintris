@@ -16,7 +16,9 @@ test('produksjonsbygget starter, løser første speil og beholder fremgangen', a
   const external: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
-  page.on('request', (request) => { if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') external.push(request.url()); });
+  // Samme test kjøres også mot publisert domene; origin følger konfigurert baseURL.
+  const origin = new URL(test.info().project.use.baseURL ?? 'http://127.0.0.1:4173').origin;
+  page.on('request', (request) => { if (new URL(request.url()).origin !== origin) external.push(request.url()); });
   await page.goto('/?mode=sticky&level=w6-15');
   await expect(page.getByRole('status')).toBeHidden();
   await expect(page.locator('canvas')).toBeVisible();
