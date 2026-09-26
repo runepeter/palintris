@@ -8,9 +8,10 @@ et trekkbudsjett.
 
 - **Speilekspedisjonen** – ni rom med veivalg, tre liv og seks relikvier. Velg mellom flere trekk eller høyere poeng, bygg spillestilen din med relikvier etter rom 2, 4, 6 og 8, og møt tre voktere. Trekk er bindende; et livsoffer gir et nytt forsøk på rommet. Reisen og rekordene lagres i nettleseren.
 
-- **Kampanje** – 90 nivåer over 6 verdener, generert av `scripts/build-campaign.ts`. Hver verden introduserer en ny
+- **Kampanje (hovedreisen)** – 90 nivåer over 6 verdener, generert av `scripts/build-campaign.ts`. Hver verden introduserer en ny
   mekanikk: bytt naboer, roter et utsnitt, speil et utsnitt, låste brikker, joker og
-  fjerning av brikker.
+  fjerning av brikker. Sterke førsteforsøk kan gi en frivillig mestringsprøve som åpner neste verden tidligere,
+  og reiseprøvene «To flytt» og «Din midtbrikke» legger til flyttekvote og valgfri midtbonus.
 - **Daglig** – ett felles brett per dag (UTC), med streak.
 - **Blitz** – tidsbegrenset kø av brett uten trekkgrense.
 - **Fri spilling** – uendelig genererte brett per verden, for øving.
@@ -20,7 +21,10 @@ et trekkbudsjett.
 
 Hele rekken skal være lik fra begge ender. Bytt nabobrikker ved å dra eller trykke på begge.
 Hold og dra over flere brikker for å velge et utsnitt når rotasjon eller speiling er tillatt.
-Tillatte verktøy vises på brettet. Angre og Reset lar deg prøve igjen i de vanlige modusene; Meny avslutter brettet.
+Tillatte verktøy vises på brettet, og «?» øverst til høyre viser en kort hjelp for dem.
+Angre og Reset lar deg prøve igjen i de vanlige modusene; Meny avslutter brettet.
+**Speilglimt** i kampanjen: ett glimt per tre ulike løste brett (maks 30). Et glimt viser neste trekk på en
+korteste løsning; du flytter selv. Hjelp gir vanlige stjerner, men teller ikke som sterkt forsøk.
 I Speilekspedisjonen er trekk bindende. Meny og omlasting bevarer forsøket;
 «Ofre ett liv» gir et nytt forsøk på samme rom.
 
