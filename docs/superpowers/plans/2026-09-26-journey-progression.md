@@ -30,7 +30,7 @@ Filer: src/scenes/MenuScene.ts, ny src/scenes/ChallengesScene.ts, src/scenes/ui.
 - [x] Implementer ren anbefaling fra faktisk opplåst progresjon. Hovedknapp går direkte til anbefalt kampanjebrett; kart er sekundært. Fremdriftskort viser faktisk neste mekanikk og krav, ikke oppdiktet XP.
 - [x] Flytt ekspedisjon, Daglig og Blitz til ChallengesScene med korte forklaringer og tilbakeknapp. Behold Sticky kun som dev-prototype i undermenyen.
 - [x] Oppdater E2E til ny navigasjon; verifiser mobil/landskap og gamle kampanjestjerner. Kjør testene først rødt, så grønt.
-- [ ] Uavhengig review, signert commit, deploy og offentlig kontroll. Registrer SHA/deploy i dagsloggen.
+- [x] Uavhengig review, signert commit, deploy og offentlig kontroll. Registrer SHA/deploy i dagsloggen.
 
 ## Leveranse 2: Mestring og forsøk
 Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src/game/modes/campaign.ts, src/game/modes/types.ts, src/scenes/BoardScene.ts, src/scenes/ResultScene.ts, src/scenes/WorldMapScene.ts, src/game/journey.ts og tester.
