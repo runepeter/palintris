@@ -94,7 +94,7 @@ describe('reisen med mestring', () => {
     for (let world = 1; world <= 6; world++) mastered[`w${world}-15`] = 2;
     const all = { offeredCheckpoints: [], masteredWorlds: [1, 2, 3, 4, 5, 6] };
     expect(journeyComplete(mastered, all)).toBe(true);
-    expect(journeyDestination(mastered, all)).toBe('w6-15');
+    expect(journeyDestination(mastered, all)).toBe('w1-02');
     expect(nextJourneyMilestone(mastered, all).title).toBe('Reisen fullført');
   });
 });

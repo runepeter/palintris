@@ -21,7 +21,10 @@ export const journeyDestination = (stars: StarMap, access: CampaignAccess = EMPT
   };
   const worlds = Array.from({ length: WORLD_COUNT }, (_, i) => i + 1);
   const highest = Math.max(...worlds.filter((world) => isWorldUnlocked(world, stars, access)));
-  return firstOpen(highest) ?? worlds.map(firstOpen).find((id) => id !== undefined) ?? levelId(WORLD_COUNT, LEVELS_PER_WORLD);
+  // Etter fullført reise: et uspilt bonusbrett i en mestret verden før siste brett spilles om igjen.
+  const bonus = (): string | undefined => worlds.flatMap((world) => Array.from({ length: LEVELS_PER_WORLD }, (_, i) => levelId(world, i + 1)))
+    .find((id) => (stars[id] ?? 0) <= 0 && isLevelUnlocked(id, stars, access));
+  return firstOpen(highest) ?? worlds.map(firstOpen).find((id) => id !== undefined) ?? bonus() ?? levelId(WORLD_COUNT, LEVELS_PER_WORLD);
 };
 
 export const journeyComplete = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean => {
@@ -50,7 +53,7 @@ export const nextJourneyMilestone = (stars: StarMap, access: CampaignAccess = EM
   if (next === undefined) {
     const destination = journeyDestination(stars, access);
     const parsed = /^w(\d)-(\d+)$/.exec(destination);
-    if ((stars[destination] ?? 0) <= 0 && parsed !== null) {
+    if (!journeyComplete(stars, access) && (stars[destination] ?? 0) <= 0 && parsed !== null) {
       return { title: `Neste: Verden ${Number(parsed[1])}, nivå ${Number(parsed[2])}`, detail: 'Alle mekanikker er åpnet. Fullfør neste speil.' };
     }
     return { title: 'Reisen fullført', detail: 'Spill bonusbrett eller samle flere stjerner på kartet.' };

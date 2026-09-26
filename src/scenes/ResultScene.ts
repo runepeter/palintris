@@ -189,7 +189,7 @@ export class ResultScene extends Phaser.Scene {
         if (progress !== null && feedback !== undefined) {
           const reason = makeLabel(this, buttonsX, buttonsTop + 147, attemptFeedbackText(feedback),
             { size: 11, color: feedback.strong ? COLORS.success : COLORS.inkMuted, font: 'body' });
-          reason.setScale(Math.min(1, 280 / reason.width));
+          reason.setScale(Math.min(1, 268 / reason.width));
         }
       }
     }

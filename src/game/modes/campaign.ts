@@ -148,7 +148,7 @@ export class CampaignMode implements BoardMode {
 
     this.flushAttempt(levelId);
     const unlockedBefore = this.unlockedWorlds();
-    let closed: FirstAttempt | null = null;
+    let closed = null as FirstAttempt | null;
     if (stars > 0) {
       this.store.update((d) => {
         let updated = recordStars(d, levelId, stars, CAMPAIGN.contentVersion);

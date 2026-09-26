@@ -28,3 +28,9 @@ describe('operation guidance', () => {
     expect(operationSummary(rules.allowedOps)).toBe('Tillatt: Bytt · Roter · Speil (hold og dra)');
   });
 });
+
+describe('avvisningstekst', () => {
+  it('kan utelate gestehintet der teksten allerede er lang', () => {
+    expect(operationSummary(new Set(['swap', 'rotate', 'mirror']), false)).toBe('Tillatt: Bytt · Roter · Speil');
+  });
+});

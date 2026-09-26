@@ -80,3 +80,41 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 844, height: 390 }
     expect(await texts(page)).toContain('✓ Sterkt forsøk: på mål uten angre');
   });
 }
+
+const clickText = async (page: Page, text: string): Promise<void> => {
+  const point = await page.evaluate(wanted => {
+    const walk = (objects: Phaser.GameObjects.GameObject[]): { x: number; y: number }[] => objects.flatMap(object => {
+      if ('visible' in object && object.visible === false) return [];
+      if (object.type === 'Text' && (object as Phaser.GameObjects.Text).text === wanted) {
+        const bounds = (object as Phaser.GameObjects.Text).getBounds();
+        return [{ x: bounds.centerX, y: bounds.centerY }];
+      }
+      return object.type === 'Container' ? walk((object as Phaser.GameObjects.Container).list) : [];
+    });
+    return walk((window as unknown as SceneWindow).progressScene.children.list)[0] ?? null;
+  }, text);
+  if (point === null) throw new Error(`Mangler tekst: ${text}`);
+  await page.mouse.click(point.x, point.y);
+  await waitForSceneFrame(page);
+};
+
+for (const viewport of [{ width: 360, height: 640 }, { width: 360, height: 500 }, { width: 844, height: 390 }]) {
+  test(`hjelpeknappen viser brettets verktøy og merkes ikke som sett ved ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await enter(page, [...levelIds(1, 12), 'w2-01'], ['w1-01', 'w2-01'], 'w2-02');
+    await hook(page).waitIdle();
+    await capture(page, `board-w2-02-${viewport.width}x${viewport.height}`);
+    expect(await hook(page).introVisible()).toBe(false);
+    await clickText(page, '?');
+    await expect.poll(() => hook(page).introVisible()).toBe(true);
+    const shown = await texts(page);
+    expect(shown).toContain('Slik spiller du');
+    expect(shown.some(text => text.includes('hold og dra'))).toBe(true);
+    expect(shown.filter(text => text.endsWith('…'))).toEqual([]);
+    await capture(page, `help-w2-02-${viewport.width}x${viewport.height}`);
+    await clickText(page, 'Skjønner');
+    await expect.poll(() => hook(page).introVisible()).toBe(false);
+    const save = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}') as SaveData, SAVE_KEY);
+    expect(save.introsSeen).not.toContain('help');
+  });
+}

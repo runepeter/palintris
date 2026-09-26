@@ -17,6 +17,7 @@ import type { GestureState, HintReason, Intent, Target } from '../game/gestures'
 import { GestureMachine } from '../game/gestures';
 import { intentToCommand } from '../game/intents';
 import type { IntroSpec } from '../game/intro';
+import { helpSpec, HELP_ID } from '../game/help';
 import { introFor, introSatisfiedBy } from '../game/intro';
 import { operationSummary, segmentOptions } from '../game/operations';
 import type { KeyCode } from '../game/keyboard';
@@ -151,6 +152,7 @@ export class BoardScene extends Phaser.Scene {
   private gapGfx!: Phaser.GameObjects.Graphics;
   private hud!: Phaser.GameObjects.Container;
   private exitButton!: Phaser.GameObjects.Container;
+  private helpButton!: Phaser.GameObjects.Container;
   private hand!: Phaser.GameObjects.Container;
   private menu!: SegmentMenu;
   private banner: Phaser.GameObjects.Container | null = null;
@@ -375,6 +377,10 @@ export class BoardScene extends Phaser.Scene {
       x: 0, y: 30, width: 68, height: 44, label: '← Meny', labelSize: 13, accent: COLORS.line,
       onClick: () => this.exitToMenu(),
     }).setDepth(30);
+    this.helpButton = makeButton(this, {
+      x: 0, y: 30, width: 44, height: 44, label: '?', labelSize: 18, accent: COLORS.line,
+      onClick: () => this.showHelp(),
+    }).setDepth(30).setName('help');
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
     if (this.modeKind === 'campaign') {
@@ -534,6 +540,7 @@ export class BoardScene extends Phaser.Scene {
     if (this.aborted) return;
     this.updateSpeilglimtButton();
     this.rotationControls.setVisible(this.rotationAvailable() && !this.view.solved && this.sacrificePrompt === null);
+    this.helpButton.setVisible(this.intro === null && !this.view.solved && this.sacrificePrompt === null);
     if (this.deferredIntro && this.pendingTweens === 0) this.dismissIntro();
     this.machine.tick(time);
     // tick() er stille, så hold-overgangen fanges bare ved å sammenligne tilstanden.
@@ -816,7 +823,7 @@ export class BoardScene extends Phaser.Scene {
       const r = this.dispatch(cmd);
       if (!r.ok) {
         const message = r.reason === 'notAllowed'
-          ? `Ikke på dette brettet · ${operationSummary(this.level.rules.allowedOps)}`
+          ? `Ikke på dette brettet · ${operationSummary(this.level.rules.allowedOps, false)}`
           : undefined;
         this.showHint(r.reason, at ?? undefined, message);
         audio.playError();
@@ -1171,7 +1178,7 @@ export class BoardScene extends Phaser.Scene {
     if (this.introSpec === null || !introSatisfiedBy(this.introSpec, cmd)) return;
     if (cmd.type === 'rotate' && this.pendingTweens > 0) {
       const id = this.introSpec.id;
-      services(this).store.update((d) => markIntroSeen(d, id));
+      if (id !== HELP_ID) services(this).store.update((d) => markIntroSeen(d, id));
       this.deferredIntro = true;
     } else this.dismissIntro();
   }
@@ -1180,8 +1187,19 @@ export class BoardScene extends Phaser.Scene {
     const spec = this.introSpec;
     if (spec === null) return;
     this.destroyIntro();
-    if (this.modeKind !== 'sticky') services(this).store.update((d) => markIntroSeen(d, spec.id));
+    if (this.modeKind !== 'sticky' && spec.id !== HELP_ID) services(this).store.update((d) => markIntroSeen(d, spec.id));
     // Brettflaten vokser igjen; onResize er nøyaktig den omleggingen, tween-opprydding inkludert.
+    this.onResize();
+  }
+
+  /** Viser hjelpen for brettets verktøy i introoverlayet; lukkes som en intro, men merkes ikke sett. */
+  private showHelp(): void {
+    if (this.intro !== null || this.inputLocked || this.pendingTweens > 0 || this.view.solved || this.sacrificePrompt !== null) return;
+    this.machine.reset();
+    this.syncGestureVisuals();
+    this.introSpec = helpSpec(this.level.rules.allowedOps);
+    this.intro = new IntroOverlay(this, this.introSpec, services(this).settings().reducedMotion, () => this.dismissIntro());
+    // Brettflaten krymper for panelet; samme omlegging som ved resize.
     this.onResize();
   }
 
@@ -1257,6 +1275,7 @@ export class BoardScene extends Phaser.Scene {
     const w = contentWidth(this);
     const left = contentLeft(this);
     this.exitButton.setPosition(left + 42, 30);
+    this.helpButton.setPosition(left + w - 30, 30);
     if (this.lastSize?.w !== screenWidth(this) || this.lastSize.h !== screenHeight(this)) {
       this.children.getByName('realm-backdrop')?.destroy();
       makeBackdrop(this, 'board');
@@ -1569,8 +1588,9 @@ export class BoardScene extends Phaser.Scene {
     this.hud.add(bg);
     // To linjer: én etikettrad på tvers av 390 px kolliderte med trekk-telleren.
     const cx = left + w / 2;
-    const title = makeLabel(this, cx + 38, y - SPACE.md, lines.top, { size: lines.topSize, color: lines.topColor, bold: true });
-    title.setScale(Math.min(1, (w - 100) / title.width));
+    // Sentrert mellom «← Meny» og «?».
+    const title = makeLabel(this, cx + 12, y - SPACE.md, lines.top, { size: lines.topSize, color: lines.topColor, bold: true });
+    title.setScale(Math.min(1, (w - 136) / title.width));
     this.hud.add(title);
     const harmony = makeLabel(this, left + w * 0.25, y + SPACE.lg, lines.harmony, { size: 11, color: this.accent(), font: 'body', bold: true });
     harmony.setScale(Math.min(1, (w * 0.44) / harmony.width));
