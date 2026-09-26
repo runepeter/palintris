@@ -38,7 +38,7 @@ Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src
 - [x] Skriv tester for samme optimale løsningsbane ved kort/lang aktiv tid, pauser, skjult fane, reset, angre, reload, replay og sidemoduser. Introduksjoner må være ufravikelige; snarveier er tilgang, aldri falske stjerner.
 - [x] Persistente kampanjeforsøk og aktiv spilletid. Pause-/animasjonstid telles ikke. Klassifiser bare etter fullført forsøk, aldri midt i brett.
 - [x] Tilby mestringsprøve ved sterke resultater, og frivillig ekstra øving ved problemer. Vis konkret neste belønning på lobby/kart/resultat. Ingen nedgradering av opptjent tilgang.
-- [ ] Uavhengig review, relevante og samlede tester, mobilkontroll, signert commit og egen verifisert deploy.
+- [x] Uavhengig review, relevante og samlede tester, mobilkontroll, signert commit og egen verifisert deploy.
 
 ## Leveranse 3: Helbrettrotasjon
 Filer: src/scenes/BoardScene.ts, faktisk bevegelsesrenderer, src/game/moveAnimation.ts og tester/E2E.
