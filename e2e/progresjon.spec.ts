@@ -45,6 +45,8 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 844, height: 390 }
     const directory = `/tmp/palintris-progresjon-${process.env['PALINTRIS_CAPTURE_PHASE'] ?? 'after'}`;
     await mkdir(directory, { recursive: true });
     await page.screenshot({ path: `${directory}/intro-w5-01-${viewport.width}x${viewport.height}.png`, scale: 'css' });
-    expect((await texts(page)).some(text => text.includes('Fjern:'))).toBe(true);
+    const shown = await texts(page);
+    expect(shown.some(text => text.includes('Fjern') && !text.startsWith('Fjern ×'))).toBe(true);
+    expect(shown.filter(text => text.endsWith('…'))).toEqual([]);
   });
 }

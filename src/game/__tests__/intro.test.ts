@@ -110,9 +110,11 @@ describe('introbrett', () => {
     }
   });
 
-  it('nevner verktøyet den i tillegg lærer bort', () => {
+  it('nevner verktøyene den i tillegg lærer bort, også i kort form', () => {
+    const word: Readonly<Record<IntroMechanic, string>> = { swap: 'bytt', rotate: 'roter', mirror: 'speil', locked: 'låst', wild: 'joker', remove: 'fjern' };
     expect(introFor('w5-01')?.alsoTeaches).toEqual(['remove']);
-    expect(introFor('w5-01')?.text).toContain('Fjern');
-    expect(introFor('w5-01')?.compactText).toContain('Fjern');
+    for (const intro of INTROS) for (const mechanic of intro.alsoTeaches ?? []) {
+      for (const text of [intro.text, intro.compactText ?? intro.text]) expect(text.toLowerCase(), intro.id).toContain(word[mechanic]);
+    }
   });
 });

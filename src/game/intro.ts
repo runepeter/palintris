@@ -32,8 +32,8 @@ export const INTROS: readonly IntroSpec[] = [
   { id: 'w4-01', mechanic: 'locked', title: 'Låste brikker', text: 'Låste brikker flytter seg ikke. Jobb rundt dem', gesture: 'tap' },
   {
     id: 'w5-01', mechanic: 'wild', title: 'Joker og Fjern',
-    text: 'Dra jokeren fra hånden inn i et mellomrom.\nHer trengs også Fjern: dra en brikke ned i Fjern.',
-    compactText: 'Joker: dra inn i et mellomrom. Fjern: dra en brikke ned.', gesture: 'dragHand', alsoTeaches: ['remove'],
+    text: 'Dra jokeren fra hånden inn i et mellomrom.\nDu trenger også Fjern: dra en brikke ned.',
+    compactText: 'Joker inn i et mellomrom. Brikke ned i Fjern.', gesture: 'dragHand', alsoTeaches: ['remove'],
   },
   { id: 'w5-02', mechanic: 'remove', title: 'Fjern en brikke', text: 'Dra en brikke ned i hånden for å fjerne den', gesture: 'dragHand' },
   { id: 'journey-quota-01', mechanic: 'swap', title: 'To flytt', text: 'Tallet følger brikken. Hver flytting bruker én. Ved 0 må brikken bli stående.', compactText: 'Tallet følger brikken. Ved 0 kan den ikke flyttes.', gesture: 'drag' },
