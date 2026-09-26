@@ -26,15 +26,15 @@ Ferdig: én hovedreise, mestringstilpasset progresjon, tydelig helbrettrotasjon,
 
 ## Leveranse 1: Én start og synlig fremdrift
 Filer: src/scenes/MenuScene.ts, ny src/scenes/ChallengesScene.ts, src/scenes/ui.ts, src/main.ts, ny src/game/journey.ts og tester, berørte E2E-filer.
-- [ ] Skriv røde tester for anbefalt neste brett: tom lagring, delvis verden, ny verden låst opp, hele kampanjen løst. Eksempel: `expect(journeyDestination({})).toBe('w1-01')`.
-- [ ] Implementer ren anbefaling fra faktisk opplåst progresjon. Hovedknapp går direkte til anbefalt kampanjebrett; kart er sekundært. Fremdriftskort viser faktisk neste mekanikk og krav, ikke oppdiktet XP.
-- [ ] Flytt ekspedisjon, Daglig og Blitz til ChallengesScene med korte forklaringer og tilbakeknapp. Behold Sticky kun som dev-prototype i undermenyen.
-- [ ] Oppdater E2E til ny navigasjon; verifiser mobil/landskap og gamle kampanjestjerner. Kjør testene først rødt, så grønt.
+- [x] Skriv røde tester for anbefalt neste brett: tom lagring, delvis verden, ny verden låst opp, hele kampanjen løst. Eksempel: `expect(journeyDestination({})).toBe('w1-01')`.
+- [x] Implementer ren anbefaling fra faktisk opplåst progresjon. Hovedknapp går direkte til anbefalt kampanjebrett; kart er sekundært. Fremdriftskort viser faktisk neste mekanikk og krav, ikke oppdiktet XP.
+- [x] Flytt ekspedisjon, Daglig og Blitz til ChallengesScene med korte forklaringer og tilbakeknapp. Behold Sticky kun som dev-prototype i undermenyen.
+- [x] Oppdater E2E til ny navigasjon; verifiser mobil/landskap og gamle kampanjestjerner. Kjør testene først rødt, så grønt.
 - [ ] Uavhengig review, signert commit, deploy og offentlig kontroll. Registrer SHA/deploy i dagsloggen.
 
 ## Leveranse 2: Mestring og forsøk
 Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src/game/modes/campaign.ts, src/game/modes/types.ts, src/scenes/BoardScene.ts, src/scenes/ResultScene.ts, src/scenes/WorldMapScene.ts, src/game/journey.ts og tester.
-- [ ] Før kode: fastsett og skriv eksakt data-/beslutningskontrakt i dagsloggen med Claude eller uavhengig domenereviewer. Tre sterke av de siste fem unike førstegangsforsøkene innen en mekanikkfamilie er utgangspunkt. Optimal løsning uten reset/angre er sterk uansett tidsbruk; rask nær-optimal løsning kan også være sterk. Tid alene kan ikke gjøre en optimal løsning svak.
+- [x] Før kode: fastsett og skriv eksakt data-/beslutningskontrakt i dagsloggen med Claude eller uavhengig domenereviewer. Tre sterke av de siste fem unike førstegangsforsøkene innen en mekanikkfamilie er utgangspunkt. Optimal løsning uten reset/angre er sterk uansett tidsbruk; rask nær-optimal løsning kan også være sterk. Tid alene kan ikke gjøre en optimal løsning svak.
 - [ ] Skriv tester for samme optimale løsningsbane ved kort/lang aktiv tid, pauser, skjult fane, reset, angre, reload, replay og sidemoduser. Introduksjoner må være ufravikelige; snarveier er tilgang, aldri falske stjerner.
 - [ ] Persistente kampanjeforsøk og aktiv spilletid. Pause-/animasjonstid telles ikke. Klassifiser bare etter fullført forsøk, aldri midt i brett.
 - [ ] Tilby mestringsprøve ved sterke resultater, og frivillig ekstra øving ved problemer. Vis konkret neste belønning på lobby/kart/resultat. Ingen nedgradering av opptjent tilgang.
@@ -48,7 +48,7 @@ Filer: src/scenes/BoardScene.ts, faktisk bevegelsesrenderer, src/game/moveAnimat
 
 ## Leveranse 4: Kvote og midtbonus i reisen
 Filer: src/core/tiles.ts, src/core/step.ts, src/core/commands.ts, src/core/solver.ts, src/core/solverProtocol.ts, src/core/level.ts, kampanje-/reiseinnhold, lagring, TileView/BoardScene/ResultScene og tester.
-- [ ] Skriv liten eksakt kontrakt for nye brikkefelt/mål og innholdstilgang før dispatch. Kvote følger ID, brukes én gang per endret posisjon per kommando, null avviser atomisk, angre gjenoppretter.
+- [x] Skriv liten eksakt kontrakt for nye brikkefelt/mål og innholdstilgang før dispatch. Kvote følger ID, brukes én gang per endret posisjon per kommando, null avviser atomisk, angre gjenoppretter.
 - [ ] Røde tester for begge deltakere i swap, rotate, mirror med urørt midte, undo/reset, søkenøkler, reload og ugyldige data. Ingen håndkort/sticky i første kvoteinnhold.
 - [ ] Bonusmål refererer konkret brikke-ID på oddetallsbrett med minst tre av symbolet. Vanlig palindrom fullfører; markert brikke i midten gir bonusmerke. Solver verifiserer både vanlig og bonusløsning, og at bonusen krever et reelt valg.
 - [ ] Introduser i eksisterende reise med egne nivå-IDer, aldri nye lobbyknapper eller overskriving av gamle stjerner. Merk kvote og bonus tydelig før og under spill.

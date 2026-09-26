@@ -2,12 +2,13 @@ import { expect, test } from '@playwright/test';
 import { hook } from './helpers';
 import { STICKY_LEVELS } from '../src/game/modes/sticky';
 import { dismissIntroIfVisible, pauseAnimationClock, tap } from './helpers';
+import { openSticky } from './menu-navigation';
 
 test('sticky-forsøket kan åpnes fra menyen', async ({ page }) => {
   await page.goto('/');
   await page.waitForSelector('canvas');
   await page.waitForTimeout(1000);
-  await page.mouse.click(111, 645);
+  await openSticky(page);
   await page.waitForFunction(() => window.__palintris?.mode === 'sticky', undefined, { timeout: 5000 });
   expect((await hook(page).view()).tiles.some((tile) => tile.sticky === true)).toBe(true);
 });
@@ -53,7 +54,7 @@ test('spiller alle tre prøvebrett og går tilbake til menyen', async ({ page })
   }
   await page.waitForTimeout(300);
   expect(await page.evaluate(() => window.__palintris)).toBeUndefined();
-  await page.mouse.click(111, 645);
+  await openSticky(page);
   await page.waitForFunction(() => window.__palintris?.levelId === 'sticky-01');
 });
 

@@ -5,6 +5,7 @@ import { BoardScene } from './scenes/BoardScene';
 import { BootScene } from './scenes/BootScene';
 import { DailyScene } from './scenes/DailyScene';
 import { MenuScene } from './scenes/MenuScene';
+import { ChallengesScene } from './scenes/ChallengesScene';
 import { ResultScene } from './scenes/ResultScene';
 import { SettingsScene } from './scenes/SettingsScene';
 import { WorldMapScene } from './scenes/WorldMapScene';
@@ -24,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
     zoom: 1 / PIXEL_RATIO,
   },
   input: { mouse: true, touch: true },
-  scene: [BootScene, MenuScene, WorldMapScene, BoardScene, ResultScene, DailyScene, BlitzResultScene, SettingsScene, ExpeditionScene],
+  scene: [BootScene, MenuScene, ChallengesScene, WorldMapScene, BoardScene, ResultScene, DailyScene, BlitzResultScene, SettingsScene, ExpeditionScene],
 };
 
 const game = new Phaser.Game(config);

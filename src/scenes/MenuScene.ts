@@ -1,112 +1,103 @@
-import { screenWidth, screenHeight } from './viewport';
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
-import { COLORS, cssColor, worldAccent } from '../theme/theme';
-import { services } from './services';
-import { makeButton, makeLabel, SCENE } from './ui';
-import { makeBackdrop } from './art';
-import { TileView } from './TileView';
+import { LEVELS_PER_WORLD, parseLevelId, solvedInWorld } from '../core/progression';
 import { makeTile } from '../core/tiles';
-import { campaignSummary } from '../game/feedback';
+import { journeyComplete, journeyDestination, nextJourneyMilestone } from '../game/journey';
+import { COLORS, cssColor, worldAccent } from '../theme/theme';
+import { makeBackdrop } from './art';
+import { services } from './services';
+import { TileView } from './TileView';
+import { makeButton, makeLabel, SCENE } from './ui';
+import { screenHeight, screenWidth } from './viewport';
 
 export class MenuScene extends Phaser.Scene {
-  /** Fast referanse, så SHUTDOWN kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
     this.children.removeAll(true);
     this.build();
   };
 
-  constructor() {
-    super(SCENE.menu);
-  }
+  constructor() { super(SCENE.menu); }
 
   create(): void {
     this.build();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize));
-    // Kommer fra et brett der gameplay-sporet fortsatt spiller: bytt tilbake til menysporet.
-    // Uten lyd i gang ennå (autoplay-policy) venter vi til første trykk, som håndteres under.
-    if (services(this).settings().music && audio.isMusicPlaying() && audio.currentTrack() !== 'menu') {
-      audio.startMusic('menu');
-    }
+    if (services(this).settings().music && audio.isMusicPlaying() && audio.currentTrack() !== 'menu') audio.startMusic('menu');
     this.input.once('pointerdown', () => audio.startMusic('menu'));
   }
 
   private build(): void {
-    if (screenHeight(this) < 560 && screenWidth(this) > screenHeight(this) * 1.25) { this.buildLandscape(); return; }
-    makeBackdrop(this, 'hero');
-    const cx = screenWidth(this) / 2;
-    const h = screenHeight(this);
-    const s = services(this);
-    const progress = campaignSummary(s.store.stars(), s.store.data.blitz.best);
-    const compact = h < 600;
-    const width = Math.min(screenWidth(this) - 64, 328);
-    makeLabel(this, cx, h * 0.075, 'ET LITE EVENTYR I SYMMETRI', { size: 10, color: COLORS.star, font: 'body' }).setLetterSpacing(2.5).setVisible(!compact);
-    makeLabel(this, cx, h * 0.135, 'PALINTRIS', { size: Math.min(compact ? 32 : 44, screenWidth(this) * 0.105), color: COLORS.ink, bold: true })
-      .setLetterSpacing(3).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
-    makeLabel(this, cx, h * 0.19 + (compact ? 7 : 0), 'Finn balansen. Åpne speilverdenen.', { size: 13, color: COLORS.inkMuted, font: 'body' });
-
-    const tileSize = compact ? 38 : 52;
-    const previewY = h * (compact ? 0.29 : 0.32);
-    ['A', 'E', 'C', 'E', 'A'].forEach((symbol, i) => {
-      const tile = new TileView(this, makeTile(i, symbol));
-      tile.setTile(makeTile(i, symbol), tileSize, s.settings().colorBlind);
-      tile.setPosition(cx + (i - 2) * (tileSize + 5), previewY + Math.abs(i - 2) * 5);
-      tile.setAngle((i - 2) * 5);
-    });
-
-    const top = Math.max(h * 0.61, previewY + tileSize + 38);
-    const mainHeight = compact ? 44 : 58;
-    const secondaryY = top + (compact ? 54 : 72);
-    const progressY = top - mainHeight / 2 - (compact ? 15 : 19);
-    const progressBar = this.add.graphics();
-    const progressWidth = width - 48;
-    progressBar.fillStyle(COLORS.line, 0.55);
-    progressBar.fillRoundedRect(cx - progressWidth / 2, progressY + 13, progressWidth, 3, 1.5);
-    progressBar.fillStyle(worldAccent(1), 0.95);
-    progressBar.fillRoundedRect(cx - progressWidth / 2, progressY + 13, progressWidth * (progress.solved / progress.total), 3, 1.5);
-    makeLabel(this, cx, progressY, `★ ${progress.stars}  ·  ${progress.solved}/${progress.total} speil  ·  Blitz ${progress.blitzBest}`, {
-      size: compact ? 10 : 12, color: COLORS.star, font: 'body', bold: true,
-    });
-    makeButton(this, { x: cx, y: top, width, height: mainHeight, label: progress.hasProgress ? 'Fortsett reisen  →' : 'Start eventyret  →', labelSize: 21,
-      accent: worldAccent(1), onClick: () => this.scene.start(SCENE.worldMap) });
-    makeLabel(this, cx, top - 139, 'NYTT EVENTYR · 9 ROM · RELIKVIER', { size: 10, color: COLORS.glow, font: 'body', bold: true }).setLetterSpacing(1.2).setBackgroundColor(cssColor(COLORS.panel)).setPadding(5, 3);
-    makeButton(this, { x: cx, y: top - 100, width, height: 60, label: 'Speilekspedisjonen  →', labelSize: 19,
-      accent: COLORS.glow, onClick: () => this.scene.start(SCENE.expedition) });
-    const half = (width - 12) / 2;
-    makeButton(this, { x: cx - (half + 12) / 2, y: secondaryY, width: half, height: 46, label: '◈  Daglig',
-      accent: COLORS.glow, onClick: () => this.scene.start(SCENE.daily) });
-    makeButton(this, { x: cx + (half + 12) / 2, y: secondaryY, width: half, height: 46, label: 'ϟ  Blitz',
-      accent: COLORS.danger, onClick: () => this.scene.start(SCENE.board, { mode: 'blitz' }) });
-    const bottomY = secondaryY + (compact ? 50 : 58);
-    if (import.meta.env.DEV) {
-      makeButton(this, { x: cx - (half + 12) / 2, y: bottomY, width: half, height: 44, label: 'Sticky · prøv', labelSize: 13,
-        accent: COLORS.glow, onClick: () => this.scene.start(SCENE.board, { mode: 'sticky' }) });
-    }
-    makeButton(this, { x: import.meta.env.DEV ? cx + (half + 12) / 2 : cx, y: bottomY, width: import.meta.env.DEV ? half : width, height: 44, label: 'Innstillinger', labelSize: 13,
-      accent: COLORS.line, onClick: () => this.scene.start(SCENE.settings) });
-    if (!compact) makeLabel(this, cx, h - 40, 'Bytt. Speil. Finn harmonien.', { size: 11, color: COLORS.inkMuted, font: 'body' });
-  }
-
-  private buildLandscape(): void {
-    makeBackdrop(this, 'hero', 1000);
     const w = screenWidth(this);
     const h = screenHeight(this);
-    const x = w * 0.72;
-    const width = Math.min(320, w * 0.43);
-    makeLabel(this, w * 0.27, h * 0.27, 'PALINTRIS', { size: 34, bold: true, color: COLORS.ink }).setLetterSpacing(2);
-    makeLabel(this, w * 0.27, h * 0.39, 'Finn balansen. Åpne speilverdenen.', { size: 12, font: 'body', color: COLORS.inkMuted });
-    ['A', 'E', 'C', 'E', 'A'].forEach((symbol, i) => {
-      const tile = new TileView(this, makeTile(i, symbol));
-      tile.setTile(makeTile(i, symbol), 40, services(this).settings().colorBlind);
-      tile.setPosition(w * 0.27 + (i - 2) * 45, h * 0.6 + Math.abs(i - 2) * 4);
-    });
-    makeButton(this, { x, y: h * 0.2, width, height: 50, label: 'Speilekspedisjonen →', labelSize: 18, accent: COLORS.glow, onClick: () => this.scene.start(SCENE.expedition) });
-    makeButton(this, { x, y: h * 0.39, width, height: 48, label: 'Kampanje →', accent: COLORS.star, onClick: () => this.scene.start(SCENE.worldMap) });
-    const half = (width - 12) / 2;
-    makeButton(this, { x: x - (half + 12) / 2, y: h * 0.58, width: half, height: 44, label: 'Daglig', accent: COLORS.glow, onClick: () => this.scene.start(SCENE.daily) });
-    makeButton(this, { x: x + (half + 12) / 2, y: h * 0.58, width: half, height: 44, label: 'Blitz', accent: COLORS.danger, onClick: () => this.scene.start(SCENE.board, { mode: 'blitz' }) });
-    makeButton(this, { x, y: h * 0.77, width, height: 44, label: 'Innstillinger', accent: COLORS.line, onClick: () => this.scene.start(SCENE.settings) });
+    const landscape = h < 560 && w > h * 1.25;
+    makeBackdrop(this, 'hero', landscape ? 1000 : undefined);
+    const stars = services(this).store.stars();
+    const destination = journeyDestination(stars);
+    const milestone = nextJourneyMilestone(stars);
+    const world = parseLevelId(destination)?.world ?? 1;
+    const solved = solvedInWorld(world, stars);
+    const accent = worldAccent(world);
+    const start = Object.values(stars).every((value) => value <= 0);
+    const complete = journeyComplete(stars);
+    const actionLabel = start ? 'Start reisen  →' : complete ? 'Spill igjen  →' : 'Fortsett reisen  →';
+    const go = (): void => { this.scene.start(SCENE.board, { mode: 'campaign', levelId: destination }); };
+
+    if (landscape) {
+      const left = w * 0.27;
+      const right = w * 0.72;
+      const width = Math.min(320, w * 0.42);
+      makeLabel(this, left, h * 0.23, 'PALINTRIS', { size: 34, color: COLORS.ink, bold: true }).setLetterSpacing(2);
+      makeLabel(this, left, h * 0.35, 'Finn balansen. Åpne speilverdenen.', { size: 12, color: COLORS.inkMuted, font: 'body' });
+      this.preview(left, h * 0.62, 40);
+      this.milestoneCard(right, h * 0.28, width, milestone.title, milestone.detail, world, solved, accent, true);
+      makeButton(this, { x: right, y: h * 0.56, width, height: 50, label: actionLabel, labelSize: 19, accent, onClick: go });
+      makeButton(this, { x: right, y: h * 0.73, width, height: 44, label: 'Utfordringer', labelSize: 16, accent: COLORS.glow, onClick: () => this.scene.start(SCENE.challenges) });
+      this.tools(right, h * 0.9, width);
+      return;
+    }
+
+    const cx = w / 2;
+    const width = Math.min(w - 40, 344);
+    const mainY = h * 0.68;
+    makeLabel(this, cx, h * 0.075, 'ET LITE EVENTYR I SYMMETRI', { size: 10, color: COLORS.star, font: 'body' }).setLetterSpacing(2.2);
+    makeLabel(this, cx, h * 0.145, 'PALINTRIS', { size: Math.min(42, w * 0.105), color: COLORS.ink, bold: true })
+      .setLetterSpacing(3).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
+    makeLabel(this, cx, h * 0.205, 'Finn balansen. Åpne speilverdenen.', { size: 13, color: COLORS.inkMuted, font: 'body' });
+    this.preview(cx, mainY - (h < 700 ? 255 : 265), h < 700 ? 38 : 48);
+    this.milestoneCard(cx, mainY - 108, width, milestone.title, milestone.detail, world, solved, accent, false);
+    makeButton(this, { x: cx, y: mainY, width, height: 58, label: actionLabel, labelSize: 21, accent, onClick: go });
+    makeButton(this, { x: cx, y: mainY + 71, width, height: 48, label: 'Utfordringer', labelSize: 17, accent: COLORS.glow,
+      onClick: () => this.scene.start(SCENE.challenges) });
+    this.tools(cx, mainY + 137, width);
   }
 
+  private preview(cx: number, y: number, size: number): void {
+    ['A', 'E', 'C', 'E', 'A'].forEach((symbol, i) => {
+      const tile = new TileView(this, makeTile(i, symbol));
+      tile.setTile(makeTile(i, symbol), size, services(this).settings().colorBlind);
+      tile.setPosition(cx + (i - 2) * (size + 5), y + Math.abs(i - 2) * 5);
+      tile.setAngle((i - 2) * 5);
+    });
+  }
+
+  private milestoneCard(cx: number, y: number, width: number, title: string, detail: string, world: number, solved: number, accent: number, landscape: boolean): void {
+    const height = landscape ? 104 : 112;
+    const card = this.add.graphics();
+    card.fillStyle(COLORS.panel, 0.94);
+    card.fillRoundedRect(cx - width / 2, y - height / 2, width, height, 14);
+    card.lineStyle(1, accent, 0.55);
+    card.strokeRoundedRect(cx - width / 2, y - height / 2, width, height, 14);
+    makeLabel(this, cx, y - 36, `VERDEN ${world}  ·  ${solved}/${LEVELS_PER_WORLD} SPEIL`, { size: 10, color: accent, font: 'body', bold: true }).setLetterSpacing(1);
+    makeLabel(this, cx, y - 11, title, { size: landscape ? 17 : 19, color: COLORS.ink, bold: true });
+    makeLabel(this, cx, y + 25, detail, { size: landscape ? 11 : 12, color: COLORS.inkMuted, font: 'body' })
+      .setWordWrapWidth(width - 28, true).setLineSpacing(2);
+  }
+
+  private tools(cx: number, y: number, width: number): void {
+    const half = (width - 12) / 2;
+    makeButton(this, { x: cx - (half + 12) / 2, y, width: half, height: 44, label: 'Kart', labelSize: 14, accent: COLORS.line,
+      onClick: () => this.scene.start(SCENE.worldMap) });
+    makeButton(this, { x: cx + (half + 12) / 2, y, width: half, height: 44, label: 'Innstillinger', labelSize: 14, accent: COLORS.line,
+      onClick: () => this.scene.start(SCENE.settings) });
+  }
 }

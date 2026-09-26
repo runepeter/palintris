@@ -6,6 +6,7 @@ import { audio } from '../audio/sound';
 export const SCENE = {
   boot: 'Boot',
   menu: 'Menu',
+  challenges: 'Challenges',
   worldMap: 'WorldMap',
   board: 'Board',
   result: 'Result',

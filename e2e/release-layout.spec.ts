@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { SAVE_KEY } from '../src/core/storage';
 import { dismissIntroIfVisible, hook, tap } from './helpers';
+import { openSettings } from './menu-navigation';
 
 test('resultatet fortsetter fra sentrert knapp på desktop', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -21,7 +22,7 @@ test('smale innstillingsknapper har minst 44 pikslers treffhøyde', async ({ pag
   await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');
   await page.mouse.click(224, 30);
   await page.waitForFunction(() => window.__palintris === undefined);
-  await page.mouse.click(608, 300);
+  await openSettings(page);
   await page.mouse.click(522, 103);
   await expect.poll(() => page.evaluate((key) => {
     const save = localStorage.getItem(key);

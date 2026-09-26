@@ -22,8 +22,7 @@ test('produksjonsbygget starter, løser første speil og beholder fremgangen', a
   await expect(page.locator('canvas')).toBeVisible();
   expect(await page.evaluate(() => '__palintris' in window)).toBe(false);
   await nextFrame(page);
-  await click(page, 195, 515);
-  await click(page, 39, 361);
+  await click(page, 195, 574);
   for (const key of ['ArrowRight', 'ArrowRight', 'Space', 'ArrowRight']) {
     await page.keyboard.press(key);
     await nextFrame(page);
@@ -34,7 +33,7 @@ test('produksjonsbygget starter, løser første speil og beholder fremgangen', a
   await expect(page.getByRole('status')).toBeHidden();
   expect((await save()).stars['w1-01']?.stars).toBe(3);
   await nextFrame(page);
-  await click(page, 111, 645);
+  await click(page, 284, 711);
   await click(page, 295, 130);
   await expect.poll(async () => (await save()).settings?.sound).toBe(false);
   await page.reload();
@@ -55,7 +54,7 @@ test('produksjonsbygget åpner også når nettleseren blokkerer lokal lagring', 
   await expect(page.getByRole('status')).toBeHidden();
   await expect(page.locator('canvas')).toBeVisible();
   await nextFrame(page);
-  await click(page, 278, 645);
+  await click(page, 284, 711);
   await click(page, 295, 130);
   expect(errors).toEqual([]);
 });
@@ -66,7 +65,8 @@ test('ekspedisjon kan startes og gjenopptas i produksjon uten utviklingskroker',
   await page.goto('/');
   await expect(page.getByRole('status')).toBeHidden();
   await nextFrame(page);
-  await click(page, 195, 415);
+  await click(page, 195, 645);
+  await click(page, 195, 245);
   await click(page, 195, 717);
   await click(page, 195, 457);
   const run = (): Promise<{phase:string;commands:unknown[];lives:number}> => page.evaluate(() =>
@@ -78,7 +78,8 @@ test('ekspedisjon kan startes og gjenopptas i produksjon uten utviklingskroker',
   await page.reload();
   await expect(page.getByRole('status')).toBeHidden();
   await nextFrame(page);
-  await click(page, 195, 415);
+  await click(page, 195, 645);
+  await click(page, 195, 245);
   if (before.phase === 'board') {
     await click(page, 195, 717);
     expect(await run()).toEqual(before);

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openSticky } from './menu-navigation';
 
 test('viser lasting til ressursene er klare og henter skriftene lokalt', async ({ page }) => {
   const remote: string[] = [];
@@ -24,6 +25,6 @@ test('viser ny lasting når en ressurs feiler og lar spilleren prøve igjen', as
   await page.unroute('**/assets/jewel-tiles.webp');
   await page.getByRole('button', { name: 'Prøv igjen' }).click();
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(111, 645);
+  await openSticky(page);
   await page.waitForFunction(() => window.__palintris?.mode === 'sticky');
 });

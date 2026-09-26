@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { defaultSave, SAVE_KEY } from '../src/core/storage';
 import { dismissIntroIfVisible, hook, tap } from './helpers';
+import { startJourney } from './menu-navigation';
 
 // Phaser må få rendere mellom målepunktene; veggklokken avhenger av CI-maskinens GPU.
 const advanceUntil = async (page: Page, condition: () => boolean): Promise<void> => {
@@ -47,10 +48,9 @@ test('meny under seierssekvensen avbryter overgangen til resultatet', async ({ p
   await page.mouse.click(42, 30);
   await page.waitForFunction(() => window.__palintris === undefined);
   await page.waitForTimeout(3000);
-  await page.mouse.click(195, 515);
+  await startJourney(page);
   await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await page.mouse.click(39, 361);
-  await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');
+  await page.waitForFunction(() => window.__palintris?.levelId === 'w1-02');
   expect((await h.view()).movesUsed).toBe(0);
 });
 

@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test';
 import type { SaveData } from '../src/core/storage';
 import { matches } from '../src/core/palindrome';
 import { hook } from './helpers';
+import { startJourney } from './menu-navigation';
 
 test('menyknappen avslutter kampanjen og lar spilleren starte igjen', async ({ page }) => {
   await page.goto('/?level=w3-02');
   await page.waitForFunction(() => window.__palintris !== undefined);
   await page.mouse.click(42, 30);
   await page.waitForFunction(() => window.__palintris === undefined);
-  await page.mouse.click(195, 515);
-  await page.mouse.click(39, 361);
+  await startJourney(page);
   await page.waitForFunction(() => window.__palintris?.levelId === 'w1-01');
   expect((await hook(page).view()).movesUsed).toBe(0);
 });

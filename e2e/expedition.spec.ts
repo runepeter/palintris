@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { hook, tap } from './helpers';
+import { openExpedition } from './menu-navigation';
 
 type ExpeditionUi = { phase: string; buttons: { id: string; x: number; y: number }[] };
 const ui = (page: Page): Promise<ExpeditionUi | null> => page.evaluate(() =>
@@ -16,7 +17,7 @@ const clickAction = async (page: Page, id: string): Promise<void> => {
 test('ekspedisjonen starter fra menyen og bevarer bindende trekk ved omlasting', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await expect.poll(async () => (await ui(page))?.phase).toBe('entrance');
   await clickAction(page, 'start');
   await clickAction(page, 'safe');
@@ -44,7 +45,7 @@ test('ekspedisjonen starter fra menyen og bevarer bindende trekk ved omlasting',
   expect((await h.view()).movesUsed).toBe(1);
   await page.reload();
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await clickAction(page, 'resume');
   await page.waitForFunction(() => window.__palintris?.mode === 'expedition');
   expect((await h.view()).tiles).toEqual(before.tiles);
@@ -110,7 +111,7 @@ test('ni rom, fire relikvier og seier via ekte spillkontroller', async ({ page }
   await page.clock.install();
   await page.goto('/');
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await clickAction(page, 'start');
   for (let floor = 1; floor <= 9; floor++) {
     await clickAction(page, floor % 3 === 0 ? 'guardian' : 'safe');
@@ -124,7 +125,7 @@ test('ni rom, fire relikvier og seier via ekte spillkontroller', async ({ page }
         const before = await saved(page);
         await page.reload();
         await expect(page.getByRole('status')).toBeHidden();
-        await page.mouse.click(195, 415);
+        await openExpedition(page);
         await expect.poll(async () => (await ui(page))?.phase).toBe('reward');
         expect(await saved(page)).toBe(before);
       }
@@ -143,7 +144,7 @@ test('ni rom, fire relikvier og seier via ekte spillkontroller', async ({ page }
   expect(result.state.score).toBeGreaterThan(1000);
   await page.reload();
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await clickAction(page, 'restart');
   expect((await ui(page))?.phase).toBe('route');
   expect((JSON.parse(await saved(page)) as typeof result).records.wins).toBe(1);
@@ -153,7 +154,7 @@ test('ni rom, fire relikvier og seier via ekte spillkontroller', async ({ page }
 test('liv krever bekreftelse, siste liv avslutter, ny reise fungerer', async ({ page }, testInfo) => {
   await page.goto('/');
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await clickAction(page, 'start');
   for (let lives = 3; lives > 0; lives--) {
     await clickAction(page, 'risk');
@@ -182,7 +183,7 @@ test('avbryt livsoffer slipper ikke dra-bevegelser gjennom til brettet', async (
   })));
   await page.goto('/');
   await expect(page.getByRole('status')).toBeHidden();
-  await page.mouse.click(195, 415);
+  await openExpedition(page);
   await clickAction(page, 'resume');
   await page.waitForFunction(() => window.__palintris?.mode === 'expedition');
   const h = hook(page);

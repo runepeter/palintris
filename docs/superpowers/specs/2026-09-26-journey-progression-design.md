@@ -20,7 +20,7 @@ Tester skal dekke lagringsmigrering, tilpasning med pauser/omstarter, lovlige og
 ## Retning
 Valgt: kampanjen blir hovedreisen. Speilekspedisjonen, Daglig og Blitz samles under «Utfordringer».
 
-Lobby: tittel og verden, ett fremdriftskort («Neste: rotasjon»), stor «Fortsett reisen»/«Start reisen», mindre «Utfordringer», kart og innstillinger som diskrete verktøy. Fortsett går direkte til aktivt eller anbefalt brett. Kartet er tilgjengelig for gjenbesøk.
+Lobby: tittel og verden, ett fremdriftskort («Neste: rotasjon»), stor «Fortsett reisen»/«Start reisen», mindre «Utfordringer», kart og innstillinger som diskrete verktøy. Fortsett går direkte til anbefalt brett. Kampanjen beholder dagens omstart-av-brett ved ny inngang; forsøksdata bevares så dette ikke kan produsere falske førsteforsøk. Kartet er tilgjengelig for gjenbesøk.
 
 ## Progresjon og motivasjon
 Hver etappe bruker rytmen introduksjon → øving → kombinasjon → mestringsprøve. Vis neste belønning som en ny evne, et nytt område eller et mesterskapsmerke. Resultatet viser én tydelig viderehandling og konkret fremgang, eksempelvis «2 av 3 prøver mot rotasjon».
@@ -28,6 +28,8 @@ Hver etappe bruker rytmen introduksjon → øving → kombinasjon → mestringsp
 Første leveranse beholder eksisterende nivåidentiteter og stjerner. Nye utfordringer får egne identiteter. Eventuelle snarveier gjennom repetisjon lagres som tilgang, aldri som falskt løste nivåer. Introduksjoner kan ikke hoppes over.
 
 Tilpasning skjer mellom brett, basert på de siste fem førstegangsforsøkene innen samme mekanikkfamilie. Effektive løsninger, få omstarter og jevn mestring veier tyngst. Aktiv spilletid er et støttesignal, normalisert mot brettets vanskelighet; meny, skjult fane, introduksjon og animasjon teller ikke. Lang tid alene senker aldri vanskelighetsgraden. Tre sterke forsøk kan gi tilbud om mestringsprøve med mindre repetisjon. Gjentatte mislykkede forsøk gir tilbud om et enklere øvingsbrett. Ingen endring midt i et forsøk, ingen trekk i opptjent progresjon. Eksakte terskler kalibreres med testforløp før publisering.
+
+Implementeringskontrakt etter uavhengig kodegjennomgang: `2026-09-26-mastery-contract.md`. Eksisterende nivå 15 er frivillig mestringsprøve. Tre sterke av siste fem åpner tilbudet; passering innen mål+1 gir varig tilgang til neste verden og de hoppede repetisjonene som bonusinnhold uten stjerner. Begge introduksjoner i verden 5 er påkrevd. Optimal løsning uten angre er alltid sterk; mål+1 er sterk innen 15 sekunder per mål-trekk. Ingen klokke vises i hovedreisen.
 
 ## Mekanikkrekkefølge
 1. Rotasjon: to synlige knapper, «Hele brettet ← / →», når evnen er introdusert. Gjenbruk eksisterende rotasjonskommando over hele rekken. Alle brikker glir ett hakk; endebrikken følger en synlig bue til motsatt ende. Retning vises før og under trekket. Redusert bevegelse får kort overgang og tydelig markering av ny posisjon. Input sperres under flyttingen.
