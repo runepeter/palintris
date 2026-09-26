@@ -8,7 +8,7 @@ import { rulesFor } from '../../core/level';
 import { isLevelUnlocked, isWorldUnlocked, nextLevelId, parseLevelId, WORLD_COUNT } from '../../core/progression';
 import { starsFor } from '../../core/scoring';
 import { campaignProgress, recordJourneyBadge, recordStars, type FirstAttempt, type SaveData } from '../../core/storage';
-import { masteryOffer } from '../mastery';
+import { attemptFeedback, masteryOffer } from '../mastery';
 import { canUseSpeilglimt, debitSpeilglimt, speilglimtBalance } from '../tools';
 import type { SessionView } from '../session';
 import type { SaveStore } from '../saveStore';
@@ -148,6 +148,7 @@ export class CampaignMode implements BoardMode {
 
     this.flushAttempt(levelId);
     const unlockedBefore = this.unlockedWorlds();
+    let closed: FirstAttempt | null = null;
     if (stars > 0) {
       this.store.update((d) => {
         let updated = recordStars(d, levelId, stars, CAMPAIGN.contentVersion);
@@ -155,8 +156,8 @@ export class CampaignMode implements BoardMode {
         const progress = campaignProgress(updated);
         const attempt = progress.firstAttempts[levelId];
         if (attempt !== undefined && attempt.end === undefined && this.activeId === levelId) {
-          updated = { ...updated, campaign: { ...progress, firstAttempts: { ...progress.firstAttempts,
-            [levelId]: { ...attempt, end: { reason: 'solved', movesUsed } } } } };
+          closed = { ...attempt, end: { reason: 'solved', movesUsed } };
+          updated = { ...updated, campaign: { ...progress, firstAttempts: { ...progress.firstAttempts, [levelId]: closed } } };
         }
         const access = campaignProgress(updated).access;
         if (access.offeredCheckpoints.includes(levelId) && movesUsed <= level.target + 1 && !access.masteredWorlds.includes(parsed.world)) {
@@ -169,8 +170,10 @@ export class CampaignMode implements BoardMode {
     const worldJustUnlocked = unlockedAfter.find((w) => !unlockedBefore.includes(w)) ?? null;
 
     const next = nextLevelId(levelId);
+    const feedback = closed === null ? null : attemptFeedback(closed, level);
     return {
       ...(this.runAssisted && this.activeId === levelId ? { assisted: true } : {}),
+      ...(feedback === null ? {} : { firstAttempt: feedback }),
       stars,
       previousStars,
       nextLevelId: next,

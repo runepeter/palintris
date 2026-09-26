@@ -21,6 +21,20 @@ export const classify = (attempt: FirstAttempt, level: Level): 'strong' | 'ordin
     (end.movesUsed === level.target + 1 && attempt.activeMs <= 15000 * Math.max(1, level.target)) ? 'strong' : 'ordinary';
 };
 
+export type AttemptReason = 'target' | 'nearTarget' | 'slow' | 'overTarget' | 'undo' | 'assisted';
+export interface AttemptFeedback { readonly strong: boolean; readonly reason: AttemptReason }
+
+/** Hvorfor et løst førsteforsøk ble (ikke) sterkt, med samme regler som classify. Null når regelen ikke gjelder. */
+export const attemptFeedback = (attempt: FirstAttempt, level: Level): AttemptFeedback | null => {
+  const end = attempt.end;
+  if (end?.reason !== 'solved' || attempt.contentVersion !== level.contentVersion || !level.targetExact) return null;
+  if (attempt.assisted === true) return { strong: false, reason: 'assisted' };
+  if (attempt.undoCount > 0) return { strong: false, reason: 'undo' };
+  if (end.movesUsed <= level.target) return { strong: true, reason: 'target' };
+  if (end.movesUsed > level.target + 1) return { strong: false, reason: 'overTarget' };
+  return attempt.activeMs <= 15000 * Math.max(1, level.target) ? { strong: true, reason: 'nearTarget' } : { strong: false, reason: 'slow' };
+};
+
 export const recentFirstAttempts = (data: SaveData, family: Family): readonly FirstAttempt[] =>
   Object.values(campaignProgress(data).firstAttempts)
     .filter((a) => a.end !== undefined && familyFor(a.levelId) === family)

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { tilesFromString } from '../../core/tiles';
-import { activeLevelInWorld, blitzUrgency, campaignSummary, moveFeedback, resultPresentation } from '../feedback';
+import { activeLevelInWorld, attemptFeedbackText, blitzUrgency, campaignSummary, moveFeedback, resultPresentation } from '../feedback';
 
 describe('game feedback', () => {
   it('teller speilpar og finner par som nettopp kom i harmoni', () => {
@@ -52,5 +52,14 @@ describe('game feedback', () => {
     expect(activeLevelInWorld(1, {})).toBe(1);
     expect(activeLevelInWorld(1, { 'w1-01': 3, 'w1-02': 1 })).toBe(3);
     expect(activeLevelInWorld(1, Object.fromEntries(Array.from({ length: 15 }, (_, i) => [`w1-${String(i + 1).padStart(2, '0')}`, 1])))).toBeNull();
+  });
+});
+
+describe('forklaring av sterke forsøk', () => {
+  it('sier kort hva som telte eller manglet', () => {
+    expect(attemptFeedbackText({ strong: true, reason: 'target' })).toBe('✓ Sterkt forsøk: på mål uten angre');
+    expect(attemptFeedbackText({ strong: false, reason: 'undo' })).toBe('Ikke sterkt: angre ble brukt');
+    expect(attemptFeedbackText({ strong: false, reason: 'assisted' })).toContain('Speilglimt');
+    for (const reason of ['nearTarget', 'slow', 'overTarget'] as const) expect(attemptFeedbackText({ strong: reason === 'nearTarget', reason })).toContain('over mål');
   });
 });

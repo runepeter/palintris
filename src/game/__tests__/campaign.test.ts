@@ -119,6 +119,22 @@ describe('førsteforsøk og mestring', () => {
     expect(store.data.campaign?.firstAttempts['w1-01']?.end?.reason).toBe('interrupted');
   });
 
+  it('resultatet forklarer bare førsteforsøket denne spillingen avsluttet', () => {
+    const { mode } = fixture();
+    mode.beginAttempt('w1-01');
+    move(mode, 'w1-01', 1, true);
+    expect(mode.onSolved('w1-01', 1).firstAttempt).toEqual({ strong: true, reason: 'target' });
+    mode.beginAttempt('w1-01');
+    move(mode, 'w1-01', 1, true);
+    expect(mode.onSolved('w1-01', 1).firstAttempt).toBeUndefined();
+    const undo = fixture();
+    undo.mode.beginAttempt('w1-01');
+    move(undo.mode, 'w1-01');
+    undo.mode.recordCommand('w1-01', { type: 'undo' }, { movesUsed: 0, solved: false, budgetLeft: 5 });
+    move(undo.mode, 'w1-01', 1, true);
+    expect(undo.mode.onSolved('w1-01', 1).firstAttempt).toEqual({ strong: false, reason: 'undo' });
+  });
+
   it('reset og angre kan ikke slette tidligere observasjoner', () => {
     const { mode, store } = fixture();
     mode.beginAttempt('w1-01');

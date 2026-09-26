@@ -2,6 +2,7 @@ import type { CenterTileGoal } from '../../core/goals';
 import type { Rules } from '../../core/rules';
 import type { Stars } from '../../core/scoring';
 import type { Hand, Tile } from '../../core/tiles';
+import type { AttemptFeedback } from '../mastery';
 
 export interface ModeLevel {
   readonly displayTitle?: string;
@@ -25,6 +26,8 @@ export interface ModeLevel {
 /** nextLevelId, nextUnlocked og worldJustUnlocked er null/false for moduser uten progresjon. */
 export interface SolvedOutcome {
   readonly assisted?: boolean;
+  /** Bare når denne spillingen avsluttet nivåets førsteforsøk. */
+  readonly firstAttempt?: AttemptFeedback;
   readonly bonusEarned?: boolean;
   readonly stars: Stars;
   readonly previousStars: number;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getCampaignLevel } from '../../content/campaign';
 import { defaultSave, type FirstAttempt, type SaveData } from '../../core/storage';
-import { ActivePlayClock, classify, familyFor, masteryOffer, masteryProgressCount, practiceDestination, recentFirstAttempts } from '../mastery';
+import { ActivePlayClock, attemptFeedback, classify, familyFor, masteryOffer, masteryProgressCount, practiceDestination, recentFirstAttempts } from '../mastery';
 
 const attempt = (id: string, ordinal: number, patch: Partial<FirstAttempt> = {}): FirstAttempt => ({
   levelId: id, contentVersion: 1, ordinal, activeMs: 1000, movesMade: 2, undoCount: 0,
@@ -115,5 +115,28 @@ describe('oppnåelig mestringsteller', () => {
     const struggling = remaining([], ['w1-01', 'w1-02', 'w1-03'].map((id, i) => attempt(id, i + 1, { end: { reason: 'reset', movesUsed: 1 } })));
     expect(masteryProgressCount(struggling, 1)).toBeNull();
     expect(practiceDestination(struggling, 1)).toBe('w1-01');
+  });
+});
+
+describe('forklaring av førsteforsøk', () => {
+  const level = getCampaignLevel('w2-03')!;
+  const over = (moves: number, activeMs = 1000): Partial<FirstAttempt> => ({ activeMs, end: { reason: 'solved', movesUsed: level.target + moves } });
+  it('gir én konkret grunn når et løst forsøk ikke ble sterkt', () => {
+    expect(attemptFeedback(attempt(level.id, 1), level)).toEqual({ strong: true, reason: 'target' });
+    expect(attemptFeedback(attempt(level.id, 1, over(1)), level)).toEqual({ strong: true, reason: 'nearTarget' });
+    expect(attemptFeedback(attempt(level.id, 1, over(1, level.target * 15000 + 1)), level)).toEqual({ strong: false, reason: 'slow' });
+    expect(attemptFeedback(attempt(level.id, 1, over(2)), level)).toEqual({ strong: false, reason: 'overTarget' });
+    expect(attemptFeedback(attempt(level.id, 1, { undoCount: 1 }), level)).toEqual({ strong: false, reason: 'undo' });
+    expect(attemptFeedback(attempt(level.id, 1, { assisted: true }), level)).toEqual({ strong: false, reason: 'assisted' });
+  });
+  it('er sterk nøyaktig når classify er sterk, og tier ellers', () => {
+    const cases: Partial<FirstAttempt>[] = [{}, over(1), over(1, 999_999), over(2), over(3), { undoCount: 2 }, { assisted: true }, { contentVersion: 99 },
+      { end: { reason: 'reset', movesUsed: 1 } }, { end: { reason: 'interrupted', movesUsed: 0 } }];
+    for (const target of [level, { ...level, targetExact: false }]) for (const patch of cases) {
+      const a = attempt(level.id, 1, patch);
+      const feedback = attemptFeedback(a, target);
+      if (a.end?.reason !== 'solved' || a.contentVersion !== target.contentVersion || !target.targetExact) expect(feedback).toBeNull();
+      else expect(feedback?.strong).toBe(classify(a, target) === 'strong');
+    }
   });
 });

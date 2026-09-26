@@ -9,7 +9,7 @@ import { journeyNextLevel } from '../game/journey';
 import { masteryProgressCount, masteryOffer, practiceDestination } from '../game/mastery';
 import { isWorldUnlocked, parseLevelId, WORLD_COUNT } from '../core/progression';
 import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
-import { resultPresentation } from '../game/feedback';
+import { attemptFeedbackText, resultPresentation } from '../game/feedback';
 import { parseFreeLevelId } from '../game/modes/free';
 import type { SolvedOutcome } from '../game/modes/types';
 import { COLORS, cssColor, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
@@ -185,6 +185,12 @@ export class ResultScene extends Phaser.Scene {
         const progress = masteryProgressCount(s.store.data, world);
         if (progress !== null) makeLabel(this, buttonsX, buttonsTop + 126, `${Math.min(3, progress)}/3 sterke forsøk mot mestringsprøven`,
           { size: 12, color: COLORS.inkMuted, font: 'body' });
+        const feedback = this.outcome.firstAttempt;
+        if (progress !== null && feedback !== undefined) {
+          const reason = makeLabel(this, buttonsX, buttonsTop + 147, attemptFeedbackText(feedback),
+            { size: 11, color: feedback.strong ? COLORS.success : COLORS.inkMuted, font: 'body' });
+          reason.setScale(Math.min(1, 280 / reason.width));
+        }
       }
     }
     const secondaryY = buttonsTop + 70;

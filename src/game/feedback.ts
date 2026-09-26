@@ -2,6 +2,7 @@ import { matches } from '../core/palindrome';
 import { levelId, LEVELS_PER_WORLD, parseLevelId, WORLD_COUNT, type StarMap } from '../core/progression';
 import type { Stars } from '../core/scoring';
 import type { Tile } from '../core/tiles';
+import type { AttemptFeedback, AttemptReason } from './mastery';
 
 export interface HarmonyProgress {
   readonly matched: number;
@@ -61,6 +62,17 @@ export const resultPresentation = (stars: Stars, previousStars: number): { reado
   title: RESULT_TITLES[stars],
   isPersonalBest: stars > previousStars,
 });
+
+const ATTEMPT_TEXT: Readonly<Record<AttemptReason, string>> = {
+  target: '✓ Sterkt forsøk: på mål uten angre',
+  nearTarget: '✓ Sterkt forsøk: ett over mål, i godt tempo',
+  slow: 'Ikke sterkt: ett over mål teller bare i godt tempo',
+  overTarget: 'Ikke sterkt: mer enn ett trekk over mål',
+  undo: 'Ikke sterkt: angre ble brukt',
+  assisted: 'Ikke sterkt: Speilglimt ble brukt',
+};
+
+export const attemptFeedbackText = (feedback: AttemptFeedback): string => ATTEMPT_TEXT[feedback.reason];
 
 export interface CampaignSummary {
   readonly solved: number;

@@ -17,7 +17,7 @@ describe('operation guidance', () => {
       { action: 'rotateLeft', enabled: true },
       { action: 'rotateRight', enabled: true },
     ]);
-    expect(operationSummary(rules.allowedOps)).toBe('Tillatt: Bytt · Roter');
+    expect(operationSummary(rules.allowedOps)).toBe('Tillatt: Bytt · Roter (hold og dra)');
   });
 
   it('viser speil som deaktivert med færre enn tre brikker', () => {
@@ -25,6 +25,6 @@ describe('operation guidance', () => {
 
     expect(segmentOptions(rules.allowedOps, 2)).toContainEqual({ action: 'mirror', enabled: false });
     expect(segmentOptions(rules.allowedOps, 3)).toContainEqual({ action: 'mirror', enabled: true });
-    expect(operationSummary(rules.allowedOps)).toBe('Tillatt: Bytt · Roter · Speil');
+    expect(operationSummary(rules.allowedOps)).toBe('Tillatt: Bytt · Roter · Speil (hold og dra)');
   });
 });

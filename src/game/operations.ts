@@ -19,6 +19,8 @@ export const operationSummary = (allowed: ReadonlySet<OpName>): string => {
   if (allowed.has('swap')) labels.push(allowed.size === 1 ? 'Bytt naboer' : 'Bytt');
   if (allowed.has('rotate')) labels.push('Roter');
   if (allowed.has('mirror')) labels.push('Speil');
+  // Gesten for utsnitt læres bare i én intro; minn om den der den trengs.
+  if (allowed.has('rotate') || allowed.has('mirror')) labels.push(`${labels.pop() ?? ''} (hold og dra)`);
   if (allowed.has('insertWild')) labels.push('Joker');
   if (allowed.has('remove')) labels.push('Fjern');
   return `Tillatt: ${labels.join(' · ')}`;
