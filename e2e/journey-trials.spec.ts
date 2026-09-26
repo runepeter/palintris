@@ -169,8 +169,8 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 844, height: 390 }
   await swap(page, 0, 1); await swap(page, 1, 2); await swap(page, 0, 1); await result(page);
   expect((await saved(page)).journeyBadges).toContain('journey-center-01');
   expect((await labels(page)).some((text) => text.includes('MIDTBONUS'))).toBe(true);
-  expect(await labels(page)).toContain('3 trekk  ·  mål 2');
-  expect(await labels(page)).toContain('Strålende speiling');
+  expect(await labels(page)).toContain('3 trekk  ·  bonusmål 3');
+  expect(await labels(page)).toContain('Perfekt harmoni');
   await screenshot(page, `center-bonus-${viewport.width}`);
   await clickText(page, 'Spill igjen');
   await page.waitForFunction(() => window.__palintris?.levelId === 'journey-center-01');

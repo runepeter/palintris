@@ -105,7 +105,9 @@ export class ResultScene extends Phaser.Scene {
     title.setScale(Math.min(1, titleWidth / title.width));
     this.buildRatingSeal(summaryX, summaryY, accent, d, effects, animate);
     this.celebrated = true;
-    makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  mål ${this.target}`, {
+    // Nådd bonus vurderes mot bonusruten, så det er den som vises.
+    const goal = trial?.bonusTarget !== undefined && this.outcome.bonusEarned === true ? `bonusmål ${trial.bonusTarget}` : `mål ${this.target}`;
+    makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  ${goal}`, {
       size: 15, color: COLORS.inkMuted, font: 'body',
     }).setStroke(cssColor(COLORS.shadow), 4);
     if (presentation.isPersonalBest && !showSpeilglimt) {
