@@ -44,6 +44,7 @@ All tiles initially unlocked/nonwild; hand={wild:0,remove:0}; allowedOps=['swap'
    Start `A0* A1 B2 A3 B4`; star denotes marked identity, NOT wild. There are3 A tiles.
    Ordinary: swap(1,2) -> `A0* B2 A1 A3 B4`; swap(0,1) -> `B2 A0* A1 A3 B4` = BAAAB, center A1, NO badge. Exact minimum2.
    Bonus: swap(0,1) -> `A1 A0* B2 A3 B4`; swap(1,2) -> `A1 B2 A0* A3 B4`; swap(0,1) -> `B2 A1 A0* A3 B4` = BAAAB, center A0, badge. Exact bonus minimum3.
+   Stjerner (endret 27.09 etter uavhengig designvurdering): når bonusen er nådd, regnes stjernene mot bonusTarget, så bonus på 3 gir 3★ + merke. Ingen ekstra stjerne; den valgfrie ruten skal ikke straffes.
    First bonus move swaps identical symbols with different identities: current symbol-only search key loses this necessary distinction. Every preterminal state above is non-palindromic.
    Normal stars remain based on2; bonus on3 yields independent badge, not fake3 stars. UI must show bonus goal separately before first move, not imply bonus is required for completion.
 

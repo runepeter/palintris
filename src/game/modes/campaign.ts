@@ -194,7 +194,8 @@ export class CampaignMode implements BoardMode {
           Number.isSafeInteger(tile.movesLeft) && tile.movesLeft >= 0 && tile.movesLeft <= original.movesLeft))) && isPalindrome(tiles) &&
       (!bonusReached || movesUsed >= (trial.bonusTarget ?? trial.target));
     if (!valid || tiles === undefined) return { stars: 0, previousStars, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null, bonusEarned: false };
-    const stars = starsFor(movesUsed, trial.target, trial.budget);
+    // Nådd bonus måles mot bonusrutens eget minimum, så den valgfrie utfordringen ikke koster en stjerne.
+    const stars = starsFor(movesUsed, bonusReached ? trial.bonusTarget ?? trial.target : trial.target, trial.budget);
     const bonusEarned = stars > 0 && bonusReached;
     if (stars > 0) this.store.update((data) => {
       const updated = recordStars(data, trial.id, stars, trial.contentVersion);

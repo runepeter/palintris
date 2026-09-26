@@ -78,8 +78,11 @@ it('gir vanlige stjerner og separat identitetsbonus som aldri slettes av replay'
   expect(ordinary).toMatchObject({ stars: 3, bonusEarned: false, worldJustUnlocked: null });
   expect(store.data.journeyBadges).toBeUndefined();
   const bonus = mode.onSolved('journey-center-01', 3, { timeMs: 0, finalTiles: centerFinal(true) });
-  expect(bonus.stars).toBeLessThan(3);
+  // Bonusruten måles mot sitt eget minimum; den valgfrie utfordringen koster ingen stjerne.
+  expect(bonus.stars).toBe(3);
   expect(bonus.bonusEarned).toBe(true);
+  expect(mode.onSolved('journey-center-01', 5, { timeMs: 0, finalTiles: centerFinal(true) }).stars).toBe(2);
+  expect(mode.onSolved('journey-center-01', 4, { timeMs: 0, finalTiles: centerFinal(false) }).stars).toBe(2);
   expect(store.data.journeyBadges).toEqual(['journey-center-01']);
   mode.onSolved('journey-center-01', 2, { timeMs: 0, finalTiles: centerFinal(false) });
   expect(store.data.journeyBadges).toEqual(['journey-center-01']);

@@ -1080,7 +1080,7 @@ export class BoardScene extends Phaser.Scene {
     // Vent på at siste trekk faktisk lander, også når spilleren slipper en dratt brikke.
     this.pendingVictory = (): void => {
       this.clearingVictory = true;
-      if (this.view.stars === 3) audio.playVictoryJingle();
+      if (this.view.stars === 3 || outcome.stars === 3) audio.playVictoryJingle();
       else audio.playPalindrome();
       this.effects.mirrorWave(this.layout, this.originX, this.originY, this.layout.scale);
       const tiles = this.view.tiles.flatMap((tile) => {

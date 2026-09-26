@@ -38,7 +38,7 @@ test('produksjon spiller kvote og valgfri midtbonus uten utviklingskroker', asyn
   await expect.poll(async () => (await save()).introsSeen).toContain('journey-center-01');
   await swap(0); await swap(1); await swap(0);
   await expect.poll(async () => (await save()).journeyBadges).toContain('journey-center-01');
-  expect((await save()).stars['journey-center-01']?.stars).toBe(2);
+  expect((await save()).stars['journey-center-01']?.stars).toBe(3);
   await page.reload();
   await expect(page.getByRole('status')).toBeHidden();
   expect((await save()).journeyBadges).toContain('journey-center-01');
