@@ -159,3 +159,10 @@ Sir er tilbake og ber uttrykkelig om at arbeidet fortsetter gjennom kvelden og n
 - Produksjon https://palintris-k6nisoa9y-cyclaw.vercel.app, dpl_6XfQxaLQWobwLxNiAy6mSVz8Miwj, READY/production/aliasbekreftet. Alle12offentlige filer SHA256-match. Rollback https://palintris-5ty42nl6u-cyclaw.vercel.app.
 -462unit/76E2E/8release/typecheck/lint/build bestått.2/2offentlige isolerte spillflyttester bestått iChromium/WebKit. Logger /tmp/palintris-night-feedback-{unit,e2e,typecheck,lint,release,public}.log. Ingen CUA-spillmutasjon i brukerlagring.
 - Neste er Speilglimt etter den reviewede spec/planen. Ingen sidecarrunde kjører, runtimefrys opphevet. Caffeinate4508 ogheartbeatACTIVEtil08. Ingen QAserver før neste UI-arbeid. Alle forrige implementerings-/reviewoppgaver ferdige.
+
+
+## Speilglimt under arbeid, kl.20.25
+- Ny belønning: ett neste-trekk-hint per tre ulike ordinære seire, retroaktiv beholdning, maksimalt30. Hjelp gir vanlige stjerner, men ikke sterke førsteforsøk. Introer/prøver og andre moduser unntatt. Full løsning/jokere/temaer/fallende variant er senere ideer.
+- Førbilder6/6 tatt på360×640,360×500,844×390 før UI-endring. Rød E2E6/6 feilet eksakt på manglende Speilglimt. Root eier alle Playwright-kjøringer.
+- domain_review implementerte solver/session og uavhengig reviewet storage/mastery; mastery_contract implementerte storage/mastery og reviewet solver/session. Begge review PASS.90brettprobe:78 eksakte lovlige hint/restminimum,12 samme unknown med/uten hint; ingen hintkostnad ved unknown.
+- scene_review implementerer nå BoardScene/ResultScene og ren layout/presentasjon. Root skriver opptjening→bruk→resize→seier→reload samt setterfeil-E2E. Ingen annen Playwright eller deploy kjører. Ingen modellserie aktiv. Siste verifiserte produksjon fortsatt52d5ba1.

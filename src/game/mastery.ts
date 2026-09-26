@@ -12,7 +12,7 @@ export const familyFor = (id: string): Family | null => {
 };
 
 export const classify = (attempt: FirstAttempt, level: Level): 'strong' | 'ordinary' | 'struggling' => {
-  if (attempt.contentVersion !== level.contentVersion) return 'ordinary';
+  if (attempt.assisted === true || attempt.contentVersion !== level.contentVersion) return 'ordinary';
   const end = attempt.end;
   if (end === undefined) return 'ordinary';
   if ((end.reason === 'reset' || end.reason === 'exhausted') && attempt.movesMade > 0) return 'struggling';
@@ -51,7 +51,7 @@ export const masteryProgressCount = (data: SaveData, world: number): number | nu
     const attempt = attempts[level.id];
     if (attempt === undefined) {
       possible.push({ ordinal: ++ordinal, strong: true });
-    } else if (attempt.end === undefined && attempt.movesMade === 0 && attempt.undoCount === 0 && attempt.contentVersion === level.contentVersion) {
+    } else if (attempt.assisted !== true && attempt.end === undefined && attempt.movesMade === 0 && attempt.undoCount === 0 && attempt.contentVersion === level.contentVersion) {
       // Ny inngang avslutter delvis spilte forsøk; nulltrekksforsøk beholder derimot ordinalen.
       possible.push({ ordinal: attempt.ordinal, strong: true });
     }

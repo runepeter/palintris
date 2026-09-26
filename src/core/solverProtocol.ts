@@ -10,6 +10,7 @@ export interface SolveRequestJson {
   readonly maxMoves: number;
   readonly limits: { readonly states: number; readonly ms?: number };
   readonly objective?: SolveRequest['objective'];
+  readonly includeFirstMove?: boolean;
 }
 
 export type WorkerIn =
@@ -33,6 +34,7 @@ export const toRequestJson = (req: SolveRequest): SolveRequestJson => ({
   maxMoves: req.maxMoves,
   limits: req.limits,
   ...(req.objective === undefined ? {} : { objective: req.objective }),
+  ...(req.includeFirstMove === undefined ? {} : { includeFirstMove: req.includeFirstMove }),
 });
 
 export const fromRequestJson = (j: SolveRequestJson): SolveRequest => ({
@@ -42,6 +44,7 @@ export const fromRequestJson = (j: SolveRequestJson): SolveRequest => ({
   maxMoves: j.maxMoves,
   limits: j.limits,
   ...(j.objective === undefined ? {} : { objective: j.objective }),
+  ...(j.includeFirstMove === undefined ? {} : { includeFirstMove: j.includeFirstMove }),
 });
 
 const CHUNK_STATES = 2000;

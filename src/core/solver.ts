@@ -14,10 +14,11 @@ export interface SolveRequest {
   readonly maxMoves: number;
   readonly limits: { readonly states: number; readonly ms?: number };
   readonly objective?: { readonly kind: 'centerBonus'; readonly tileId: number };
+  readonly includeFirstMove?: boolean;
 }
 
 export type SolveResult =
-  | { readonly status: 'solved'; readonly moves: number }
+  | { readonly status: 'solved'; readonly moves: number; readonly firstMove?: MoveCommand }
   | { readonly status: 'unreachableWithinBudget' }
   | { readonly status: 'unknown' }
   | { readonly status: 'cancelled' };
@@ -71,6 +72,7 @@ export const legalMoves = (rules: Rules, snap: Snapshot): MoveCommand[] => {
 interface QueueItem {
   readonly snap: Snapshot;
   readonly depth: number;
+  readonly firstMove?: MoveCommand;
 }
 
 export class BfsSearch {
@@ -116,7 +118,8 @@ export class BfsSearch {
         if (this.visited.has(key)) continue;
         if (isPalindrome(r.value.tiles)) {
           if (!this.matchesObjective(r.value.tiles)) continue;
-          this.done = { status: 'solved', moves: item.depth + 1 };
+          this.done = { status: 'solved', moves: item.depth + 1,
+            ...(this.req.includeFirstMove === true ? { firstMove: item.firstMove ?? move } : {}) };
           return this.done;
         }
         this.visited.add(key);
@@ -124,7 +127,8 @@ export class BfsSearch {
           this.done = { status: 'unknown' };
           return this.done;
         }
-        if (item.depth + 1 < this.req.maxMoves) this.queue.push({ snap: r.value, depth: item.depth + 1 });
+        if (item.depth + 1 < this.req.maxMoves) this.queue.push({ snap: r.value, depth: item.depth + 1,
+          ...(this.req.includeFirstMove === true ? { firstMove: item.firstMove ?? move } : {}) });
       }
       if (this.req.limits.ms !== undefined && Date.now() - this.startedAt > this.req.limits.ms) {
         this.done = { status: 'unknown' };

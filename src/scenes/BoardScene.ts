@@ -28,7 +28,9 @@ import type { BoardMode, ModeLevel } from '../game/modes/types';
 import { moveAnimationFor, rotationControlsLayout, wholeRotationPath, rotationPoint, type MoveAnimation, type RotationPath } from '../game/moveAnimation';
 import { STICKY_LEVELS } from '../game/modes/sticky';
 import type { SessionReject, SessionView } from '../game/session';
-import { BoardSession } from '../game/session';
+import { BoardSession, type SessionHint } from '../game/session';
+import { canUseSpeilglimt, speilglimtBalance } from '../game/tools';
+import { speilglimtHandLayout, speilglimtInstruction, type HandBox, type SpeilglimtInstruction } from './speilglimtPresentation';
 import { COLORS, durations, EASING, RADIUS, SPACE, worldAccent } from '../theme/theme';
 import { Effects } from './effects';
 import { introHeight, IntroOverlay } from './IntroOverlay';
@@ -205,11 +207,18 @@ export class BoardScene extends Phaser.Scene {
   private rotationTween: Phaser.Tweens.Tween | null = null;
   private rotationLanding: Phaser.Time.TimerEvent | null = null;
   private deferredIntro = false;
+  private paidSpeilglimt: SessionHint | null = null;
+  private speilglimtMarks: Phaser.GameObjects.Container | null = null;
+  private speilglimtButton: Phaser.GameObjects.Container | null = null;
+  private speilglimtLabel: Phaser.GameObjects.Text | null = null;
+  private speilglimtCaption: Phaser.GameObjects.Text | null = null;
+  private handHitAreas: readonly HandBox[] = [];
   private sacrificePrompt: Phaser.GameObjects.Container | null = null;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
     this.clearRotation();
+    this.clearSpeilglimt(false);
     this.sacrificePrompt?.destroy();
     this.sacrificePrompt = null;
     if (this.clearingVictory) {
@@ -314,6 +323,12 @@ export class BoardScene extends Phaser.Scene {
     this.rotationTween = null;
     this.rotationLanding = null;
     this.sacrificePrompt = null;
+    this.paidSpeilglimt = null;
+    this.speilglimtMarks = null;
+    this.speilglimtButton = null;
+    this.speilglimtLabel = null;
+    this.speilglimtCaption = null;
+    this.handHitAreas = [];
     this.zoneCache = { wild: { x: 0, y: 0 }, remove: { x: 0, y: 0 }, undo: { x: 0, y: 0 }, reset: { x: 0, y: 0 } };
   }
 
@@ -407,6 +422,7 @@ export class BoardScene extends Phaser.Scene {
         target: level.target,
         budget: level.budget,
         solver: s.solver,
+        includeFirstMove: this.speilglimtEligible(),
         onChange: (v) => this.onViewChange(v),
       });
     this.session = newSession();
@@ -489,6 +505,7 @@ export class BoardScene extends Phaser.Scene {
   /** Neste brett i samme scene: uten scene.start, som ville nullstilt klokken og modusen. */
   private loadBoard(level: ModeLevel): void {
     this.clearRotation();
+    this.clearSpeilglimt();
     this.destroyIntro();
     this.session.dispose();
     for (const v of this.tiles.values()) {
@@ -514,6 +531,7 @@ export class BoardScene extends Phaser.Scene {
 
   override update(time: number, delta: number): void {
     if (this.aborted) return;
+    this.updateSpeilglimtButton();
     this.rotationControls.setVisible(this.rotationAvailable() && !this.view.solved && this.sacrificePrompt === null);
     if (this.deferredIntro && this.pendingTweens === 0) this.dismissIntro();
     this.machine.tick(time);
@@ -636,12 +654,14 @@ export class BoardScene extends Phaser.Scene {
     if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
     this.clearRotation();
+    this.clearSpeilglimt();
     this.destroyIntro();
     removeHook();
     this.session.dispose();
   }
 
   private exitToMenu(): void {
+    this.clearSpeilglimt();
     this.suspendCampaign();
     if (this.modeKind === 'daily' && this.timerRunning && !this.solvedFired) this.saveDailyProgress();
     this.timerRunning = false;
@@ -665,6 +685,10 @@ export class BoardScene extends Phaser.Scene {
    */
   private near(z: { x: number; y: number }, x: number, y: number): boolean {
     if (y < screenHeight(this) - HAND_HEIGHT) return false;
+    if (this.handHitAreas.length > 0) {
+      const box = this.handHitAreas.find((area) => area.x === z.x && area.y === z.y);
+      return box !== undefined && Math.abs(x - box.x) <= box.width / 2 && Math.abs(y - box.y) <= box.height / 2;
+    }
     const r = Math.min(ZONE_HIT, contentWidth(this) / 8 - 2);
     return Math.hypot(x - z.x, y - z.y) <= r;
   }
@@ -1257,7 +1281,8 @@ export class BoardScene extends Phaser.Scene {
    * inneholder knapper, så en unødig ombygging mellom pointerdown og pointerup ville spist klikket.
    */
   private refreshChrome(resized: boolean): void {
-    const lines = this.hudLines();
+    const base = this.hudLines();
+    const lines = this.paidSpeilglimt === null ? base : { ...base, operations: this.speilglimtHelp(this.paidSpeilglimt).text };
     const text = `${lines.top}|${lines.bottom}|${lines.harmony}|${lines.operations}`;
     if (resized || this.hudText !== text) {
       this.hudText = text;
@@ -1372,6 +1397,7 @@ export class BoardScene extends Phaser.Scene {
 
     if (this.lastKind !== null && this.lastKind !== this.layout.kind) this.inputLocked = true;
     this.lastKind = this.layout.kind;
+    this.drawSpeilglimt();
   }
 
   private onViewChange(v: SessionView): void {
@@ -1380,6 +1406,8 @@ export class BoardScene extends Phaser.Scene {
     this.view = v;
     // Avspilling tegner én gang til slutt; hver mellomtilstand ville gitt en animasjon.
     if (this.replaying) return;
+    // Reset på et urørt brett beholder det betalte hintet; alle andre aksepterte trekk gjør det ugyldig.
+    if (command !== null && (this.paidSpeilglimt === null || !this.session.isCurrentHint(this.paidSpeilglimt))) this.clearSpeilglimt();
     if (this.modeKind === 'expedition' && command !== null) services(this).modes.expedition.recordCommand(command);
     // Løseren sender samme brett en gang til med bare ny status. En ny render her ville
     // avbrutt den langsomme trekkanimasjonen ved å tween-e fra mellomposisjonen på nytt.
@@ -1554,6 +1582,10 @@ export class BoardScene extends Phaser.Scene {
 
   private buildHand(): void {
     this.hand.removeAll(true);
+    this.speilglimtButton = null;
+    this.speilglimtLabel = null;
+    this.speilglimtCaption = null;
+    this.handHitAreas = [];
     const w = contentWidth(this);
     const left = contentLeft(this);
     const cy = screenHeight(this) - HAND_HEIGHT / 2;
@@ -1566,6 +1598,7 @@ export class BoardScene extends Phaser.Scene {
     tray.lineStyle(1, COLORS.gold, 0.4);
     tray.lineBetween(left + 20, screenHeight(this) - HAND_HEIGHT, left + w - 20, screenHeight(this) - HAND_HEIGHT);
     this.hand.add(tray);
+    if (this.speilglimtEligible()) { this.buildSpeilglimtHand(); return; }
 
     if (this.modeKind === 'expedition') {
       const relics = services(this).modes.expedition.state?.relics ?? [];
@@ -1637,6 +1670,143 @@ export class BoardScene extends Phaser.Scene {
     };
   }
 
+  private speilglimtEligible(): boolean {
+    return this.modeKind === 'campaign' && !this.devPreview && canUseSpeilglimt(this.levelId);
+  }
+
+  private speilglimtBlocked(): boolean {
+    const gesture = this.machine.state.name;
+    return this.inputLocked || this.pendingTweens > 0 || this.view.solved || this.intro !== null ||
+      this.menu.visible || this.sacrificePrompt !== null || this.dragId !== null ||
+      gesture === 'pending' || gesture === 'dragTile' || gesture === 'segment' || gesture === 'dragWild';
+  }
+
+  private speilglimtHelp(quote: SessionHint): SpeilglimtInstruction {
+    return speilglimtInstruction(quote.move, this.view.tiles, this.rotationAvailable());
+  }
+
+  private clearSpeilglimt(forget = true): void {
+    if (this.speilglimtMarks !== null) this.tweens.killTweensOf(this.speilglimtMarks);
+    this.speilglimtMarks?.destroy();
+    this.speilglimtMarks = null;
+    if (forget) this.paidSpeilglimt = null;
+  }
+
+  private showSpeilglimt(): void {
+    if (!this.speilglimtEligible() || this.speilglimtBlocked()) return;
+    const quote = this.session.currentHint();
+    if (quote === null || !this.session.isCurrentHint(quote)) return;
+    if (this.paidSpeilglimt !== quote) {
+      if (speilglimtBalance(services(this).store.data) <= 0) return;
+      if (!services(this).modes.campaign.useSpeilglimt(this.levelId)) {
+        this.showHint('notAllowed', undefined, 'Kunne ikke lagre. Ingen glimt brukt.');
+        return;
+      }
+      this.paidSpeilglimt = quote;
+    }
+    this.machine.reset();
+    this.keyboard.reset();
+    this.keyboardActive = false;
+    this.syncGestureVisuals();
+    this.drawSpeilglimt();
+    this.refreshChrome(false);
+    this.updateSpeilglimtButton();
+  }
+
+  private drawSpeilglimt(): void {
+    this.clearSpeilglimt(false);
+    const quote = this.paidSpeilglimt;
+    if (quote === null || !this.session.isCurrentHint(quote)) return;
+    const presentation = this.speilglimtHelp(quote);
+    const graphics = this.add.graphics();
+    const parts: Phaser.GameObjects.GameObject[] = [graphics];
+    const size = this.layout.tile * this.layout.scale;
+    // Lys kant med glorie: brikkenes egne rammer er gull, og harmonimarkeringen er turkis.
+    const ring = (x: number, y: number, w: number, h: number, radius: number): void => {
+      graphics.lineStyle(9, COLORS.ink, 0.22).strokeRoundedRect(x - w / 2 - 6, y - h / 2 - 6, w + 12, h + 12, radius + 4);
+      graphics.lineStyle(3, COLORS.ink, 1).strokeRoundedRect(x - w / 2 - 4, y - h / 2 - 4, w + 8, h + 8, radius + 2);
+    };
+    const points = presentation.indices.flatMap((index) => {
+      const slot = this.layout.slots[index];
+      return slot === undefined ? [] : [this.screenPoint(slot.x, slot.y)];
+    });
+    for (const point of points) ring(point.x, point.y, size, size, RADIUS.tile);
+    if (presentation.glyph !== null && points.length > 0) {
+      const x = points.reduce((sum, point) => sum + point.x, 0) / points.length;
+      const y = Math.min(...points.map((point) => point.y)) - size / 2 - 22;
+      graphics.fillStyle(COLORS.panel, 1).fillCircle(x, y, 15);
+      graphics.lineStyle(2, COLORS.ink, 1).strokeCircle(x, y, 15);
+      parts.push(makeLabel(this, x, y, presentation.glyph, { size: 18, color: COLORS.ink, bold: true }));
+    }
+    if (presentation.wholeBoard !== null) {
+      const button = this.rotationControls.list[presentation.wholeBoard === 'left' ? 0 : 1] as Phaser.GameObjects.Container | undefined;
+      if (button !== undefined) ring(button.x, button.y, button.width, button.height, RADIUS.button);
+    }
+    if (presentation.gap !== null) {
+      const gap = this.layout.gaps.find((point) => point.at === presentation.gap);
+      if (gap !== undefined) {
+        const point = this.screenPoint(gap.x, gap.y);
+        graphics.fillStyle(COLORS.panel, 1).fillCircle(point.x, point.y, 15);
+        graphics.lineStyle(3, COLORS.ink, 1).strokeCircle(point.x, point.y, 15);
+        parts.push(makeLabel(this, point.x, point.y, '+', { size: 24, color: COLORS.ink, bold: true }));
+      }
+    }
+    this.speilglimtMarks = this.add.container(0, 0, parts).setDepth(9).setName('speilglimt-marks');
+    if (!services(this).settings().reducedMotion) {
+      this.tweens.add({ targets: this.speilglimtMarks, alpha: 0.45, duration: this.d.ceremony, ease: EASING.fade, yoyo: true, repeat: -1 });
+    }
+  }
+
+  private updateSpeilglimtButton(): void {
+    if (this.speilglimtButton === null || this.speilglimtLabel === null || this.speilglimtCaption === null) return;
+    const balance = speilglimtBalance(services(this).store.data);
+    const quote = this.session.currentHint();
+    const paid = quote !== null && quote === this.paidSpeilglimt;
+    const ready = quote !== null && (paid || balance > 0) && !this.speilglimtBlocked();
+    this.speilglimtLabel.setText(`Speilglimt · ${balance}`);
+    const room = this.speilglimtButton.width - 12;
+    const caption = paid ? this.speilglimtHelp(quote).short : balance === 0 ? 'Ett glimt per 3 nye speil' :
+      this.view.solveStatus.kind === 'pending' ? 'Leter etter neste trekk …' : quote === null ? 'Ingen sikkert glimt nå' : 'Vis neste trekk. Du flytter selv.';
+    this.speilglimtCaption.setScale(1).setText(caption);
+    if (this.speilglimtCaption.width > room && caption.startsWith('Vis neste trekk.')) this.speilglimtCaption.setText('Vis neste trekk');
+    this.speilglimtCaption.setScale(Math.min(1, room / this.speilglimtCaption.width));
+    this.speilglimtButton.setAlpha(ready ? 1 : .6);
+  }
+
+  private buildSpeilglimtHand(): void {
+    const layout = speilglimtHandLayout(screenWidth(this), screenHeight(this), this.level.rules.allowedOps.has('insertWild'), this.level.rules.allowedOps.has('remove'));
+    this.handHitAreas = [layout.undo, layout.reset, ...layout.cards.map((card) => card.box)];
+    this.zoneCache = { wild: { x: -100, y: -100 }, remove: { x: -100, y: -100 }, undo: layout.undo, reset: layout.reset };
+    this.armedRing = null;
+    let allowedPress = false;
+    const button = makeButton(this, { ...layout.glimt, label: 'Speilglimt', labelSize: 15, accent: COLORS.star,
+      onClick: () => { if (allowedPress) this.showSpeilglimt(); } }).setName('speilglimt');
+    button.on('pointerdown', () => { allowedPress = !this.speilglimtBlocked(); });
+    this.speilglimtButton = button;
+    this.speilglimtLabel = button.list.find((child) => child.type === 'Text') as Phaser.GameObjects.Text;
+    this.speilglimtLabel.setY(-7);
+    this.speilglimtCaption = makeLabel(this, 0, 11, '', { size: 11, color: COLORS.inkMuted, font: 'body' });
+    button.add(this.speilglimtCaption);
+    this.hand.add(button);
+    for (const card of layout.cards) {
+      const count = this.view.hand[card.kind];
+      this.zoneCache[card.kind] = card.box;
+      this.hand.add(this.makeZone(card.box.x, card.box.y, card.box.width, `${card.kind === 'wild' ? 'Joker' : 'Fjern'} ×${count}`, count > 0, card.box.height));
+      if (card.kind === 'wild') {
+        const ring = this.add.graphics();
+        ring.lineStyle(2, COLORS.ink, 1).strokeRoundedRect(card.box.x - card.box.width / 2 - 2, card.box.y - card.box.height / 2 - 2, card.box.width + 4, card.box.height + 4, RADIUS.button);
+        ring.setVisible(this.machine.state.name === 'wildArmed');
+        this.hand.add(ring);
+        this.armedRing = ring;
+      }
+    }
+    this.hand.add(makeButton(this, { ...layout.undo, label: 'Angre', labelSize: 15, accent: COLORS.inkMuted, enabled: this.view.canUndo,
+      onClick: () => { if (this.inputLocked || this.pendingTweens > 0) return; this.dispatch({ type: 'undo' }); audio.playUndo(); } }));
+    this.hand.add(makeButton(this, { ...layout.reset, label: 'Reset', labelSize: 15, accent: COLORS.danger,
+      onClick: () => { if (this.inputLocked || this.pendingTweens > 0) return; this.dispatch({ type: 'reset' }); } }));
+    this.updateSpeilglimtButton();
+  }
+
   private confirmSacrifice(): void {
     if (this.inputLocked || this.pendingTweens > 0 || this.solvedFired || this.sacrificePrompt !== null) return;
     this.machine.reset();
@@ -1662,13 +1832,13 @@ export class BoardScene extends Phaser.Scene {
     this.sacrificePrompt = this.add.container(0, 0, [panel, blocker, title, text, cancel, confirm]).setDepth(100);
   }
 
-  private makeZone(x: number, y: number, w: number, label: string, active: boolean): Phaser.GameObjects.Container {
+  private makeZone(x: number, y: number, w: number, label: string, active: boolean, height = ZONE_HEIGHT): Phaser.GameObjects.Container {
     const g = this.add.graphics();
     g.lineStyle(2, active ? COLORS.ink : COLORS.locked, active ? 0.8 : 0.4);
-    dashedRect(g, -w / 2, -ZONE_HEIGHT / 2, w, ZONE_HEIGHT);
+    dashedRect(g, -w / 2, -height / 2, w, height);
     const text = makeLabel(this, 0, 0, label, { size: 15, color: active ? COLORS.ink : COLORS.inkMuted, font: 'body' });
     const c = this.add.container(x, y, [g, text]);
-    c.setSize(w, ZONE_HEIGHT);
+    c.setSize(w, height);
     return c;
   }
 

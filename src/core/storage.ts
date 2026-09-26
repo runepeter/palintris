@@ -32,6 +32,7 @@ export interface DailyProgress {
 }
 
 export interface FirstAttempt {
+  readonly assisted?: true;
   readonly levelId: string;
   readonly contentVersion: number;
   readonly ordinal: number;
@@ -50,6 +51,7 @@ export const campaignProgress = (data: SaveData): CampaignProgress =>
   data.campaign ?? { firstAttempts: {}, access: EMPTY_ACCESS };
 
 export interface SaveData {
+  readonly tools?: { readonly speilglimtSpent: number };
   readonly journeyBadges?: readonly string[];
   readonly campaign?: CampaignProgress;
   readonly saveVersion: 1;
@@ -209,6 +211,7 @@ const parseCampaign = (raw: unknown, stars: StarMap): CampaignProgress | undefin
       nonnegativeInteger(r['activeMs']) && nonnegativeInteger(r['movesMade']) && nonnegativeInteger(r['undoCount']) && validEnd) {
       firstAttempts[id] = { levelId: id, contentVersion: r['contentVersion'], ordinal: r['ordinal'],
         activeMs: r['activeMs'], movesMade: r['movesMade'], undoCount: r['undoCount'],
+        ...(Object.prototype.hasOwnProperty.call(r, 'assisted') && r['assisted'] !== false ? { assisted: true as const } : {}),
         ...(end === undefined ? {} : { end: end as FirstAttempt['end'] }) };
     } else {
       firstAttempts[id] = { levelId: id, contentVersion: 1, ordinal: ++nextOrdinal, activeMs: 0, movesMade: 0, undoCount: 0,
@@ -252,6 +255,9 @@ export const parseSave = (raw: unknown): SaveData | null => {
   const campaign = parseCampaign(raw['campaign'], Object.fromEntries(Object.entries(stars).map(([id, r]) => [id, r.stars])));
   return {
     ...(campaign === undefined ? {} : { campaign }),
+    ...(Object.prototype.hasOwnProperty.call(raw, 'tools') ? { tools: { speilglimtSpent:
+      isRecord(raw['tools']) && !Array.isArray(raw['tools']) && nonnegativeInteger(raw['tools']['speilglimtSpent']) && raw['tools']['speilglimtSpent'] <= 30
+        ? raw['tools']['speilglimtSpent'] : 30 } } : {}),
     ...(Array.isArray(raw['journeyBadges']) ? { journeyBadges: [...new Set(raw['journeyBadges'].filter((id): id is string =>
       typeof id === 'string' && journeyTrial(id) !== undefined))] } : {}),
     saveVersion: 1,

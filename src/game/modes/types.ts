@@ -24,6 +24,7 @@ export interface ModeLevel {
 
 /** nextLevelId, nextUnlocked og worldJustUnlocked er null/false for moduser uten progresjon. */
 export interface SolvedOutcome {
+  readonly assisted?: boolean;
   readonly bonusEarned?: boolean;
   readonly stars: Stars;
   readonly previousStars: number;

@@ -1,12 +1,13 @@
 import type { BoardState } from '../core/board';
 import { apply, createBoard } from '../core/board';
-import type { Command, RejectReason, Result } from '../core/commands';
+import type { Command, MoveCommand, RejectReason, Result } from '../core/commands';
 import { reject } from '../core/commands';
 import { isPalindrome } from '../core/palindrome';
 import type { Rules } from '../core/rules';
 import type { Stars } from '../core/scoring';
 import { starsFor } from '../core/scoring';
 import type { SolveRequest, SolveResult } from '../core/solver';
+import { applyMove } from '../core/step';
 import type { Hand, Tile } from '../core/tiles';
 
 export const CLIENT_SOLVER_STATES = 50000;
@@ -18,6 +19,10 @@ export interface SolverPort {
 
 /** Kjernens avvisningsgrunner, pluss sesjonens egen for trekk etter dispose. */
 export type SessionReject = RejectReason | 'disposed';
+
+export interface SessionHint {
+  readonly move: MoveCommand;
+}
 
 export type SolveStatus =
   | { readonly kind: 'idle' }
@@ -45,6 +50,7 @@ export interface SessionOptions {
   readonly budget: number;
   readonly solver: SolverPort;
   readonly solverStates?: number;
+  readonly includeFirstMove?: boolean;
   readonly onChange: (view: SessionView) => void;
 }
 
@@ -58,6 +64,7 @@ export class BoardSession {
   private solveStatus: SolveStatus = { kind: 'idle' };
   private requestSeq = 0;
   private disposed = false;
+  private hint: SessionHint | null = null;
 
   constructor(private readonly opts: SessionOptions) {
     this.current = createBoard(opts.tiles, opts.hand);
@@ -68,10 +75,26 @@ export class BoardSession {
     return this.current;
   }
 
+  currentHint(): SessionHint | null {
+    return this.hint !== null && this.isCurrentHint(this.hint) ? this.hint : null;
+  }
+
+  isCurrentHint(quote: SessionHint): boolean {
+    return !this.disposed && this.hint === quote && this.solveStatus.kind === 'known' &&
+      !isPalindrome(this.current.tiles) && this.current.movesUsed < this.opts.budget &&
+      applyMove(this.opts.rules, this.current, quote.move).ok;
+  }
+
   dispatch(cmd: Command): Result<BoardState, SessionReject> {
     if (this.disposed) return reject('disposed');
     const r = apply(this.opts.rules, this.current, cmd);
     if (!r.ok) return r;
+    // Reset på et urørt brett gir samme tilstand: behold løserstatus og et betalt hint.
+    if (r.value === this.current) {
+      this.emit();
+      return r;
+    }
+    this.hint = null;
     this.current = r.value;
     this.afterChange(true);
     return r;
@@ -94,6 +117,7 @@ export class BoardSession {
 
   dispose(): void {
     this.disposed = true;
+    this.hint = null;
     this.opts.solver.cancelAll();
   }
 
@@ -125,6 +149,7 @@ export class BoardSession {
         hand: this.current.hand,
         maxMoves: budgetLeft,
         limits: { states: this.opts.solverStates ?? CLIENT_SOLVER_STATES },
+        ...(this.opts.includeFirstMove === true ? { includeFirstMove: true } : {}),
       })
       .then((res) => this.onSolveResult(seq, res))
       .catch(() => this.onSolveResult(seq, { status: 'unknown' }));
@@ -135,6 +160,11 @@ export class BoardSession {
     switch (res.status) {
       case 'solved':
         this.solveStatus = { kind: 'known', moves: res.moves };
+        if (this.opts.includeFirstMove === true && Number.isSafeInteger(res.moves) && res.moves > 0 &&
+            res.moves <= this.opts.budget - this.current.movesUsed && res.firstMove !== undefined &&
+            applyMove(this.opts.rules, this.current, res.firstMove).ok) {
+          this.hint = Object.freeze({ move: Object.freeze({ ...res.firstMove }) });
+        }
         break;
       case 'unreachableWithinBudget':
         this.solveStatus = { kind: 'deadEnd' };

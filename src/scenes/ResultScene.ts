@@ -3,6 +3,8 @@ import { screenWidth, screenHeight } from './viewport';
 import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import { campaignProgress } from '../core/storage';
+import { speilglimtBalance } from '../game/tools';
+import { resultInfoRows, speilglimtResultLines } from './speilglimtPresentation';
 import { journeyNextLevel } from '../game/journey';
 import { masteryProgressCount, masteryOffer, practiceDestination } from '../game/mastery';
 import { isWorldUnlocked, parseLevelId, WORLD_COUNT } from '../core/progression';
@@ -80,6 +82,7 @@ export class ResultScene extends Phaser.Scene {
     const parsed = this.mode === 'free' ? parseFreeLevelId(this.levelId) : parseLevelId(this.levelId);
     const trial = this.mode === 'campaign' ? journeyTrial(this.levelId) : undefined;
     const world = trial?.world ?? parsed?.world ?? 1;
+    const showSpeilglimt = this.mode === 'campaign' && parsed !== null;
     // Dagens brett hører ikke til en verden og bruker modusens egen farge.
     const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
     const h = screenHeight(this);
@@ -88,6 +91,7 @@ export class ResultScene extends Phaser.Scene {
     const summaryX = landscape ? cx - Math.min(170, w * 0.2) : cx;
     const summaryY = landscape ? h * 0.52 : h * 0.31;
     const titleY = landscape ? 78 : Math.min(h * 0.165, summaryY - 120);
+    const buttonsTop = landscape ? h * 0.39 : h * 0.66;
     const presentation = resultPresentation(this.outcome.stars, this.outcome.previousStars);
 
     const animate = !this.celebrated;
@@ -104,10 +108,28 @@ export class ResultScene extends Phaser.Scene {
     makeLabel(this, summaryX, summaryY + 83, `${this.movesUsed} trekk  ·  mål ${this.target}`, {
       size: 15, color: COLORS.inkMuted, font: 'body',
     }).setStroke(cssColor(COLORS.shadow), 4);
-    if (presentation.isPersonalBest) {
+    if (presentation.isPersonalBest && !showSpeilglimt) {
       makeLabel(this, summaryX, summaryY + 110, this.outcome.previousStars > 0 ? 'NY PERSONLIG BESTE' : 'FØRSTE SEIER', {
         size: 11, color: COLORS.success, font: 'body', bold: true,
       }).setLetterSpacing(1.5).setStroke(cssColor(COLORS.shadow), 4);
+    }
+    if (showSpeilglimt) {
+      const rows = resultInfoRows(landscape ? h - 16 - summaryY : buttonsTop - 29 - 4 - summaryY, presentation.isPersonalBest, this.outcome.worldJustUnlocked !== null);
+      if (rows.best !== null) {
+        makeLabel(this, summaryX, summaryY + rows.best, this.outcome.previousStars > 0 ? 'NY PERSONLIG BESTE' : 'FØRSTE SEIER', {
+          size: 11, color: COLORS.success, font: 'body', bold: true,
+        }).setLetterSpacing(1.5).setStroke(cssColor(COLORS.shadow), 4);
+      }
+      if (rows.unlock !== null && this.outcome.worldJustUnlocked !== null) this.buildUnlockBanner(summaryX, summaryY + rows.unlock, this.outcome.worldJustUnlocked);
+      const solved = Object.entries(s.store.data.stars).filter(([id, record]) => parseLevelId(id) !== null && record.stars > 0).length;
+      const lines = speilglimtResultLines(solved, speilglimtBalance(s.store.data), this.outcome.assisted === true);
+      const texts = rows.glimt.length === 2 ? [lines.balance, lines.progress] : [lines.compact];
+      const maxWidth = landscape ? w / 2 - 40 : w - 40;
+      rows.glimt.forEach((y, i) => {
+        const label = makeLabel(this, summaryX, summaryY + y, texts[i] ?? '', i === 0
+          ? { size: 12, color: COLORS.star, font: 'body', bold: true } : { size: 11, color: COLORS.inkMuted, font: 'body' });
+        label.setStroke(cssColor(COLORS.shadow), 4).setScale(Math.min(1, maxWidth / label.width));
+      });
     }
     if (trial?.bonusGoal !== undefined) {
       const earned = this.outcome.bonusEarned === true;
@@ -116,12 +138,11 @@ export class ResultScene extends Phaser.Scene {
         { size: landscape ? 11 : 12, color: earned || held ? COLORS.star : COLORS.inkMuted, font: 'body', bold: earned });
     }
     if (this.mode === 'daily') this.buildDailyStats(summaryX, summaryY + (presentation.isPersonalBest ? 136 : 112));
-    if (this.outcome.worldJustUnlocked !== null) {
+    if (this.outcome.worldJustUnlocked !== null && !showSpeilglimt) {
       this.buildUnlockBanner(summaryX, summaryY + (presentation.isPersonalBest ? 142 : 116), this.outcome.worldJustUnlocked);
     }
 
     const buttonsX = landscape ? cx + Math.min(170, w * 0.2) : cx;
-    const buttonsTop = landscape ? h * 0.39 : h * 0.66;
     if (this.mode === 'daily') {
       this.buildDailyButtons(buttonsX, buttonsTop, accent, landscape);
       return;

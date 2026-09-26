@@ -9,6 +9,7 @@ import { isLevelUnlocked, isWorldUnlocked, nextLevelId, parseLevelId, WORLD_COUN
 import { starsFor } from '../../core/scoring';
 import { campaignProgress, recordJourneyBadge, recordStars, type FirstAttempt, type SaveData } from '../../core/storage';
 import { masteryOffer } from '../mastery';
+import { canUseSpeilglimt, debitSpeilglimt, speilglimtBalance } from '../tools';
 import type { SessionView } from '../session';
 import type { SaveStore } from '../saveStore';
 import type { BoardMode, ModeLevel, SolvedInfo, SolvedOutcome } from './types';
@@ -19,6 +20,7 @@ export class CampaignMode implements BoardMode {
   private activeId: string | null = null;
   private preview = false;
   private pendingMs = 0;
+  private runAssisted = false;
 
   constructor(private readonly store: SaveStore) {}
 
@@ -26,6 +28,7 @@ export class CampaignMode implements BoardMode {
     if (this.activeId !== null) this.flushAttempt(this.activeId);
     this.activeId = id;
     this.preview = preview;
+    this.runAssisted = false;
     this.pendingMs = 0;
     const level = getCampaignLevel(id);
     if (preview || level === undefined || !this.isUnlocked(id) || parseLevelId(id)?.n === 15) return;
@@ -41,6 +44,24 @@ export class CampaignMode implements BoardMode {
     const ordinal = Math.max(0, ...Object.values(progress.firstAttempts).map((a) => a.ordinal)) + 1;
     const attempt: FirstAttempt = { levelId: id, contentVersion: level.contentVersion, ordinal, activeMs: 0, movesMade: 0, undoCount: 0 };
     this.store.update((d) => ({ ...d, campaign: { ...campaignProgress(d), firstAttempts: { ...campaignProgress(d).firstAttempts, [id]: attempt } } }));
+  }
+
+  useSpeilglimt(id: string): boolean {
+    if (this.preview || id !== this.activeId || !canUseSpeilglimt(id) || !this.isUnlocked(id) || speilglimtBalance(this.store.data) <= 0) return false;
+    const elapsed = Math.round(this.pendingMs);
+    const committed = this.store.tryUpdate((data) => {
+      const debited = debitSpeilglimt(data);
+      const progress = campaignProgress(debited);
+      const attempt = progress.firstAttempts[id];
+      if (attempt === undefined || attempt.end !== undefined) return debited;
+      return { ...debited, campaign: { ...progress, firstAttempts: { ...progress.firstAttempts,
+        [id]: { ...attempt, assisted: true, activeMs: attempt.activeMs + elapsed } } } };
+    });
+    if (committed) {
+      this.pendingMs = 0;
+      this.runAssisted = true;
+    }
+    return committed;
   }
 
   recordCommand(id: string, command: Command, view: Pick<SessionView, 'movesUsed' | 'budgetLeft' | 'solved'>): void {
@@ -149,6 +170,7 @@ export class CampaignMode implements BoardMode {
 
     const next = nextLevelId(levelId);
     return {
+      ...(this.runAssisted && this.activeId === levelId ? { assisted: true } : {}),
       stars,
       previousStars,
       nextLevelId: next,
