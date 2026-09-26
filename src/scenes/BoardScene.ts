@@ -212,6 +212,7 @@ export class BoardScene extends Phaser.Scene {
   private speilglimtButton: Phaser.GameObjects.Container | null = null;
   private speilglimtLabel: Phaser.GameObjects.Text | null = null;
   private speilglimtCaption: Phaser.GameObjects.Text | null = null;
+  private speilglimtCaptionFor: string | null = null;
   private handHitAreas: readonly HandBox[] = [];
   private sacrificePrompt: Phaser.GameObjects.Container | null = null;
 
@@ -1733,7 +1734,10 @@ export class BoardScene extends Phaser.Scene {
     for (const point of points) ring(point.x, point.y, size, size, RADIUS.tile);
     if (presentation.glyph !== null && points.length > 0) {
       const x = points.reduce((sum, point) => sum + point.x, 0) / points.length;
-      const y = Math.min(...points.map((point) => point.y)) - size / 2 - 22;
+      const above = Math.min(...points.map((point) => point.y)) - size / 2 - 22;
+      // Over raden kan merket havne bak «Hele brettet»-knappene; da legges det under.
+      const limit = (this.rotationAvailable() ? rotationControlsLayout(screenWidth(this), screenHeight(this)).boardTop : HUD_HEIGHT) + 16;
+      const y = above >= limit ? above : Math.max(...points.map((point) => point.y)) + size / 2 + 22;
       graphics.fillStyle(COLORS.panel, 1).fillCircle(x, y, 15);
       graphics.lineStyle(2, COLORS.ink, 1).strokeCircle(x, y, 15);
       parts.push(makeLabel(this, x, y, presentation.glyph, { size: 18, color: COLORS.ink, bold: true }));
@@ -1767,9 +1771,13 @@ export class BoardScene extends Phaser.Scene {
     const room = this.speilglimtButton.width - 12;
     const caption = paid ? this.speilglimtHelp(quote).short : balance === 0 ? 'Ett glimt per 3 nye speil' :
       this.view.solveStatus.kind === 'pending' ? 'Leter etter neste trekk …' : quote === null ? 'Ingen sikkert glimt nå' : 'Vis neste trekk. Du flytter selv.';
-    this.speilglimtCaption.setScale(1).setText(caption);
-    if (this.speilglimtCaption.width > room && caption.startsWith('Vis neste trekk.')) this.speilglimtCaption.setText('Vis neste trekk');
-    this.speilglimtCaption.setScale(Math.min(1, room / this.speilglimtCaption.width));
+    // Kalles hver frame; en ny tekst tegnes og lastes opp på nytt, så bare ved endring.
+    if (this.speilglimtCaptionFor !== caption) {
+      this.speilglimtCaptionFor = caption;
+      this.speilglimtCaption.setScale(1).setText(caption);
+      if (this.speilglimtCaption.width > room && caption.startsWith('Vis neste trekk.')) this.speilglimtCaption.setText('Vis neste trekk');
+      this.speilglimtCaption.setScale(Math.min(1, room / this.speilglimtCaption.width));
+    }
     this.speilglimtButton.setAlpha(ready ? 1 : .6);
   }
 
@@ -1786,6 +1794,7 @@ export class BoardScene extends Phaser.Scene {
     this.speilglimtLabel = button.list.find((child) => child.type === 'Text') as Phaser.GameObjects.Text;
     this.speilglimtLabel.setY(-7);
     this.speilglimtCaption = makeLabel(this, 0, 11, '', { size: 11, color: COLORS.inkMuted, font: 'body' });
+    this.speilglimtCaptionFor = null;
     button.add(this.speilglimtCaption);
     this.hand.add(button);
     for (const card of layout.cards) {
