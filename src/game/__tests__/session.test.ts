@@ -29,13 +29,16 @@ const fakeSolver = (): SolverPort & { requests: SolveRequest[]; answer: (i: numb
 
 const flush = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
 
+// Nok hånd til at 'ABCD' fortsatt kan bli palindrom; ellers gir pariteten blindvei før løseren spørres.
+const OPEN_HAND = { wild: 2, remove: 1 };
+
 const session = (s: string, opts: Partial<{ target: number; budget: number; hand: { wild: number; remove: number } }> = {}) => {
   const solver = fakeSolver();
   const views: SessionView[] = [];
   const sess = new BoardSession({
     rules: makeRules(ALL_OPS),
     tiles: tilesFromString(s),
-    hand: opts.hand ?? { wild: 0, remove: 0 },
+    hand: opts.hand ?? OPEN_HAND,
     target: opts.target ?? 1,
     budget: opts.budget ?? 5,
     solver,
@@ -45,6 +48,14 @@ const session = (s: string, opts: Partial<{ target: number; budget: number; hand
 };
 
 describe('BoardSession', () => {
+  it('gir sikker blindvei uten løser når pariteten ikke lar seg rette', () => {
+    const { sess, solver } = session('ABCD', { budget: 5, hand: { wild: 1, remove: 1 } });
+    expect(sess.view().solveStatus).toEqual({ kind: 'deadEnd' });
+    expect(solver.requests).toHaveLength(0);
+    const open = session('ABCD', { budget: 5, hand: { wild: 1, remove: 2 } });
+    expect(open.sess.view().solveStatus).toEqual({ kind: 'pending' });
+  });
+
   it('starter med løserforespørsel med maxMoves = budsjett og 50 000 tilstander, uten å emitte', () => {
     const { sess, solver, views } = session('AAB', { budget: 5 });
     expect(views).toHaveLength(0);
@@ -159,7 +170,7 @@ describe('BoardSession', () => {
     const sess = new BoardSession({
       rules: makeRules(ALL_OPS),
       tiles: tilesFromString('ABCD'),
-      hand: { wild: 0, remove: 0 },
+      hand: OPEN_HAND,
       target: 1,
       budget: 5,
       solver: { solve: () => Promise.reject(new Error('worker')), cancelAll: () => {} },

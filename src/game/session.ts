@@ -2,7 +2,7 @@ import type { BoardState } from '../core/board';
 import { apply, createBoard } from '../core/board';
 import type { Command, MoveCommand, RejectReason, Result } from '../core/commands';
 import { reject } from '../core/commands';
-import { isPalindrome } from '../core/palindrome';
+import { canBecomePalindrome, isPalindrome } from '../core/palindrome';
 import type { Rules } from '../core/rules';
 import type { Stars } from '../core/scoring';
 import { starsFor } from '../core/scoring';
@@ -134,7 +134,8 @@ export class BoardSession {
       return;
     }
     const budgetLeft = this.opts.budget - this.current.movesUsed;
-    if (budgetLeft <= 0) {
+    // Pariteten fanger sikre blindveier der løseren ellers ville gitt opp med «ukjent».
+    if (budgetLeft <= 0 || !canBecomePalindrome(this.current.tiles, this.current.hand)) {
       this.solveStatus = { kind: 'deadEnd' };
       this.opts.solver.cancelAll();
       if (emitNow) this.emit();

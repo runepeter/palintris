@@ -10,6 +10,8 @@ export interface IntroSpec {
   readonly text: string;
   readonly compactText?: string;
   readonly gesture: 'drag' | 'hold' | 'tap' | 'dragHand';
+  /** Mekanikk introbrettet krever før dens egen intro, og som teksten derfor også forklarer. */
+  readonly alsoTeaches?: readonly IntroMechanic[];
 }
 
 /** Første nivå i hver verden lærer bort én ting. Rekkefølgen er verdenes. */
@@ -28,7 +30,11 @@ export const INTROS: readonly IntroSpec[] = [
   },
   { id: 'w3-01', mechanic: 'mirror', title: 'Speil en bit', text: 'Hold og dra over minst tre, velg ⇋', gesture: 'hold' },
   { id: 'w4-01', mechanic: 'locked', title: 'Låste brikker', text: 'Låste brikker flytter seg ikke. Jobb rundt dem', gesture: 'tap' },
-  { id: 'w5-01', mechanic: 'wild', title: 'Joker', text: 'Dra jokeren fra hånden inn i et mellomrom', gesture: 'dragHand' },
+  {
+    id: 'w5-01', mechanic: 'wild', title: 'Joker og Fjern',
+    text: 'Dra jokeren fra hånden inn i et mellomrom.\nHer trengs også Fjern: dra en brikke ned i Fjern.',
+    compactText: 'Joker: dra inn i et mellomrom. Fjern: dra en brikke ned.', gesture: 'dragHand', alsoTeaches: ['remove'],
+  },
   { id: 'w5-02', mechanic: 'remove', title: 'Fjern en brikke', text: 'Dra en brikke ned i hånden for å fjerne den', gesture: 'dragHand' },
   { id: 'journey-quota-01', mechanic: 'swap', title: 'To flytt', text: 'Tallet følger brikken. Hver flytting bruker én. Ved 0 må brikken bli stående.', compactText: 'Tallet følger brikken. Ved 0 kan den ikke flyttes.', gesture: 'drag' },
   { id: 'journey-quota-02', mechanic: 'swap', title: 'Spar flyttene', text: 'Den merkede brikken har to flytt. Planlegg hvor den skal ende.', gesture: 'drag' },

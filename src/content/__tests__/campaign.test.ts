@@ -3,7 +3,8 @@ import { CAMPAIGN, getCampaignLevel } from '../campaign';
 import { BUILD_ATTEMPTS, CONTENT_VERSION, INTRO_LEVELS, rampedRecipe, WORLD_RECIPES } from '../recipes';
 import { validateSolution } from '../../core/generator';
 import { makeLevel, rulesFor } from '../../core/level';
-import { isPalindrome } from '../../core/palindrome';
+import { canBecomePalindrome, isPalindrome } from '../../core/palindrome';
+import { JOURNEY_TRIALS } from '../journeyTrials';
 import { levelId, LEVELS_PER_WORLD, WORLD_COUNT } from '../../core/progression';
 import { MAX_LENGTH, MIN_LENGTH } from '../../core/rules';
 import { symbolKey } from '../../core/tiles';
@@ -85,5 +86,12 @@ describe('campaign.v1.json', () => {
       requireExact: true,
     });
     expect(level).toEqual(getCampaignLevel(levelId(world, 3)));
+  });
+});
+
+describe('paritetssjekken', () => {
+  it('gir aldri blindvei ved start på et innholdsbrett', () => {
+    for (const level of CAMPAIGN.levels) expect(canBecomePalindrome(level.tiles, level.hand), level.id).toBe(true);
+    for (const trial of JOURNEY_TRIALS) expect(canBecomePalindrome(trial.tiles, trial.hand), trial.id).toBe(true);
   });
 });

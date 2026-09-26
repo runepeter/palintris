@@ -252,6 +252,8 @@ export class ResultScene extends Phaser.Scene {
     seal.lineStyle(2, accent, 0.7);
     seal.strokeCircle(cx, y, 74);
     for (let i = 0; i < 12; i++) {
+      // Nederste tikk ville krysset «trekk · mål»-linjen rett under seglet.
+      if (i === 3) continue;
       const angle = (i / 12) * Math.PI * 2;
       const inner = 79;
       const outer = i % 3 === 0 ? 88 : 84;

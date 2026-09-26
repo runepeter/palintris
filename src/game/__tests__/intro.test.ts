@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { getCampaignLevel } from '../../content/campaign';
 import type { Command } from '../../core/commands';
+import type { OpName } from '../../core/rules';
+import { makeRules } from '../../core/rules';
+import { solve } from '../../core/solver';
 import type { IntroMechanic } from '../intro';
 import { INTROS, introFor, introSatisfiedBy } from '../intro';
 
@@ -87,5 +91,28 @@ describe('introSatisfiedBy', () => {
     for (const cmd of Object.values(CMD)) {
       expect(introSatisfiedBy(spec('locked'), cmd)).toBe(true);
     }
+  });
+});
+
+const OP_FOR: Readonly<Record<IntroMechanic, OpName | null>> = { swap: 'swap', rotate: 'rotate', mirror: 'mirror', locked: null, wild: 'insertWild', remove: 'remove' };
+
+describe('introbrett', () => {
+  it('kan løses med det spilleren har lært til og med introen', () => {
+    const campaignIntros = INTROS.filter((s) => s.id.startsWith('w'));
+    for (const [i, intro] of campaignIntros.entries()) {
+      const level = getCampaignLevel(intro.id);
+      if (level === undefined) throw new Error(intro.id);
+      const learned = new Set([...campaignIntros.slice(0, i + 1).map((s) => s.mechanic), ...(intro.alsoTeaches ?? [])]);
+      const ops = level.allowedOps.filter((op) => [...learned].some((m) => OP_FOR[m] === op));
+      const hand = { wild: learned.has('wild') ? level.hand.wild : 0, remove: learned.has('remove') ? level.hand.remove : 0 };
+      const result = solve({ rules: makeRules(ops), tiles: level.tiles, hand, maxMoves: level.budget, limits: { states: 300_000 } });
+      expect(result.status, intro.id).toBe('solved');
+    }
+  });
+
+  it('nevner verktøyet den i tillegg lærer bort', () => {
+    expect(introFor('w5-01')?.alsoTeaches).toEqual(['remove']);
+    expect(introFor('w5-01')?.text).toContain('Fjern');
+    expect(introFor('w5-01')?.compactText).toContain('Fjern');
   });
 });

@@ -29,6 +29,13 @@ describe('journeyDestination', () => {
     expect(journeyDestination(all)).toBe('w6-15');
   });
 
+  it('takes leftover boards from the lowest world upward once the highest world is complete', () => {
+    const stars: Record<string, number> = { ...learnedTrials, ...solved(6, 15) };
+    for (let world = 1; world <= 5; world++) Object.assign(stars, solved(world, 12));
+    expect(journeyDestination(stars)).toBe('w1-13');
+    expect(journeyDestination({ ...stars, ...solved(1, 15) })).toBe('w2-13');
+  });
+
   it('returns to an accessible unfinished board when the highest world is complete', () => {
     const stars: Record<string, number> = { ...learnedTrials, ...solved(1, 15), ...solved(2, 15), ...solved(3, 15), ...solved(4, 15), ...solved(5, 15), ...solved(6, 15) };
     delete stars['w2-15'];

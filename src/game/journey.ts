@@ -5,20 +5,23 @@ import { INTROS } from './intro';
 const newTrialDestination = (stars: StarMap, access: CampaignAccess): string | undefined =>
   ['journey-quota-01', 'journey-center-01'].find((id) => (stars[id] ?? 0) <= 0 && isJourneyTrialUnlocked(id, stars, access));
 
-/** Velger alltid et tilgjengelig, uløst brett i den lengst åpnede verdenen. */
+/** Velger et tilgjengelig, uløst brett i den lengst åpnede verdenen; når den er ferdig, restbrett fra laveste verden. */
 export const journeyDestination = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): string => {
   const intro = INTROS.find(({ id }) => id.startsWith('w') && (stars[id] ?? 0) <= 0 && isLevelUnlocked(id, stars, access));
   if (intro !== undefined) return intro.id;
   const trial = newTrialDestination(stars, access);
   if (trial !== undefined) return trial;
-  for (let world = WORLD_COUNT; world >= 1; world--) {
-    if (!isWorldUnlocked(world, stars, access) || isWorldMastered(world, stars, access)) continue;
+  const firstOpen = (world: number): string | undefined => {
+    if (!isWorldUnlocked(world, stars, access) || isWorldMastered(world, stars, access)) return undefined;
     for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
       const id = levelId(world, n);
       if ((stars[id] ?? 0) <= 0 && isLevelUnlocked(id, stars, access)) return id;
     }
-  }
-  return levelId(WORLD_COUNT, LEVELS_PER_WORLD);
+    return undefined;
+  };
+  const worlds = Array.from({ length: WORLD_COUNT }, (_, i) => i + 1);
+  const highest = Math.max(...worlds.filter((world) => isWorldUnlocked(world, stars, access)));
+  return firstOpen(highest) ?? worlds.map(firstOpen).find((id) => id !== undefined) ?? levelId(WORLD_COUNT, LEVELS_PER_WORLD);
 };
 
 export const journeyComplete = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean => {
