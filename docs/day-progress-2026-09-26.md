@@ -115,3 +115,16 @@ Kjør på én stabil kildekodetilstand: unit/type/lint, relevante E2E og e2e:rel
 - Sidecar har nå kvotevalidering/innholdshash og180sstandardfrist. Legacy ordinary hash bevart. Faktisk lokal Gemma-kvotesmoke:1kall,1spill,1trekk, BFS1, fullført; sidecar-runs/2026-09-26-quota-smoke. Ingen modell-/regelendring, midtbonus foreløpig ikke evalueringsmål.
 -22før/etterPNG kopiert til hovedrepoets screenshots-local/2026-09-26/04-trials. Galleri oppdatert; root så kvote0-varsel og midtbrikkestart uten overlapp. Uavhengig visuell review dekker360×640/844×390 og stabilt bonus-/normalresultat/reload.
 - Neste: signert kildecommit, dist-onlydeploy, offentlige filhash og faktisk gammel/ny spillflyt. Ingen implementeringsagent eller sidecar-prosess aktiv. QAserver3006/caffeinate1414/heartbeat fortsatt aktive til sluttkontroll.
+
+
+## Leveranse4 publisert og sluttført
+- Signert kilde5f807a5851c824eedb448f6aea6e3fa27902996f (G). Artifact /tmp/palintris-release-ughj86uc inneholder bare dist; ingen kilde-/config-/persondata sendt.
+- Produksjon opprettet26.september kl.11.40: https://palintris-5ty42nl6u-cyclaw.vercel.app, dpl_31RM9fgs8SzWqsm9qXaZrgnMoh1Q. READY/production, alias https://palintris.vercel.app og alle12offentlige SHA256-filer verifisert.
+- Rollback https://palintris-nleig2utn-cyclaw.vercel.app, kilde46f2e42a38f060337012796ea5c4114fc1b5edbe.
+- Offentlig ny spillflyt:2/2Chromium/WebKit bestått, ekte input intro→kvote→bonus→reload i isolerte testkontekster.90gamle stjerner beholdt, kvote3stjerner, midtbonus2stjerner+merke vedvart. /tmp/palintris-trials-public-e2e.log. Ingen app-debugkroker brukt.
+- CUA390×844 på offentlig side bekreftet eksisterende lagring2/15verden2 og Fortsett→w2-03. Ekstra rotasjonstrykk ble avvist av automatisk godkjenningskontroll fordi fanen hadde eksisterende lagring; ingen omgåelse. Funksjonskontrollen fullført i isolerte testnettlesere. Egen kontrollfane lukket og viewportnullstilt; brukerfane beholdt.
+- Siste uavhengige review PASS: produksjonstest og sidecargrense /tmp/palintris-trials-final-boundary-review.md. Ingen åpne kodefunn. Visuell review har ingen kalibrert taste-score; funn og visuelle grenser dokumentert i rapporten.
+- Avtalt scope1–4, lokal sidecar og Git-ignorert før/etterarkiv ferdig. Sidecarens14spill/19kall viste ingen forbedring, så strategien ble beholdt. Ingen vekttrening eller automatisk endring av spillregler.
+- Avslutning kl.12.53: eksisterende heartbeat palintris-verifiserte-leveranser-gjennom-dagen PAUSED, bekreftet av verktøy og config. QAserver75084/port3006 og oppgavens caffeinate1414 stoppet; ps/lsof bekreftet STOPPED/CLOSED. Ingen implementeringsagenter, sidecar eller testsuiter aktive.
+- Worktree og branch beholdes. Ingen push/PR/merge/GitHub-kommentarer. Uvedkommende .codex/ urørt. Videre utvikling krever nytt omfang; automatikken fortsetter ikke kunstig etter ferdigscope.
+- Sporingssak runepeter/palintris#5: testkriterier og leveransebevis oppdatert i body, deretter CLOSED som completed; readback bekreftet26.september12.55. Ingen kommentar skrevet.

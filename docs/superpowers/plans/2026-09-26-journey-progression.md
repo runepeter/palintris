@@ -52,12 +52,12 @@ Filer: src/core/tiles.ts, src/core/step.ts, src/core/commands.ts, src/core/solve
 - [x] Røde tester for begge deltakere i swap, rotate, mirror med urørt midte, undo/reset, søkenøkler, reload og ugyldige data. Ingen håndkort/sticky i første kvoteinnhold.
 - [x] Bonusmål refererer konkret brikke-ID på oddetallsbrett med minst tre av symbolet. Vanlig palindrom fullfører; markert brikke i midten gir bonusmerke. Solver verifiserer både vanlig og bonusløsning, og at bonusen krever et reelt valg.
 - [x] Introduser i eksisterende reise med egne nivå-IDer, aldri nye lobbyknapper eller overskriving av gamle stjerner. Merk kvote og bonus tydelig før og under spill.
-- [ ] Uavhengig domene-/UI-review, full testpakke, mobil visuell kontroll, signert commit og offentlig verifisert deploy.
+- [x] Uavhengig domene-/UI-review, full testpakke, mobil visuell kontroll, signert commit og offentlig verifisert deploy.
 
 ## Tillegg fra Sir
 - Før/etter-bilder per visuell leveranse i hovedrepoets lokale, Git-ignorerte screenshots-local/. Registrer tilstand/provenance; manglende historiske før-bilder merkes ærlig.
 - Lokal spillende sidecar: docs/superpowers/plans/2026-09-26-sidecar.md. Skal ferdigstilles som del av dagsarbeidet, uten å forsinke verifiserte spill-leveranser.
 
 ## Sluttkontroll
-- [ ] Hele nye spillerreisen og retur med gammel lagring testes; mobilregresjoner og endelig produksjonskontroll.
-- [ ] Dagslogg oppdateres med levert/gjenstående. Automatisk oppfølging pauses når scope er ferdig, senest kl. 23. Ingen kunstig videreutvikling etter ferdig scope.
+- [x] Hele nye spillerreisen og retur med gammel lagring testes; mobilregresjoner og endelig produksjonskontroll.
+- [x] Dagslogg oppdateres med levert/gjenstående. Automatisk oppfølging pauses når scope er ferdig, senest kl. 23. Ingen kunstig videreutvikling etter ferdig scope.
