@@ -4,7 +4,7 @@ import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import { campaignProgress } from '../core/storage';
 import { journeyNextLevel } from '../game/journey';
-import { masteryCount, masteryOffer, practiceDestination } from '../game/mastery';
+import { masteryProgressCount, masteryOffer, practiceDestination } from '../game/mastery';
 import { isWorldUnlocked, parseLevelId, WORLD_COUNT } from '../core/progression';
 import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
 import { resultPresentation } from '../game/feedback';
@@ -161,7 +161,8 @@ export class ResultScene extends Phaser.Scene {
             { size: 11, color: COLORS.inkMuted, font: 'body' });
         }
       } else if (this.outcome.worldJustUnlocked === null && !campaignProgress(s.store.data).access.masteredWorlds.includes(world)) {
-        makeLabel(this, buttonsX, buttonsTop + 126, `${Math.min(3, masteryCount(s.store.data, world))}/3 sterke forsøk mot mestringsprøven`,
+        const progress = masteryProgressCount(s.store.data, world);
+        if (progress !== null) makeLabel(this, buttonsX, buttonsTop + 126, `${Math.min(3, progress)}/3 sterke forsøk mot mestringsprøven`,
           { size: 12, color: COLORS.inkMuted, font: 'body' });
       }
     }

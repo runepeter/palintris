@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getCampaignLevel } from '../../content/campaign';
 import { defaultSave, type FirstAttempt, type SaveData } from '../../core/storage';
-import { ActivePlayClock, classify, familyFor, masteryOffer, practiceDestination, recentFirstAttempts } from '../mastery';
+import { ActivePlayClock, classify, familyFor, masteryOffer, masteryProgressCount, practiceDestination, recentFirstAttempts } from '../mastery';
 
 const attempt = (id: string, ordinal: number, patch: Partial<FirstAttempt> = {}): FirstAttempt => ({
   levelId: id, contentVersion: 1, ordinal, activeMs: 1000, movesMade: 2, undoCount: 0,
@@ -59,5 +59,61 @@ describe('aktiv spilletid', () => {
     clock.suspend();
     expect(clock.tick(9000, true)).toBe(0);
     expect(clock.tick(100, true)).toBe(100);
+  });
+});
+
+
+describe('oppnåelig mestringsteller', () => {
+  const remaining = (ids: string[], attempts: FirstAttempt[] = []): SaveData => ({ ...dataWith(attempts),
+    stars: Object.fromEntries(Array.from({ length: 15 }, (_, i) => `w1-${String(i + 1).padStart(2, '0')}`)
+      .filter((id) => !ids.includes(id)).map((id) => [id, { stars: 1, contentVersion: 1 }])),
+  });
+  const ordinary = (id: string, ordinal: number): FirstAttempt => attempt(id, ordinal, { undoCount: 1 });
+  const pending = (id: string, ordinal: number, patch: Partial<FirstAttempt> = {}): FirstAttempt =>
+    attempt(id, ordinal, { end: undefined, movesMade: 0, ...patch });
+
+  it('beholder telleren for ny reise, men skjuler den for gammel gjennomspilt verden', () => {
+    expect(masteryProgressCount(defaultSave(), 1)).toBe(0);
+    expect(masteryProgressCount(dataWith([attempt('w1-01', 1)]), 1)).toBe(1);
+    expect(masteryProgressCount(remaining([]), 1)).toBeNull();
+  });
+  it('trenger minst tre mulige sterke når ingen allerede teller', () => {
+    expect(masteryProgressCount(remaining(['w1-13']), 1)).toBeNull();
+    expect(masteryProgressCount(remaining(['w1-13', 'w1-14']), 1)).toBeNull();
+    expect(masteryProgressCount(remaining(['w1-12', 'w1-13', 'w1-14']), 1)).toBe(0);
+    expect(masteryProgressCount(remaining(['w1-13', 'w1-14', 'w1-15']), 1)).toBeNull();
+  });
+  it('lar gamle sterke falle ut av femvinduet og beholder nyere sterke', () => {
+    const oldStrong = [attempt('w1-01', 1), attempt('w1-02', 2), ordinary('w1-03', 3), ordinary('w1-04', 4), ordinary('w1-05', 5)];
+    expect(masteryProgressCount(remaining(['w1-14'], oldStrong), 1)).toBeNull();
+    const newStrong = [ordinary('w1-01', 1), ordinary('w1-02', 2), ordinary('w1-03', 3), attempt('w1-04', 4), attempt('w1-05', 5)];
+    expect(masteryProgressCount(remaining(['w1-14'], newStrong), 1)).toBe(2);
+  });
+  it('bruker opprinnelig ordinal for påbegynt nulltrekksforsøk', () => {
+    const finished = [ordinary('w1-02', 2), ordinary('w1-03', 3), ordinary('w1-04', 4), ordinary('w1-05', 5), ordinary('w1-06', 6)];
+    expect(masteryProgressCount(remaining(['w1-01', 'w1-13', 'w1-14'], [pending('w1-01', 1), ...finished]), 1)).toBeNull();
+    expect(masteryProgressCount(remaining(['w1-01', 'w1-13', 'w1-14'], [pending('w1-01', 7), ...finished]), 1)).toBe(0);
+  });
+  it('regner ikke brukte, angrede, gamle eller terminale forsøk som ferske muligheter', () => {
+    for (const patch of [{ movesMade: 1 }, { undoCount: 1 }, { contentVersion: 99 }, { end: { reason: 'invalid' as const, movesUsed: 0 } }]) {
+      expect(masteryProgressCount(remaining(['w1-12', 'w1-13', 'w1-14'], [pending('w1-12', 1, patch)]), 1)).toBeNull();
+    }
+    expect(masteryProgressCount(remaining(['w1-13', 'w1-14'], [pending('w1-12', 1)]), 1)).toBeNull();
+  });
+  it('lar opptjente prøve- og øvingstilbud være uendret', () => {
+    const data = remaining([], [attempt('w1-01', 1), attempt('w1-02', 2), attempt('w1-03', 3)]);
+    const before = JSON.stringify(data);
+    expect(masteryOffer(data, 1)).toBe('w1-15');
+    expect(masteryProgressCount(data, 1)).toBe(3);
+    expect(masteryOffer(data, 1)).toBe('w1-15');
+    expect(JSON.stringify(data)).toBe(before);
+    expect(masteryProgressCount(data, 0)).toBeNull();
+    const earned = remaining([]);
+    const durable = { ...earned, campaign: { firstAttempts: {}, access: { offeredCheckpoints: ['w1-15'], masteredWorlds: [] } } };
+    expect(masteryProgressCount(durable, 1)).toBeNull();
+    expect(masteryOffer(durable, 1)).toBe('w1-15');
+    const struggling = remaining([], ['w1-01', 'w1-02', 'w1-03'].map((id, i) => attempt(id, i + 1, { end: { reason: 'reset', movesUsed: 1 } })));
+    expect(masteryProgressCount(struggling, 1)).toBeNull();
+    expect(practiceDestination(struggling, 1)).toBe('w1-01');
   });
 });

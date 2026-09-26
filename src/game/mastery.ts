@@ -35,6 +35,31 @@ export const masteryCount = (data: SaveData, world: number, kind: 'strong' | 'st
   }).length;
 };
 
+/** Optimistisk visningsgrense etter et resultat; endrer ikke tilbud eller opptjening. */
+export const masteryProgressCount = (data: SaveData, world: number): number | null => {
+  const family = FAMILIES[world - 1];
+  if (family === undefined) return null;
+  const attempts = campaignProgress(data).firstAttempts;
+  const completed = Object.values(attempts).filter((a) => a.end !== undefined && familyFor(a.levelId) === family);
+  const possible = completed.map((a) => {
+    const level = getCampaignLevel(a.levelId);
+    return { ordinal: a.ordinal, strong: level !== undefined && classify(a, level) === 'strong' };
+  });
+  let ordinal = Object.values(attempts).reduce((max, a) => Math.max(max, a.ordinal), 0);
+  for (const level of CAMPAIGN.levels) {
+    if (familyFor(level.id) !== family || !level.targetExact || (data.stars[level.id]?.stars ?? 0) > 0) continue;
+    const attempt = attempts[level.id];
+    if (attempt === undefined) {
+      possible.push({ ordinal: ++ordinal, strong: true });
+    } else if (attempt.end === undefined && attempt.movesMade === 0 && attempt.undoCount === 0 && attempt.contentVersion === level.contentVersion) {
+      // Ny inngang avslutter delvis spilte forsøk; nulltrekksforsøk beholder derimot ordinalen.
+      possible.push({ ordinal: attempt.ordinal, strong: true });
+    }
+  }
+  const attainable = possible.sort((a, b) => b.ordinal - a.ordinal).slice(0, 5).filter((a) => a.strong).length;
+  return attainable >= 3 ? masteryCount(data, world) : null;
+};
+
 export const masteryOffer = (data: SaveData, world: number): string | null => {
   const stars = starMap(data);
   const access = campaignProgress(data).access;
