@@ -7,10 +7,11 @@ import { reject } from '../core/commands';
 import { RELICS } from '../game/modes/expedition';
 import type { Command, MoveCommand, Result } from '../core/commands';
 import { matches } from '../core/palindrome';
-import { markIntroSeen, setDailyProgress } from '../core/storage';
+import { campaignProgress, markIntroSeen, setDailyProgress } from '../core/storage';
 import { makeTile, WILD_SYMBOL } from '../core/tiles';
 import { BLITZ, BlitzClock, blitzBonusMs } from '../game/blitz';
 import { mmss } from '../game/daily';
+import { ActivePlayClock } from '../game/mastery';
 import { blitzUrgency, harmonyProgress, moveFeedback } from '../game/feedback';
 import type { GestureState, HintReason, Intent, Target } from '../game/gestures';
 import { GestureMachine } from '../game/gestures';
@@ -44,6 +45,7 @@ interface BoardData {
   readonly mode: ModeKind;
   /** Kampanje og fri spilling peker ut et brett; daglig og blitz henter sitt eget. */
   readonly levelId?: string;
+  readonly devPreview?: boolean;
 }
 
 /** De to HUD-linjene. Toppen er stor i blitz, der klokken er hovedsaken. */
@@ -183,6 +185,8 @@ export class BoardScene extends Phaser.Scene {
   private paused = false;
   /** Daglig: tid brukt, kommandologg og starttidspunkt for gjenopptakelse. */
   private elapsedMs = 0;
+  private campaignClock = new ActivePlayClock();
+  private devPreview = false;
   private timerRunning = false;
   private startedAt = '';
   private commands: Command[] = [];
@@ -241,10 +245,16 @@ export class BoardScene extends Phaser.Scene {
   /** Fast referanse, så teardown kan koble den av document. */
   private readonly onVisibility = (): void => {
     this.paused = document.hidden;
+    this.suspendCampaign();
     if (this.modeKind !== 'blitz') return;
     if (this.paused) this.clock.pause();
     // Et løst brett venter på neste; da skal klokken stå til det er lastet.
     else if (!this.solvedFired && !this.blitzDone) this.clock.resume();
+  };
+
+  private readonly suspendCampaign = (): void => {
+    this.campaignClock.suspend();
+    if (this.modeKind === 'campaign' && !this.aborted) services(this).modes.campaign.flushAttempt(this.levelId);
   };
 
   constructor() {
@@ -254,6 +264,8 @@ export class BoardScene extends Phaser.Scene {
   /** Phaser gjenbruker sceneinstansen, så feltene må nullstilles her og ikke bare i initialiseringen. */
   init(data: BoardData): void {
     this.modeKind = data.mode;
+    this.devPreview = import.meta.env.DEV && data.devPreview === true;
+    this.campaignClock = new ActivePlayClock();
     this.levelId = data.levelId ?? '';
     this.tiles = new Map();
     this.fadingTiles = new Set();
@@ -301,7 +313,13 @@ export class BoardScene extends Phaser.Scene {
     // En blitz-omgang teller sine egne brett, så hver inngang til scenen starter en fersk kø.
     if (this.modeKind === 'blitz') s.restartBlitz();
     this.mode = s.modes[this.modeKind];
-    const level = this.mode.load(this.startId(s));
+    const id = this.startId(s);
+    if (this.modeKind === 'campaign' && !this.devPreview && !this.mode.isUnlocked(id)) {
+      this.aborted = true;
+      this.scene.start(SCENE.menu);
+      return;
+    }
+    const level = this.mode.load(id);
     if (level === null) {
       // session og machine finnes ikke; alt som kjører videre må se at scenen ga opp.
       this.aborted = true;
@@ -333,6 +351,10 @@ export class BoardScene extends Phaser.Scene {
     }).setDepth(30);
     this.hand = this.add.container(0, 0).setDepth(10);
     this.menu = new SegmentMenu(this, this.accent(), HUD_HEIGHT);
+    if (this.modeKind === 'campaign') {
+      s.modes.campaign.beginAttempt(level.id, this.devPreview);
+      this.elapsedMs = campaignProgress(s.store.data).firstAttempts[level.id]?.activeMs ?? 0;
+    }
     this.startBoard(level);
     if (this.modeKind === 'sticky') this.stickyLinks = new StickyLinks(this, s.settings().reducedMotion);
     if (this.modeKind === 'blitz') this.clock.start();
@@ -341,6 +363,8 @@ export class BoardScene extends Phaser.Scene {
     if (this.paused) this.clock.pause();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
     document.addEventListener('visibilitychange', this.onVisibility);
+    window.addEventListener('pagehide', this.suspendCampaign);
+    for (const event of [Phaser.Scenes.Events.PAUSE, Phaser.Scenes.Events.RESUME, Phaser.Scenes.Events.SLEEP, Phaser.Scenes.Events.WAKE]) this.events.on(event, this.suspendCampaign);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     this.setupInput();
     // Et gjenopptatt dagsbrett kan alt være løst; da hører seremonien til nå.
@@ -506,6 +530,17 @@ export class BoardScene extends Phaser.Scene {
 
   /** Begge klokkene mates fra spilløkka, aldri fra setInterval: en skjult fane står stille. */
   private tickClock(delta: number): void {
+    if (this.modeKind === 'campaign') {
+      const s = services(this);
+      const attempt = campaignProgress(s.store.data).firstAttempts[this.levelId];
+      const eligible = !this.devPreview && attempt !== undefined && attempt.end === undefined &&
+        !this.paused && !document.hidden && this.scene.isActive() && this.intro === null &&
+        !this.inputLocked && this.pendingTweens === 0 && !this.solvedFired && this.pendingVictory === null;
+      const elapsed = this.campaignClock.tick(delta, eligible);
+      this.elapsedMs += elapsed;
+      s.modes.campaign.tickAttempt(this.levelId, elapsed);
+      return;
+    }
     if (this.modeKind === 'daily') {
       if (!this.timerRunning || this.paused) return;
       this.elapsedMs += delta;
@@ -581,6 +616,9 @@ export class BoardScene extends Phaser.Scene {
 
   private teardown(): void {
     document.removeEventListener('visibilitychange', this.onVisibility);
+    window.removeEventListener('pagehide', this.suspendCampaign);
+    for (const event of [Phaser.Scenes.Events.PAUSE, Phaser.Scenes.Events.RESUME, Phaser.Scenes.Events.SLEEP, Phaser.Scenes.Events.WAKE]) this.events.off(event, this.suspendCampaign);
+    this.suspendCampaign();
     if (this.aborted) return;
     this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
     this.destroyIntro();
@@ -589,6 +627,7 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private exitToMenu(): void {
+    this.suspendCampaign();
     if (this.modeKind === 'daily' && this.timerRunning && !this.solvedFired) this.saveDailyProgress();
     this.timerRunning = false;
     this.clock.pause();
@@ -1250,6 +1289,10 @@ export class BoardScene extends Phaser.Scene {
       else this.hideBanner();
       this.syncGestureVisuals();
       return;
+    }
+    if (this.modeKind === 'campaign') {
+      this.campaignClock.suspend();
+      services(this).modes.campaign.recordCommand(this.levelId, command, v);
     }
     let newMatchedIndexes: readonly number[] = [];
     if (command !== null && command.type !== 'undo' && command.type !== 'reset' && v.movesUsed > previous.movesUsed) {

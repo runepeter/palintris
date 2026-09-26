@@ -23,15 +23,36 @@ export const solvedInWorld = (world: number, stars: StarMap): number => {
   return count;
 };
 
-export const isWorldUnlocked = (world: number, stars: StarMap): boolean =>
-  world === 1 || (world <= WORLD_COUNT && solvedInWorld(world - 1, stars) >= WORLD_GATE);
+export interface CampaignAccess {
+  readonly offeredCheckpoints: readonly string[];
+  readonly masteredWorlds: readonly number[];
+}
 
-export const isLevelUnlocked = (id: string, stars: StarMap): boolean => {
+export const EMPTY_ACCESS: CampaignAccess = { offeredCheckpoints: [], masteredWorlds: [] };
+
+export const mandatoryIntroIds = (world: number): readonly string[] =>
+  world === 5 ? ['w5-01', 'w5-02'] : world >= 1 && world <= 4 ? [levelId(world, 1)] : [];
+
+export const introductionsSolved = (world: number, stars: StarMap): boolean =>
+  mandatoryIntroIds(world).every((id) => (stars[id] ?? 0) > 0);
+
+export const isWorldMastered = (world: number, stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean =>
+  world >= 1 && world <= WORLD_COUNT && access.masteredWorlds.includes(world) &&
+  (stars[levelId(world, LEVELS_PER_WORLD)] ?? 0) > 0 && introductionsSolved(world, stars);
+
+export const isWorldUnlocked = (world: number, stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean =>
+  Number.isInteger(world) && world >= 1 && world <= WORLD_COUNT &&
+  (world === 1 || solvedInWorld(world - 1, stars) >= WORLD_GATE || isWorldMastered(world - 1, stars, access));
+
+export const isLevelUnlocked = (id: string, stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean => {
   const parsed = parseLevelId(id);
   if (parsed === null) return false;
-  if (!isWorldUnlocked(parsed.world, stars)) return false;
-  if (parsed.n === 1) return true;
-  return (stars[levelId(parsed.world, parsed.n - 1)] ?? 0) > 0;
+  if ((stars[id] ?? 0) > 0) return true;
+  if (!isWorldUnlocked(parsed.world, stars, access)) return false;
+  if (parsed.n === 1 || (stars[levelId(parsed.world, parsed.n - 1)] ?? 0) > 0) return true;
+  if (!introductionsSolved(parsed.world, stars)) return false;
+  return (parsed.n === LEVELS_PER_WORLD && access.offeredCheckpoints.includes(id)) ||
+    (!mandatoryIntroIds(parsed.world).includes(id) && isWorldMastered(parsed.world, stars, access));
 };
 
 export const nextLevelId = (id: string): string | null => {

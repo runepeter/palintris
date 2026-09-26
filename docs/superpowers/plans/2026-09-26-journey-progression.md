@@ -35,9 +35,9 @@ Filer: src/scenes/MenuScene.ts, ny src/scenes/ChallengesScene.ts, src/scenes/ui.
 ## Leveranse 2: Mestring og forsøk
 Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src/game/modes/campaign.ts, src/game/modes/types.ts, src/scenes/BoardScene.ts, src/scenes/ResultScene.ts, src/scenes/WorldMapScene.ts, src/game/journey.ts og tester.
 - [x] Før kode: fastsett og skriv eksakt data-/beslutningskontrakt i dagsloggen med Claude eller uavhengig domenereviewer. Tre sterke av de siste fem unike førstegangsforsøkene innen en mekanikkfamilie er utgangspunkt. Optimal løsning uten reset/angre er sterk uansett tidsbruk; rask nær-optimal løsning kan også være sterk. Tid alene kan ikke gjøre en optimal løsning svak.
-- [ ] Skriv tester for samme optimale løsningsbane ved kort/lang aktiv tid, pauser, skjult fane, reset, angre, reload, replay og sidemoduser. Introduksjoner må være ufravikelige; snarveier er tilgang, aldri falske stjerner.
-- [ ] Persistente kampanjeforsøk og aktiv spilletid. Pause-/animasjonstid telles ikke. Klassifiser bare etter fullført forsøk, aldri midt i brett.
-- [ ] Tilby mestringsprøve ved sterke resultater, og frivillig ekstra øving ved problemer. Vis konkret neste belønning på lobby/kart/resultat. Ingen nedgradering av opptjent tilgang.
+- [x] Skriv tester for samme optimale løsningsbane ved kort/lang aktiv tid, pauser, skjult fane, reset, angre, reload, replay og sidemoduser. Introduksjoner må være ufravikelige; snarveier er tilgang, aldri falske stjerner.
+- [x] Persistente kampanjeforsøk og aktiv spilletid. Pause-/animasjonstid telles ikke. Klassifiser bare etter fullført forsøk, aldri midt i brett.
+- [x] Tilby mestringsprøve ved sterke resultater, og frivillig ekstra øving ved problemer. Vis konkret neste belønning på lobby/kart/resultat. Ingen nedgradering av opptjent tilgang.
 - [ ] Uavhengig review, relevante og samlede tester, mobilkontroll, signert commit og egen verifisert deploy.
 
 ## Leveranse 3: Helbrettrotasjon
@@ -53,6 +53,10 @@ Filer: src/core/tiles.ts, src/core/step.ts, src/core/commands.ts, src/core/solve
 - [ ] Bonusmål refererer konkret brikke-ID på oddetallsbrett med minst tre av symbolet. Vanlig palindrom fullfører; markert brikke i midten gir bonusmerke. Solver verifiserer både vanlig og bonusløsning, og at bonusen krever et reelt valg.
 - [ ] Introduser i eksisterende reise med egne nivå-IDer, aldri nye lobbyknapper eller overskriving av gamle stjerner. Merk kvote og bonus tydelig før og under spill.
 - [ ] Uavhengig domene-/UI-review, full testpakke, mobil visuell kontroll, signert commit og offentlig verifisert deploy.
+
+## Tillegg fra Sir
+- Før/etter-bilder per visuell leveranse i hovedrepoets lokale, Git-ignorerte screenshots-local/. Registrer tilstand/provenance; manglende historiske før-bilder merkes ærlig.
+- Lokal spillende sidecar: docs/superpowers/plans/2026-09-26-sidecar.md. Skal ferdigstilles som del av dagsarbeidet, uten å forsinke verifiserte spill-leveranser.
 
 ## Sluttkontroll
 - [ ] Hele nye spillerreisen og retur med gammel lagring testes; mobilregresjoner og endelig produksjonskontroll.

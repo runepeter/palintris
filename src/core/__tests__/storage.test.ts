@@ -173,3 +173,57 @@ describe('intro og daily progress', () => {
     expect(setDailyProgress(d, undefined).daily.inProgress).toBeUndefined();
   });
 });
+
+describe('kampanjeforsøk', () => {
+  it('bevarer forsøk og tilgang ved roundtrip uten å endre gamle felter', () => {
+    const data = { ...defaultSave(), campaign: {
+      firstAttempts: { 'w1-02': { levelId: 'w1-02', contentVersion: 1, ordinal: 1, activeMs: 3000, movesMade: 1, undoCount: 0 } },
+      access: { offeredCheckpoints: [], masteredWorlds: [] },
+    } };
+    expect(parseSave(data)).toEqual(data);
+  });
+  it('bevarer stjerner og lager ugyldig tombstone ved ødelagt identifiserbart forsøk', () => {
+    const data = { ...recordStars(defaultSave(), 'w1-01', 3, 1), campaign: {
+      firstAttempts: { 'w1-02': { activeMs: Infinity }, 'w1-03': { levelId: 'w1-03', contentVersion: 1, ordinal: 1, activeMs: -1, movesMade: 0, undoCount: 0 } },
+      access: { offeredCheckpoints: ['w1-03', 'w9-15'], masteredWorlds: [1, 7] },
+    } };
+    const parsed = parseSave(data)!;
+    expect(parsed.stars).toEqual(data.stars);
+    expect(parsed.campaign?.firstAttempts['w1-02']?.end?.reason).toBe('invalid');
+    expect(parsed.campaign?.firstAttempts['w1-03']?.end?.reason).toBe('invalid');
+    expect(parsed.campaign?.access).toEqual({ offeredCheckpoints: [], masteredWorlds: [] });
+  });
+  it('beholder varig mestring bare med ekte intro- og prøvestjerner', () => {
+    let data = recordStars(defaultSave(), 'w1-01', 3, 1);
+    data = recordStars(data, 'w1-15', 2, 1);
+    expect(parseSave({ ...data, campaign: { firstAttempts: {}, access: { offeredCheckpoints: ['w1-15'], masteredWorlds: [1] } } })?.campaign?.access.masteredWorlds).toEqual([1]);
+  });
+});
+
+it('behandler umulige og dupliserte forsøk som ugyldige, ikke ferske sterke', () => {
+  const attempt = { levelId: 'w1-02', contentVersion: 1, ordinal: 1, activeMs: 0, movesMade: 0, undoCount: 0, end: { reason: 'solved', movesUsed: 2 } };
+  const parsed = parseSave({ ...defaultSave(), campaign: { firstAttempts: { 'w1-02': attempt, 'w1-03': { ...attempt, levelId: 'w1-03', movesMade: 2 } } } })!;
+  expect(parsed.campaign?.firstAttempts['w1-02']?.end?.reason).toBe('invalid');
+  const ordinals = Object.values(parsed.campaign!.firstAttempts).map((a) => a.ordinal);
+  expect(new Set(ordinals).size).toBe(ordinals.length);
+});
+
+it('bevarer identifiserbart forsøksnivå selv om record-nøkkelen er skadet', () => {
+  const parsed = parseSave({ ...defaultSave(), campaign: { firstAttempts: { broken: {
+    levelId: 'w1-02', contentVersion: 1, ordinal: 1, activeMs: 90000, movesMade: 2, undoCount: 1,
+  } } } })!;
+  expect(parsed.campaign?.firstAttempts['w1-02']?.end?.reason).toBe('invalid');
+});
+
+it('lar store ødelagte valgfrie forsøksdata falle trygt tilbake', () => {
+  const data = { ...recordStars(defaultSave(), 'w1-01', 3, 1), campaign: { firstAttempts: Array(150000).fill(0) } };
+  expect(() => parseSave(data)).not.toThrow();
+  expect(parseSave(data)?.stars).toEqual(data.stars);
+});
+
+it('beskytter begge nivå-IDer ved konflikt og lar ikke senere duplikat gjenopplive dem', () => {
+  const attempt = { levelId: 'w1-02', contentVersion: 1, ordinal: 1, activeMs: 90000, movesMade: 2, undoCount: 1 };
+  const parsed = parseSave({ ...defaultSave(), campaign: { firstAttempts: { 'w1-03': attempt, 'w1-02': { ...attempt, ordinal: 2 } } } })!;
+  expect(parsed.campaign?.firstAttempts['w1-02']?.end?.reason).toBe('invalid');
+  expect(parsed.campaign?.firstAttempts['w1-03']?.end?.reason).toBe('invalid');
+});

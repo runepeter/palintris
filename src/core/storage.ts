@@ -1,5 +1,5 @@
 import type { Command } from './commands';
-import type { StarMap } from './progression';
+import { EMPTY_ACCESS, introductionsSolved, levelId, parseLevelId, WORLD_COUNT, type CampaignAccess, type StarMap } from './progression';
 
 export interface Settings {
   sound: boolean;
@@ -30,7 +30,26 @@ export interface DailyProgress {
   readonly commands: readonly Command[];
 }
 
+export interface FirstAttempt {
+  readonly levelId: string;
+  readonly contentVersion: number;
+  readonly ordinal: number;
+  readonly activeMs: number;
+  readonly movesMade: number;
+  readonly undoCount: number;
+  readonly end?: { readonly reason: 'solved' | 'reset' | 'exhausted' | 'interrupted' | 'invalid'; readonly movesUsed: number };
+}
+
+export interface CampaignProgress {
+  readonly firstAttempts: Readonly<Record<string, FirstAttempt>>;
+  readonly access: CampaignAccess;
+}
+
+export const campaignProgress = (data: SaveData): CampaignProgress =>
+  data.campaign ?? { firstAttempts: {}, access: EMPTY_ACCESS };
+
 export interface SaveData {
+  readonly campaign?: CampaignProgress;
   readonly saveVersion: 1;
   readonly contentVersion: number;
   readonly stars: Readonly<Record<string, StarRecord>>;
@@ -156,6 +175,62 @@ const parseIntrosSeen = (raw: unknown): readonly string[] => {
   return raw;
 };
 
+const nonnegativeInteger = (v: unknown): v is number =>
+  typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
+
+const parseCampaign = (raw: unknown, stars: StarMap): CampaignProgress | undefined => {
+  if (raw === undefined) return undefined;
+  const source = isRecord(raw) ? raw : {};
+  const attempts = isRecord(source['firstAttempts']) && !Array.isArray(source['firstAttempts']) ? source['firstAttempts'] : {};
+  const firstAttempts: Record<string, FirstAttempt> = {};
+  const ordinals = new Set<number>();
+  const conflictingIds = new Set<string>();
+  let nextOrdinal = Object.values(attempts).reduce<number>((max, v) => isRecord(v) && nonnegativeInteger(v['ordinal']) && v['ordinal'] < Number.MAX_SAFE_INTEGER - 100 ? Math.max(max, v['ordinal']) : max, 0);
+  for (const [key, value] of Object.entries(attempts)) {
+    const r = isRecord(value) ? value : {};
+    const declaredId = typeof r['levelId'] === 'string' ? r['levelId'] : '';
+    if (declaredId !== key) {
+      for (const candidate of [key, declaredId]) {
+        const parsedId = parseLevelId(candidate);
+        if (parsedId !== null && parsedId.n !== 15) conflictingIds.add(candidate);
+      }
+    }
+    const id = parseLevelId(key) !== null ? key : declaredId;
+    const parsed = parseLevelId(id);
+    if (parsed === null || parsed.n === 15) continue;
+    const end = r['end'];
+    const validEnd = end === undefined || (isRecord(end) &&
+      ['solved', 'reset', 'exhausted', 'interrupted', 'invalid'].includes(String(end['reason'])) && nonnegativeInteger(end['movesUsed']) &&
+      (end['reason'] !== 'solved' || (nonnegativeInteger(r['movesMade']) && end['movesUsed'] > 0 && end['movesUsed'] <= r['movesMade'])));
+    if (key === id && firstAttempts[id] === undefined && r['levelId'] === id && nonnegativeInteger(r['contentVersion']) &&
+      nonnegativeInteger(r['ordinal']) && r['ordinal'] > 0 && r['ordinal'] < Number.MAX_SAFE_INTEGER - 100 && !ordinals.has(r['ordinal']) &&
+      nonnegativeInteger(r['activeMs']) && nonnegativeInteger(r['movesMade']) && nonnegativeInteger(r['undoCount']) && validEnd) {
+      firstAttempts[id] = { levelId: id, contentVersion: r['contentVersion'], ordinal: r['ordinal'],
+        activeMs: r['activeMs'], movesMade: r['movesMade'], undoCount: r['undoCount'],
+        ...(end === undefined ? {} : { end: end as FirstAttempt['end'] }) };
+    } else {
+      firstAttempts[id] = { levelId: id, contentVersion: 1, ordinal: ++nextOrdinal, activeMs: 0, movesMade: 0, undoCount: 0,
+        end: { reason: 'invalid', movesUsed: 0 } };
+    }
+    ordinals.add(firstAttempts[id].ordinal);
+  }
+  for (const id of conflictingIds) {
+    firstAttempts[id] = { levelId: id, contentVersion: 1, ordinal: ++nextOrdinal, activeMs: 0, movesMade: 0, undoCount: 0,
+      end: { reason: 'invalid', movesUsed: 0 } };
+  }
+  const access = isRecord(source['access']) ? source['access'] : {};
+  const offers = access['offeredCheckpoints'];
+  const mastered = access['masteredWorlds'];
+  const offeredCheckpoints = Array.isArray(offers) ? [...new Set(offers.filter((id): id is string => {
+    if (typeof id !== 'string') return false;
+    const parsed = parseLevelId(id);
+    return parsed?.n === 15 && introductionsSolved(parsed.world, stars);
+  }))] : [];
+  const masteredWorlds = Array.isArray(mastered) ? [...new Set(mastered.filter((w): w is number =>
+    nonnegativeInteger(w) && w >= 1 && w <= WORLD_COUNT && (stars[levelId(w, 15)] ?? 0) > 0 && introductionsSolved(w, stars)))] : [];
+  return { firstAttempts, access: { offeredCheckpoints, masteredWorlds } };
+};
+
 export const parseSave = (raw: unknown): SaveData | null => {
   if (!isRecord(raw) || raw['saveVersion'] !== 1) return null;
 
@@ -172,7 +247,9 @@ export const parseSave = (raw: unknown): SaveData | null => {
   const contentVersionRaw = raw['contentVersion'];
   const contentVersion = isNumber(contentVersionRaw) ? contentVersionRaw : 1;
 
+  const campaign = parseCampaign(raw['campaign'], Object.fromEntries(Object.entries(stars).map(([id, r]) => [id, r.stars])));
   return {
+    ...(campaign === undefined ? {} : { campaign }),
     saveVersion: 1,
     contentVersion,
     stars,

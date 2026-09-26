@@ -1,7 +1,9 @@
 import { screenWidth, screenHeight } from './viewport';
 import { drawMedallion, makeBackdrop } from './art';
 import Phaser from 'phaser';
-import { isWorldUnlocked, levelId, LEVELS_PER_WORLD, WORLD_COUNT, type StarMap } from '../core/progression';
+import { isWorldMastered, isWorldUnlocked, levelId, LEVELS_PER_WORLD, WORLD_COUNT, type StarMap } from '../core/progression';
+import { campaignProgress } from '../core/storage';
+import { masteryOffer } from '../game/mastery';
 import { freeLevelId } from '../game/modes/free';
 import { activeLevelInWorld } from '../game/feedback';
 import { COLORS, DURATION, EASING, SPACE, worldAccent } from '../theme/theme';
@@ -43,7 +45,7 @@ export class WorldMapScene extends Phaser.Scene {
 
   private highestUnlocked(stars: StarMap): number {
     for (let w = WORLD_COUNT; w >= 1; w--) {
-      if (isWorldUnlocked(w, stars)) return w;
+      if (isWorldUnlocked(w, stars, campaignProgress(services(this).store.data).access)) return w;
     }
     return 1;
   }
@@ -64,7 +66,7 @@ export class WorldMapScene extends Phaser.Scene {
     makeLabel(this, cx, 56, `Verden ${this.world}`, { size: 32, color: accent, bold: true });
 
     const prevDisabled = this.world <= 1;
-    const nextDisabled = this.world >= WORLD_COUNT || !isWorldUnlocked(this.world + 1, stars);
+    const nextDisabled = this.world >= WORLD_COUNT || !isWorldUnlocked(this.world + 1, stars, campaignProgress(s.store.data).access);
     makeButton(this, {
       x: left + 36, y: 56, width: 56, height: 44, label: '◀', accent, enabled: !prevDisabled,
       onClick: () => this.scene.start(SCENE.worldMap, { world: this.world - 1 }),
@@ -85,7 +87,7 @@ export class WorldMapScene extends Phaser.Scene {
       progress.fillRoundedRect(cx - 100, 153, 200 * (solved / LEVELS_PER_WORLD), 4, 2);
     }
     const gridTop = compact ? 84 : 174;
-    const gridBottom = screenHeight(this) - (compact ? 110 : 140);
+    const gridBottom = screenHeight(this) - (compact ? 164 : 152);
     const cellW = mapWidth / COLS;
     const cellH = Math.min(cellW, (gridBottom - gridTop) / ROWS);
     const gridHeight = cellH * ROWS;
@@ -107,7 +109,8 @@ export class WorldMapScene extends Phaser.Scene {
       path.lineStyle(travelled ? 5 : 2, travelled ? accent : COLORS.line, travelled ? 0.7 : 0.32);
       path.lineBetween(from.x, from.y, to.x, to.y);
     }
-    const activeLevel = activeLevelInWorld(this.world, stars);
+    const mastered = isWorldMastered(this.world, stars, campaignProgress(s.store.data).access);
+    const activeLevel = mastered ? null : activeLevelInWorld(this.world, stars);
     for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
       const id = levelId(this.world, n);
       const unlocked = s.modes.campaign.isUnlocked(id);
@@ -118,12 +121,12 @@ export class WorldMapScene extends Phaser.Scene {
       this.buildLevelCell(x, y, cellSize, n, id, starCount, unlocked, accent, n === activeLevel, reducedMotion);
     }
 
-    const worldUnlocked = isWorldUnlocked(this.world, stars);
+    const worldUnlocked = isWorldUnlocked(this.world, stars, campaignProgress(s.store.data).access);
     makeButton(this, {
-      x: cx, y: screenHeight(this) - (compact ? 80 : 92), width: 220, height: compact ? 36 : 44, label: 'Fri spilling', accent: COLORS.inkMuted, enabled: worldUnlocked,
+      x: cx, y: screenHeight(this) - 112, width: 220, height: 44, label: 'Fri spilling', accent: COLORS.inkMuted, enabled: worldUnlocked,
       onClick: () => this.scene.start(SCENE.board, { mode: 'free', levelId: freeLevelId(this.world, 1) }),
     });
-    makeButton(this, { x: cx, y: screenHeight(this) - (compact ? 34 : 44), width: 180, height: compact ? 40 : 48, label: 'Tilbake', accent, onClick: () => this.scene.start(SCENE.menu) });
+    makeButton(this, { x: cx, y: screenHeight(this) - 56, width: 180, height: 44, label: 'Tilbake', accent, onClick: () => this.scene.start(SCENE.menu) });
   }
 
   private buildLevelCell(
@@ -148,14 +151,16 @@ export class WorldMapScene extends Phaser.Scene {
       beacon.strokeCircle(0, 0, radius + 13);
       if (!reducedMotion) this.tweens.add({ targets: beacon, scale: 1.15, alpha: 0.35, duration: 900, yoyo: true, repeat: -1, ease: EASING.fade });
     }
+    const mastered = isWorldMastered(this.world, services(this).store.stars(), campaignProgress(services(this).store.data).access);
+    const bonus = mastered && starCount === 0;
     const g = drawMedallion(this, 0, 0, radius, unlocked ? accent : COLORS.line);
     const numberLabel = makeLabel(this, 0, -size * 0.12, String(n), { size: Math.round(size * 0.32), color: unlocked ? COLORS.ink : COLORS.inkMuted, bold: true });
-    const starLabel = makeLabel(this, 0, size * 0.3, '★'.repeat(starCount) + '☆'.repeat(3 - starCount), { size: Math.round(size * 0.18), color: starCount > 0 ? COLORS.star : COLORS.line, font: 'body' });
+    const starLabel = makeLabel(this, 0, size * 0.3, bonus ? 'BONUS' : '★'.repeat(starCount) + '☆'.repeat(3 - starCount), { size: Math.round(size * (bonus ? 0.14 : 0.18)), color: bonus ? accent : starCount > 0 ? COLORS.star : COLORS.line, font: 'body' });
     const children: Phaser.GameObjects.GameObject[] = [beacon, g, numberLabel, starLabel];
     if (active) children.push(makeLabel(this, 0, -radius - 13, 'NESTE', { size: 8, color: COLORS.star, font: 'body', bold: true }).setLetterSpacing(1.3));
-    if (gate) children.push(makeLabel(this, 0, radius + 13, n === LEVELS_PER_WORLD ? 'PORT' : 'MILEPÆL', { size: 7, color: accent, font: 'body', bold: true }).setLetterSpacing(1));
+    if (gate && !bonus && (screenHeight(this) >= 560 || n === LEVELS_PER_WORLD)) children.push(makeLabel(this, 0, radius + 13, mastered ? (starCount === 0 ? 'BONUS' : n === LEVELS_PER_WORLD ? 'MESTRET' : 'MILEPÆL') : n === LEVELS_PER_WORLD ? (masteryOffer(services(this).store.data, this.world) === id ? 'MESTRING' : 'PORT') : 'MILEPÆL', { size: 7, color: accent, font: 'body', bold: true }).setLetterSpacing(1));
     const c = this.add.container(x, y, children);
-    c.setSize(size, size);
+    c.setSize(Math.max(44, size), Math.max(44, size));
     if (!unlocked) return;
     c.setInteractive({ useHandCursor: true });
     // Rask inn/ut-hovring kunne stable opp konkurrerende skaleringstweens; drep forrige først.

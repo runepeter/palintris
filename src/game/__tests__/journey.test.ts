@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { journeyComplete, journeyDestination, nextJourneyMilestone } from '../journey';
+import { journeyComplete, journeyDestination, journeyNextLevel, nextJourneyMilestone } from '../journey';
 
 const solved = (world: number, count: number): Record<string, number> =>
   Object.fromEntries(Array.from({ length: count }, (_, i) => [`w${world}-${String(i + 1).padStart(2, '0')}`, 1]));
@@ -67,4 +67,40 @@ describe('journeyComplete', () => {
     delete stars['w2-15'];
     expect(journeyComplete(stars)).toBe(false);
   });
+});
+
+describe('reisen med mestring', () => {
+  const access = { offeredCheckpoints: ['w1-15'], masteredWorlds: [1] };
+  const stars = { ...solved(1, 3), 'w1-15': 2 };
+  it('går til ny introduksjon etter prøve og ikke til hoppet over repetisjon', () => {
+    expect(journeyDestination(stars, access)).toBe('w2-01');
+    expect(journeyDestination({ ...stars, 'w2-01': 1 }, access)).toBe('w2-02');
+    expect(nextJourneyMilestone(stars, access).detail).toContain('Åpent nå');
+  });
+  it('tilbud endrer ikke vanlig fortsett-handling', () => {
+    expect(journeyDestination(solved(1, 3), { offeredCheckpoints: ['w1-15'], masteredWorlds: [] })).toBe('w1-04');
+  });
+  it('fullfører reisen med seks ekte prøver og introer uten å kreve bonusrepetisjon', () => {
+    const mastered: Record<string, number> = { ...solved(1, 1), ...solved(2, 1), ...solved(3, 1), ...solved(4, 1), ...solved(5, 2), 'w6-01': 1 };
+    for (let world = 1; world <= 6; world++) mastered[`w${world}-15`] = 2;
+    const all = { offeredCheckpoints: [], masteredWorlds: [1, 2, 3, 4, 5, 6] };
+    expect(journeyComplete(mastered, all)).toBe(true);
+    expect(journeyDestination(mastered, all)).toBe('w6-15');
+    expect(nextJourneyMilestone(mastered, all).title).toBe('Reisen fullført');
+  });
+});
+
+
+it('tilbyr ikke et nytt nivå etter siste mestringsprøve eller alle nitti speil', () => {
+  const stars: Record<string, number> = {};
+  for (let world = 1; world <= 6; world++) Object.assign(stars, solved(world, 15));
+  expect(journeyNextLevel(stars)).toBeNull();
+  delete stars['w6-14'];
+  expect(journeyNextLevel(stars, { offeredCheckpoints: [], masteredWorlds: [6] })).toBeNull();
+  expect(journeyNextLevel({ 'w1-01': 3 })).toBe('w1-02');
+});
+
+it('viser mestringsprøven som faktisk alternativ til tolv løste speil', () => {
+  const next = nextJourneyMilestone({ 'w1-01': 3, 'w1-02': 3, 'w1-03': 3 }, { offeredCheckpoints: ['w1-15'], masteredWorlds: [] });
+  expect(next.detail).toContain('mestringsprøven');
 });

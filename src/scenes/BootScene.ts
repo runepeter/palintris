@@ -66,7 +66,7 @@ export class BootScene extends Phaser.Scene {
     }
     const level = params?.get('level') ?? null;
     if (level !== null && parseLevelId(level) !== null && hasBoard) {
-      this.scene.start(SCENE.board, { mode: 'campaign', levelId: level });
+      this.scene.start(SCENE.board, { mode: 'campaign', levelId: level, devPreview: true });
       return;
     }
     this.scene.start(SCENE.menu);

@@ -48,3 +48,29 @@ describe('nextLevelId', () => {
     expect(nextLevelId('nope')).toBeNull();
   });
 });
+
+describe('mestringstilgang', () => {
+  const access = { offeredCheckpoints: ['w1-15'], masteredWorlds: [1] };
+  const stars = { 'w1-01': 3, 'w1-15': 2 };
+  it('åpner neste intro og bonusbrett uten å telle dem som løste', () => {
+    expect(isWorldUnlocked(2, stars, access)).toBe(true);
+    expect(isLevelUnlocked('w1-08', stars, access)).toBe(true);
+    expect(solvedInWorld(1, stars)).toBe(2);
+    expect(isLevelUnlocked('w2-01', stars, access)).toBe(true);
+    expect(isLevelUnlocked('w2-02', stars, access)).toBe(false);
+    expect(isLevelUnlocked('w2-02', { ...stars, 'w2-01': 1 }, access)).toBe(true);
+  });
+  it('tilbud åpner bare prøven og krever begge introduksjonene i verden fem', () => {
+    const five = { ...solvedWorld1(12), ...Object.fromEntries(Array.from({ length: 12 }, (_, i) => [levelId(4, i + 1), 1])), 'w5-01': 1 };
+    const offer = { offeredCheckpoints: ['w5-15'], masteredWorlds: [] };
+    expect(isLevelUnlocked('w5-15', five, offer)).toBe(false);
+    expect(isLevelUnlocked('w5-15', { ...five, 'w5-02': 1 }, offer)).toBe(true);
+    expect(isLevelUnlocked('w5-08', { ...five, 'w5-02': 1 }, offer)).toBe(false);
+    expect(isWorldUnlocked(6, five, offer)).toBe(false);
+  });
+  it('avviser ugyldige verdener og mestring uten faktisk prøve og introduksjon', () => {
+    expect(isWorldUnlocked(0, stars, access)).toBe(false);
+    expect(isWorldUnlocked(7, stars, { offeredCheckpoints: [], masteredWorlds: [6] })).toBe(false);
+    expect(isWorldUnlocked(2, {}, access)).toBe(false);
+  });
+});

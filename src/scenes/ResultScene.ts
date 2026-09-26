@@ -1,7 +1,10 @@
 import { screenWidth, screenHeight } from './viewport';
 import { makeBackdrop } from './art';
 import Phaser from 'phaser';
-import { parseLevelId } from '../core/progression';
+import { campaignProgress } from '../core/storage';
+import { journeyNextLevel } from '../game/journey';
+import { masteryCount, masteryOffer, practiceDestination } from '../game/mastery';
+import { isWorldUnlocked, parseLevelId, WORLD_COUNT } from '../core/progression';
 import { dailyShareText, mmss, sharedAttempt } from '../game/daily';
 import { resultPresentation } from '../game/feedback';
 import { parseFreeLevelId } from '../game/modes/free';
@@ -115,9 +118,9 @@ export class ResultScene extends Phaser.Scene {
       this.buildDailyButtons(buttonsX, buttonsTop, accent, landscape);
       return;
     }
-    const nextLevel = this.outcome.nextLevelId;
+    const nextLevel = this.mode === 'campaign' ? journeyNextLevel(s.store.stars(), campaignProgress(s.store.data).access) : this.outcome.nextLevelId;
     const isFree = this.mode === 'free';
-    const canContinue = nextLevel !== null && (isFree || this.outcome.nextUnlocked);
+    const canContinue = nextLevel !== null && (isFree || (this.mode === 'campaign' ? s.modes.campaign.isUnlocked(nextLevel) : this.outcome.nextUnlocked));
     const toWorldMap = this.mode === 'campaign' || isFree;
     makeButton(this, {
       x: buttonsX, y: buttonsTop, width: 268, height: 58,
@@ -130,6 +133,26 @@ export class ResultScene extends Phaser.Scene {
         }
       },
     });
+    if (this.mode === 'campaign') {
+      const offer = masteryOffer(s.store.data, world);
+      const practice = offer === null ? practiceDestination(s.store.data, world) : null;
+      const adaptive = offer ?? practice;
+      if (adaptive !== null) {
+        makeButton(this, { x: buttonsX, y: buttonsTop + 126, width: 268, height: 44,
+          label: offer !== null ? 'Prøv mestringsprøven' : 'Øv på et kjent speil', labelSize: 14, accent: COLORS.line,
+          onClick: () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: adaptive }) });
+        const checkpoint = offer === null ? null : s.modes.campaign.load(offer);
+        if (checkpoint !== null) {
+          const opensWorld = world < WORLD_COUNT && !isWorldUnlocked(world + 1, s.store.stars(), campaignProgress(s.store.data).access);
+          const reward = opensWorld ? `Åpne verden ${world + 1}` : 'Få mestringsmerket';
+          makeLabel(this, buttonsX, buttonsTop + 160, `${reward} · høyst ${checkpoint.target + 1} trekk`,
+            { size: 11, color: COLORS.inkMuted, font: 'body' });
+        }
+      } else if (this.outcome.worldJustUnlocked === null && !campaignProgress(s.store.data).access.masteredWorlds.includes(world)) {
+        makeLabel(this, buttonsX, buttonsTop + 126, `${Math.min(3, masteryCount(s.store.data, world))}/3 sterke forsøk mot mestringsprøven`,
+          { size: 12, color: COLORS.inkMuted, font: 'body' });
+      }
+    }
     const secondaryY = buttonsTop + 70;
     if (!isFree) {
       makeButton(this, {

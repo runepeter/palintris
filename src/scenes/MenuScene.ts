@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/sound';
 import { LEVELS_PER_WORLD, parseLevelId, solvedInWorld } from '../core/progression';
+import { campaignProgress } from '../core/storage';
+import { masteryOffer, practiceDestination } from '../game/mastery';
 import { makeTile } from '../core/tiles';
 import { journeyComplete, journeyDestination, nextJourneyMilestone } from '../game/journey';
 import { COLORS, cssColor, worldAccent } from '../theme/theme';
@@ -31,14 +33,16 @@ export class MenuScene extends Phaser.Scene {
     const h = screenHeight(this);
     const landscape = h < 560 && w > h * 1.25;
     makeBackdrop(this, 'hero', landscape ? 1000 : undefined);
-    const stars = services(this).store.stars();
-    const destination = journeyDestination(stars);
-    const milestone = nextJourneyMilestone(stars);
+    const store = services(this).store;
+    const stars = store.stars();
+    const access = campaignProgress(store.data).access;
+    const destination = journeyDestination(stars, access);
+    const milestone = nextJourneyMilestone(stars, access);
     const world = parseLevelId(destination)?.world ?? 1;
     const solved = solvedInWorld(world, stars);
     const accent = worldAccent(world);
     const start = Object.values(stars).every((value) => value <= 0);
-    const complete = journeyComplete(stars);
+    const complete = journeyComplete(stars, access);
     const actionLabel = start ? 'Start reisen  →' : complete ? 'Spill igjen  →' : 'Fortsett reisen  →';
     const go = (): void => { this.scene.start(SCENE.board, { mode: 'campaign', levelId: destination }); };
 
@@ -53,6 +57,7 @@ export class MenuScene extends Phaser.Scene {
       makeButton(this, { x: right, y: h * 0.56, width, height: 50, label: actionLabel, labelSize: 19, accent, onClick: go });
       makeButton(this, { x: right, y: h * 0.73, width, height: 44, label: 'Utfordringer', labelSize: 16, accent: COLORS.glow, onClick: () => this.scene.start(SCENE.challenges) });
       this.tools(right, h * 0.9, width);
+      this.adaptiveChoice(left, h * 0.86, width, world);
       return;
     }
 
@@ -69,6 +74,17 @@ export class MenuScene extends Phaser.Scene {
     makeButton(this, { x: cx, y: mainY + 71, width, height: 48, label: 'Utfordringer', labelSize: 17, accent: COLORS.glow,
       onClick: () => this.scene.start(SCENE.challenges) });
     this.tools(cx, mainY + 137, width);
+    this.adaptiveChoice(cx, mainY - 197, width, world);
+  }
+
+  private adaptiveChoice(x: number, y: number, width: number, world: number): void {
+    const data = services(this).store.data;
+    const offer = masteryOffer(data, world);
+    const practice = offer === null ? practiceDestination(data, world) : null;
+    const id = offer ?? practice;
+    if (id === null) return;
+    makeButton(this, { x, y, width, height: 44, label: offer !== null ? 'Prøv mestringsprøven' : 'Øv på et kjent speil',
+      labelSize: 14, accent: COLORS.line, onClick: () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: id }) });
   }
 
   private preview(cx: number, y: number, size: number): void {

@@ -28,7 +28,7 @@ export interface TestHook {
   stickyPreview(): readonly { a: number; b: number }[];
   renderedTiles(): ReadonlyArray<{ id: number; x: number; y: number; alpha: number; scaleX: number; scaleY: number; size: number }>;
   state(): GestureState;
-  /** Blitz: tid igjen. Daglig: tid brukt. Ellers 0. */
+  /** Blitz: tid igjen. Daglig/kampanje: aktiv tid brukt. */
   clockMs(): number;
   bannerVisible(): boolean;
   /** Sant mens kampanjeintroen står. Nivåer uten intro, og sette introer, gir usant. */
