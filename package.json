@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:release": "npm run build && playwright test --config e2e/release.config.ts",
-    "build:campaign": "tsx scripts/build-campaign.ts"
+    "build:campaign": "tsx scripts/build-campaign.ts",
+    "sidecar": "node --import tsx scripts/sidecar/cli.ts"
   },
   "keywords": [
     "phaser",

@@ -71,3 +71,12 @@ Kjør på én stabil kildekodetilstand: unit/type/lint, relevante E2E og e2e:rel
 - Leveranse3 implementeres nå avmastery_contract: først før-bilder, så synlighelrotasjon medkurve oginputguard. Agent eierBoardScene/moveAnimation/tilhørendeE2E. Ingenoverlappendesrc-endring.
 - Sidecar_assessment implementerer lokalCLI etter godkjentplan; eier scripts/sidecar, nødvendigpackage/config/.gitignore ogdocs/sidecar.md. Ingenapp-srcredigering. Ingencommit/deploy fraagentene.
 - Root eier integrasjon/review, skjermbildearkiv, samletverifisering ogpublisering. QAdevserver3006 fortsatt aktiv; caffeinate1414+heartbeataktive. IngenPlaywrightsuiteaktiv hosroot nå. Arbeidetfortsetterutenbrukeravklaring.
+
+
+## Lokal sidecar — operativ, kl. 11.11
+- Implementert scripts/sidecar/{cli,game,ollama,session}.ts,26tester, docs/sidecar.md. npm-script/typecheck/lint/testdiscovery integrert; sidecar-runs/ ignorert. Ingen endringer i Vorz eller automatiske spillregelendringer.
+- Uavhengig game/session-review PASS (/tmp/palintris-sidecar-domain-review.md). Root kontrollerte driver/CLI, lokalendpoint, modell-digest, strukturertvalg, kumulativ --from-beskyttelse. Funn om mutable historikk, filnavn og tom smoke rettet med røde/grønne tester. Krasj mellom spillfil/state gjenbruker fullført spill.
+- Faktisk Ollama gemma4:e4b-mlx: første smoke timeout60s,0spill,1kall, ingen reserveagent. Ny smoke med180sfrist fullførte; første respons166.53s,neste0.31s. Intern årsak ikke fastslått; ingen modellprosesser restartet.
+- Én full runde: sidecar-runs/2026-09-26-round-1,14spill,19modellkall, exit0, lås fjernet. Dev1/3 for begge strategier, lik reward0.3667; ingen forbedring påvist, gammel strategi beholdt. Separat holdout1/3 for initial/beholdt. Faktisk resume hadde fortsatt19kall/14spill og ingen ny generering.
+- Kommando: npm run sidecar -- --output sidecar-runs/2026-09-26-round-1 --minutes20 --max-calls40 --timeout-ms180000 (bruk mellomrom mellom flagg og verdier som i docs/sidecar.md).
+- Samlet stabil kilde:426/426tester, typecheck/lint grønne. Inkluderer foreløpig rotasjonskode; full66E2E pågår separat. Resultatrapporten er lokal/ignorert, kildekode og brukerdokumentasjon committes.

@@ -31,3 +31,6 @@ npm-debug.log*
 playwright-report/
 test-results/
 .playwright-mcp/
+
+# Local model experiments
+sidecar-runs/
