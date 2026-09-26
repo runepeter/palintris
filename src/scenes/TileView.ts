@@ -6,6 +6,7 @@ import { COLORS, cssColor, FONTS, RADIUS, symbolColor, symbolPattern, WORLD_ACCE
 import { ART, jewelFrame } from './art';
 
 export interface TileFlags {
+  centerGoal: boolean;
   matched: boolean;
   /** Par som ikke matcher ennå. Gir dempet kant, i motsetning til matched-ringen. */
   unmatched: boolean;
@@ -69,13 +70,15 @@ export class TileView extends Phaser.GameObjects.Container {
   private tile: Tile;
   private size = 60;
   private colorBlind = false;
-  private current: TileFlags = { matched: false, unmatched: false, selected: false, segment: false, ghost: false, cursor: false };
+  private current: TileFlags = { centerGoal: false, matched: false, unmatched: false, selected: false, segment: false, ghost: false, cursor: false };
   private readonly bg: Phaser.GameObjects.Graphics;
   private readonly jewel: Phaser.GameObjects.Image;
   private readonly pattern: Phaser.GameObjects.Graphics;
   private readonly ring: Phaser.GameObjects.Graphics;
   private readonly label: Phaser.GameObjects.Text;
   private readonly lock: Phaser.GameObjects.Graphics;
+  private readonly mechanicBadge: Phaser.GameObjects.Graphics;
+  private readonly mechanicLabel: Phaser.GameObjects.Text;
   private clearGlow: Phaser.GameObjects.Graphics | null = null;
   private clearEnergyGlow = false;
 
@@ -91,7 +94,9 @@ export class TileView extends Phaser.GameObjects.Container {
       .text(0, 0, '', { resolution: PIXEL_RATIO, fontFamily: FONTS.display, fontStyle: 'bold', color: cssColor(COLORS.ink) })
       .setOrigin(0.5, 0.55);
     this.lock = scene.add.graphics();
-    this.add([this.bg, this.jewel, this.pattern, this.ring, this.label, this.lock]);
+    this.mechanicBadge = scene.add.graphics();
+    this.mechanicLabel = scene.add.text(0, 0, '', { resolution: PIXEL_RATIO, fontFamily: FONTS.body, fontStyle: 'bold' }).setOrigin(.5);
+    this.add([this.bg, this.jewel, this.pattern, this.ring, this.label, this.lock, this.mechanicBadge, this.mechanicLabel]);
     scene.add.existing(this);
   }
 
@@ -196,6 +201,20 @@ export class TileView extends Phaser.GameObjects.Container {
     this.label.setPosition(0, hasSprite ? s * 0.31 : 0);
     this.label.setColor(cssColor(COLORS.ink));
     this.label.setStroke(cssColor(COLORS.shadow), hasSprite ? 3 : 0);
+
+    const marked = this.current.centerGoal;
+    const limited = t.movesLeft !== undefined;
+    const badgeX = s * .32;
+    const badgeY = -s * .31;
+    const badgeRadius = Math.max(10, s * .17);
+    const badgeColor = limited && t.movesLeft === 0 ? COLORS.danger : COLORS.star;
+    this.mechanicBadge.clear();
+    if (marked || limited) {
+      this.mechanicBadge.fillStyle(COLORS.panel, 1).fillCircle(badgeX, badgeY, badgeRadius);
+      this.mechanicBadge.lineStyle(2, badgeColor, 1).strokeCircle(badgeX, badgeY, badgeRadius);
+    }
+    this.mechanicLabel.setVisible(marked || limited).setText(limited ? String(t.movesLeft) : '◆')
+      .setPosition(badgeX, badgeY).setFontSize(Math.max(14, Math.round(s * .22))).setColor(cssColor(badgeColor));
 
     this.lock.clear();
     if (t.sticky === true || t.bondedTo !== undefined) {

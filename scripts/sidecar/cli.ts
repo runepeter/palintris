@@ -18,7 +18,7 @@ function sourceIdentity(): string {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (args.includes('--help')) {
-    console.log('npm run sidecar -- --output sidecar-runs/name [--smoke] [--minutes 10] [--max-calls 40] [--model gemma4:e4b-mlx] [--base-url http://127.0.0.1:11434] [--timeout-ms 60000] [--manifest puzzles.json] [--from previous-run]\nOne iteration per run. Resume with the identical command. STOP file or SIGINT/SIGTERM stops. --from requires a fresh manifest.');
+    console.log('npm run sidecar -- --output sidecar-runs/name [--smoke] [--minutes 10] [--max-calls 40] [--model gemma4:e4b-mlx] [--base-url http://127.0.0.1:11434] [--timeout-ms 180000] [--manifest puzzles.json] [--from previous-run]\nOne iteration per run. Resume with the identical command. STOP file or SIGINT/SIGTERM stops. --from requires a fresh manifest.');
     return;
   }
   const values = new Map<string, string>(); let smoke = false;
@@ -35,7 +35,7 @@ async function main(): Promise<void> {
   if (output === undefined) throw new Error('--output is required');
   const baseUrl = values.get('--base-url') ?? 'http://127.0.0.1:11434';
   const model = values.get('--model') ?? 'gemma4:e4b-mlx';
-  const timeout = Number(values.get('--timeout-ms') ?? 60000);
+  const timeout = Number(values.get('--timeout-ms') ?? 180000);
   const durationMs = Number(values.get('--minutes') ?? 10) * 60000;
   const maxCalls = Number(values.get('--max-calls') ?? (smoke ? 2 : 40));
   if (!Number.isFinite(durationMs) || durationMs <= 0 || durationMs > 3600000 || !Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 1000) throw new Error('Use minutes 0–60 and max-calls 1–1000');

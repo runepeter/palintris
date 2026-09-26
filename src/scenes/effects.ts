@@ -51,13 +51,13 @@ export class Effects {
   }
 
   /** Teksten bærer informasjonen også med redusert bevegelse; bevegelsen er pynt. */
-  reward(x: number, y: number, label: string, color: number): void {
+  reward(x: number, y: number, label: string, color: number): Phaser.GameObjects.Text {
     const text = makeLabel(this.scene, x, y, label, { size: 18, color, font: 'body', bold: true })
       .setStroke(cssColor(COLORS.shadow), 5)
       .setDepth(850);
     if (this.reduced) {
       this.scene.time.delayedCall(500, () => text.destroy());
-      return;
+      return text;
     }
     text.setScale(0.85);
     this.scene.tweens.add({
@@ -70,6 +70,7 @@ export class Effects {
       ease: EASING.move,
       onComplete: () => text.destroy(),
     });
+    return text;
   }
 
   /** Kort handlingsnavn som gjør retning og verktøy lesbart mens brikkene flytter seg. */

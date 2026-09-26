@@ -1,3 +1,4 @@
+import { journeyTrialsForWorld } from '../content/journeyTrials';
 import { screenWidth, screenHeight } from './viewport';
 import { drawMedallion, makeBackdrop } from './art';
 import Phaser from 'phaser';
@@ -20,9 +21,11 @@ const WORLD_NAMES = ['Speillunden', 'Månehagen', 'Tidevannstempelet', 'Krystall
 
 export class WorldMapScene extends Phaser.Scene {
   private world = 1;
+  private trialsOpen = false;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
   private readonly onResize = (): void => {
+    this.tweens.killAll();
     this.children.removeAll(true);
     this.build();
   };
@@ -35,6 +38,7 @@ export class WorldMapScene extends Phaser.Scene {
   init(data: WorldMapData = {}): void {
     const stars = services(this).store.stars();
     this.world = data.world ?? this.highestUnlocked(stars);
+    this.trialsOpen = false;
   }
 
   create(): void {
@@ -52,6 +56,7 @@ export class WorldMapScene extends Phaser.Scene {
 
   private build(): void {
     makeBackdrop(this);
+    if (this.trialsOpen) { this.buildTrials(); return; }
     const s = services(this);
     const stars = s.store.stars();
     const width = contentWidth(this);
@@ -122,11 +127,40 @@ export class WorldMapScene extends Phaser.Scene {
     }
 
     const worldUnlocked = isWorldUnlocked(this.world, stars, campaignProgress(s.store.data).access);
+    const hasTrials = journeyTrialsForWorld(this.world, s.store.data).length > 0;
     makeButton(this, {
-      x: cx, y: screenHeight(this) - 112, width: 220, height: 44, label: 'Fri spilling', accent: COLORS.inkMuted, enabled: worldUnlocked,
+      x: hasTrials ? cx - 82 : cx, y: screenHeight(this) - 112, width: hasTrials ? 152 : 220, height: 44, label: 'Fri spilling', accent: COLORS.inkMuted, enabled: worldUnlocked,
       onClick: () => this.scene.start(SCENE.board, { mode: 'free', levelId: freeLevelId(this.world, 1) }),
     });
+    if (hasTrials) makeButton(this, { x: cx + 82, y: screenHeight(this) - 112, width: 152, height: 44, label: 'Bonusbrett', accent,
+      onClick: () => { this.trialsOpen = true; this.onResize(); } });
     makeButton(this, { x: cx, y: screenHeight(this) - 56, width: 180, height: 44, label: 'Tilbake', accent, onClick: () => this.scene.start(SCENE.menu) });
+  }
+
+  private buildTrials(): void {
+    const cx = screenWidth(this) / 2;
+    const h = screenHeight(this);
+    const width = Math.min(400, contentWidth(this) - 32);
+    const accent = worldAccent(this.world);
+    const save = services(this).store.data;
+    makeLabel(this, cx, 50, 'Bonusbrett', { size: 28, color: accent, bold: true });
+    makeLabel(this, cx, 85, `Verden ${this.world} · små prøver, nye muligheter`, { size: 12, color: COLORS.inkMuted, font: 'body' });
+    const trials = journeyTrialsForWorld(this.world, save);
+    const pitch = Math.min(122, (h - 166) / Math.max(1, trials.length));
+    trials.forEach((trial, i) => {
+      const y = 108 + pitch * (i + .5);
+      const badge = save.journeyBadges?.includes(trial.id) === true;
+      const stars = save.stars[trial.id]?.stars ?? 0;
+      const detail = badge ? '◆ MIDTBONUS · merket er ditt' : trial.bonusGoal !== undefined ? 'Valgfri bonus: ◆ i midten' : 'Tallet på brikken viser flytt igjen';
+      const background = this.add.graphics();
+      background.fillStyle(COLORS.panel, .96).fillRoundedRect(cx - width / 2, y - 48, width, 96, 12);
+      background.lineStyle(1, accent, .5).strokeRoundedRect(cx - width / 2, y - 48, width, 96, 12);
+      makeButton(this, { x: cx, y: y - 15, width: width - 16, height: 44, label: trial.displayTitle, labelSize: 18, accent,
+        onClick: () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: trial.id }) });
+      makeLabel(this, cx, y + 24, `${stars > 0 ? '✓ Løst · ' : ''}${detail}`, { size: 12, color: badge ? COLORS.star : COLORS.inkMuted, font: 'body' });
+    });
+    makeButton(this, { x: cx, y: h - 36, width: 200, height: 44, label: 'Tilbake til kartet', accent,
+      onClick: () => { this.trialsOpen = false; this.onResize(); } });
   }
 
   private buildLevelCell(

@@ -9,6 +9,7 @@ export interface SolveRequestJson {
   readonly hand: Hand;
   readonly maxMoves: number;
   readonly limits: { readonly states: number; readonly ms?: number };
+  readonly objective?: SolveRequest['objective'];
 }
 
 export type WorkerIn =
@@ -31,6 +32,7 @@ export const toRequestJson = (req: SolveRequest): SolveRequestJson => ({
   hand: req.hand,
   maxMoves: req.maxMoves,
   limits: req.limits,
+  ...(req.objective === undefined ? {} : { objective: req.objective }),
 });
 
 export const fromRequestJson = (j: SolveRequestJson): SolveRequest => ({
@@ -39,6 +41,7 @@ export const fromRequestJson = (j: SolveRequestJson): SolveRequest => ({
   hand: j.hand,
   maxMoves: j.maxMoves,
   limits: j.limits,
+  ...(j.objective === undefined ? {} : { objective: j.objective }),
 });
 
 const CHUNK_STATES = 2000;

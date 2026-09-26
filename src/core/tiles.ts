@@ -9,6 +9,7 @@ export interface Tile {
   readonly wild: boolean;
   readonly sticky?: boolean;
   readonly bondedTo?: number;
+  readonly movesLeft?: number;
 }
 
 export interface Hand {
@@ -26,19 +27,23 @@ export interface Snapshot {
 export const makeTile = (
   id: number,
   symbol: string,
-  opts: { locked?: boolean; wild?: boolean; sticky?: boolean } = {}
+  opts: { locked?: boolean; wild?: boolean; sticky?: boolean; movesLeft?: number } = {}
 ): Tile => {
   const wild = opts.wild === true;
   const locked = opts.locked === true;
   // symbolKey har ikke noe eget tegn for kombinasjonen, så to ulike tilstander
   // ville fått samme søkenøkkel i løseren.
   if (wild && locked) throw new Error('makeTile: en brikke kan ikke være både wild og locked');
+  if (opts.movesLeft !== undefined && (!Number.isSafeInteger(opts.movesLeft) || opts.movesLeft < 0)) {
+    throw new Error('makeTile: movesLeft må være et heltall >= 0');
+  }
   return {
     id,
     symbol: wild ? WILD_SYMBOL : symbol,
     locked,
     wild,
     ...(opts.sticky === true ? { sticky: true } : {}),
+    ...(opts.movesLeft === undefined ? {} : { movesLeft: opts.movesLeft }),
   };
 };
 

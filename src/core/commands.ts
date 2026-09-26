@@ -13,6 +13,7 @@ export type RejectReason =
   | 'notAllowed'
   | 'locked'
   | 'stickyConflict'
+  | 'quotaExhausted'
   | 'notAdjacent'
   | 'segmentTooShort'
   | 'segmentContainsLocked'

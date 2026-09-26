@@ -1,8 +1,12 @@
+import type { CenterTileGoal } from '../../core/goals';
 import type { Rules } from '../../core/rules';
 import type { Stars } from '../../core/scoring';
 import type { Hand, Tile } from '../../core/tiles';
 
 export interface ModeLevel {
+  readonly displayTitle?: string;
+  readonly bonusGoal?: CenterTileGoal;
+  readonly bonusTarget?: number;
   readonly id: string;
   readonly world: number;
   readonly n: number;
@@ -20,6 +24,7 @@ export interface ModeLevel {
 
 /** nextLevelId, nextUnlocked og worldJustUnlocked er null/false for moduser uten progresjon. */
 export interface SolvedOutcome {
+  readonly bonusEarned?: boolean;
   readonly stars: Stars;
   readonly previousStars: number;
   readonly nextLevelId: string | null;
@@ -29,6 +34,7 @@ export interface SolvedOutcome {
 
 /** Ekstra tall fra brettet som bare tidsbaserte moduser bryr seg om. */
 export interface SolvedInfo {
+  readonly finalTiles?: readonly Tile[];
   readonly timeMs: number;
 }
 

@@ -1,13 +1,17 @@
+import { journeyTrial, journeyTrialUnlocked, type JourneyTrial } from '../../content/journeyTrials';
+import { hasCenterBonus } from '../../core/goals';
+import { isPalindrome } from '../../core/palindrome';
+import { journeyNextLevel } from '../journey';
 import { CAMPAIGN, getCampaignLevel } from '../../content/campaign';
 import type { Command } from '../../core/commands';
 import { rulesFor } from '../../core/level';
 import { isLevelUnlocked, isWorldUnlocked, nextLevelId, parseLevelId, WORLD_COUNT } from '../../core/progression';
 import { starsFor } from '../../core/scoring';
-import { campaignProgress, recordStars, type FirstAttempt, type SaveData } from '../../core/storage';
+import { campaignProgress, recordJourneyBadge, recordStars, type FirstAttempt, type SaveData } from '../../core/storage';
 import { masteryOffer } from '../mastery';
 import type { SessionView } from '../session';
 import type { SaveStore } from '../saveStore';
-import type { BoardMode, ModeLevel, SolvedOutcome } from './types';
+import type { BoardMode, ModeLevel, SolvedInfo, SolvedOutcome } from './types';
 
 export class CampaignMode implements BoardMode {
   readonly kind = 'campaign' as const;
@@ -85,6 +89,8 @@ export class CampaignMode implements BoardMode {
   }
 
   load(levelId: string): ModeLevel | null {
+    const trial = journeyTrial(levelId);
+    if (trial !== undefined) return trial;
     const parsed = parseLevelId(levelId);
     const level = getCampaignLevel(levelId);
     if (parsed === null || level === undefined) return null;
@@ -104,10 +110,13 @@ export class CampaignMode implements BoardMode {
   }
 
   isUnlocked(levelId: string): boolean {
+    if (journeyTrial(levelId) !== undefined) return journeyTrialUnlocked(levelId, this.store.data);
     return isLevelUnlocked(levelId, this.store.stars(), campaignProgress(this.store.data).access);
   }
 
-  onSolved(levelId: string, movesUsed: number): SolvedOutcome {
+  onSolved(levelId: string, movesUsed: number, info?: SolvedInfo): SolvedOutcome {
+    const trial = journeyTrial(levelId);
+    if (trial !== undefined) return this.onTrialSolved(trial, movesUsed, info);
     const level = getCampaignLevel(levelId);
     const parsed = parseLevelId(levelId);
     const previousStars = this.store.stars()[levelId] ?? 0;
@@ -146,6 +155,28 @@ export class CampaignMode implements BoardMode {
       nextUnlocked: next !== null && this.isUnlocked(next),
       worldJustUnlocked,
     };
+  }
+
+  private onTrialSolved(trial: JourneyTrial, movesUsed: number, info?: SolvedInfo): SolvedOutcome {
+    const previousStars = this.store.stars()[trial.id] ?? 0;
+    const tiles = info?.finalTiles;
+    const bonusReached = tiles !== undefined && trial.bonusGoal !== undefined && hasCenterBonus(tiles, trial.bonusGoal);
+    const valid = this.isUnlocked(trial.id) && Number.isInteger(movesUsed) && movesUsed >= trial.target &&
+      tiles !== undefined && tiles.length === trial.tiles.length && new Set(tiles.map((tile) => tile.id)).size === tiles.length &&
+      tiles.every((tile) => trial.tiles.some((original) => original.id === tile.id && original.symbol === tile.symbol &&
+        original.wild === tile.wild && original.locked === tile.locked && original.sticky === tile.sticky && original.bondedTo === tile.bondedTo &&
+        (original.movesLeft === undefined ? tile.movesLeft === undefined : tile.movesLeft !== undefined &&
+          Number.isSafeInteger(tile.movesLeft) && tile.movesLeft >= 0 && tile.movesLeft <= original.movesLeft))) && isPalindrome(tiles) &&
+      (!bonusReached || movesUsed >= (trial.bonusTarget ?? trial.target));
+    if (!valid || tiles === undefined) return { stars: 0, previousStars, nextLevelId: null, nextUnlocked: false, worldJustUnlocked: null, bonusEarned: false };
+    const stars = starsFor(movesUsed, trial.target, trial.budget);
+    const bonusEarned = stars > 0 && bonusReached;
+    if (stars > 0) this.store.update((data) => {
+      const updated = recordStars(data, trial.id, stars, trial.contentVersion);
+      return bonusEarned ? recordJourneyBadge(updated, trial.id) : updated;
+    });
+    const next = journeyNextLevel(this.store.stars(), campaignProgress(this.store.data).access);
+    return { stars, previousStars, nextLevelId: next, nextUnlocked: next !== null && this.isUnlocked(next), worldJustUnlocked: null, bonusEarned };
   }
 
   private unlockedWorlds(): number[] {

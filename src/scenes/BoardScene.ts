@@ -101,6 +101,7 @@ const KEY_MAP: Readonly<Record<string, KeyCode>> = {
 const HINT_TEXT: Readonly<Record<HintReason | SessionReject, string>> = {
   stickyConflict: 'Paret må ha plass til å flyttes sammen',
   locked: 'Låst brikke',
+  quotaExhausted: 'Denne brikken har ingen flytt igjen',
   segmentContainsLocked: 'Segmentet inneholder låst brikke',
   segmentTooShort: 'Segment må ha minst 3',
   handEmpty: 'Hånden er tom',
@@ -1005,6 +1006,10 @@ export class BoardScene extends Phaser.Scene {
   }
 
   private showDeadEnd(): void {
+    for (const feedback of this.children.list.filter((child) => child.name === 'harmony-feedback')) {
+      this.tweens.killTweensOf(feedback);
+      feedback.destroy();
+    }
     if (this.banner !== null) return;
     const w = Math.min(contentWidth(this) - SPACE.xl, BANNER_W);
     const g = this.add.graphics();
@@ -1039,7 +1044,7 @@ export class BoardScene extends Phaser.Scene {
       return;
     }
     const timeMs = Math.round(this.elapsedMs);
-    const outcome = this.mode.onSolved(this.levelId, movesUsed, this.modeKind === 'daily' ? { timeMs } : undefined);
+    const outcome = this.mode.onSolved(this.levelId, movesUsed, this.modeKind === 'campaign' ? { timeMs, finalTiles: this.view.tiles } : this.modeKind === 'daily' ? { timeMs } : undefined);
     // Vent på at siste trekk faktisk lander, også når spilleren slipper en dratt brikke.
     this.pendingVictory = (): void => {
       this.clearingVictory = true;
@@ -1300,6 +1305,7 @@ export class BoardScene extends Phaser.Scene {
         }
       }
       v.setTile(tile, size, colorBlind);
+      v.setFlags({ centerGoal: tile.id === this.level.bonusGoal?.tileId });
       // Draget eier posisjonen til brikka det holder. Løseren svarer midt i neste drag, og
       // uten dette ville render tweenet brikka tilbake til sloten mens fingeren flytter den.
       if (tile.id === this.dragId) return;
@@ -1461,7 +1467,7 @@ export class BoardScene extends Phaser.Scene {
     const cx = contentLeft(this) + contentWidth(this) / 2;
     const y = Math.max(HUD_HEIGHT + SPACE.xl * 2, this.originY - SPACE.lg);
     const flow = this.flow > 1 ? ` · Flyt ×${this.flow}` : '';
-    this.effects.reward(cx, y, `Harmoni +${this.lastGain}${flow}`, this.accent());
+    this.effects.reward(cx, y, `Harmoni +${this.lastGain}${flow}`, this.accent()).setName('harmony-feedback');
     if (!reduced) this.effects.burst(cx, y + SPACE.lg, this.accent());
   }
 
@@ -1497,6 +1503,11 @@ export class BoardScene extends Phaser.Scene {
       case 'free':
         return { top: moves, topSize: HUD_TOP, bottom: `Fri spilling · Verden ${this.level.world}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       case 'campaign': {
+        if (this.level.displayTitle !== undefined) {
+          return { top: this.level.displayTitle, topSize: HUD_TOP,
+            bottom: `${this.view.budgetLeft} trekk igjen`, harmony: `Trekk ${this.view.movesUsed} · mål ${this.level.target}`,
+            operations: this.level.bonusGoal === undefined ? 'Tallet følger brikken · 0 = ingen flytt' : `Valgfri bonus: ◆ i midten · bonusmål ${this.level.bonusTarget ?? '—'}` };
+        }
         const budget = this.level.showBudget ? ` · Budsjett ${this.view.budgetLeft}` : '';
         return { top: moves, topSize: HUD_TOP, bottom: `Verden ${this.level.world} · Nivå ${this.level.n}${budget}`, harmony: this.harmonyText(), operations: operationSummary(this.level.rules.allowedOps) };
       }

@@ -1,3 +1,4 @@
+import { journeyTrial, journeyTrialUnlocked } from '../content/journeyTrials';
 import { screenWidth, screenHeight } from './viewport';
 import { makeBackdrop } from './art';
 import Phaser from 'phaser';
@@ -77,7 +78,8 @@ export class ResultScene extends Phaser.Scene {
     const effects = new Effects(this, reducedMotion);
     // Fri spilling bruker et eget id-format (free-w{verden}-{n}), ikke kampanjens w{verden}-{nn}.
     const parsed = this.mode === 'free' ? parseFreeLevelId(this.levelId) : parseLevelId(this.levelId);
-    const world = parsed?.world ?? 1;
+    const trial = this.mode === 'campaign' ? journeyTrial(this.levelId) : undefined;
+    const world = trial?.world ?? parsed?.world ?? 1;
     // Dagens brett hører ikke til en verden og bruker modusens egen farge.
     const accent = this.mode === 'daily' ? COLORS.inkMuted : worldAccent(world);
     const h = screenHeight(this);
@@ -107,6 +109,12 @@ export class ResultScene extends Phaser.Scene {
         size: 11, color: COLORS.success, font: 'body', bold: true,
       }).setLetterSpacing(1.5).setStroke(cssColor(COLORS.shadow), 4);
     }
+    if (trial?.bonusGoal !== undefined) {
+      const earned = this.outcome.bonusEarned === true;
+      const held = s.store.data.journeyBadges?.includes(trial.id) === true;
+      makeLabel(this, summaryX, summaryY + 138, earned ? '◆ MIDTBONUS · riktig brikke i midten!' : held ? '◆ MIDTBONUS · merket er bevart' : 'Speilet er løst. Prøv med ◆ i midten!',
+        { size: landscape ? 11 : 12, color: earned || held ? COLORS.star : COLORS.inkMuted, font: 'body', bold: earned });
+    }
     if (this.mode === 'daily') this.buildDailyStats(summaryX, summaryY + (presentation.isPersonalBest ? 136 : 112));
     if (this.outcome.worldJustUnlocked !== null) {
       this.buildUnlockBanner(summaryX, summaryY + (presentation.isPersonalBest ? 142 : 116), this.outcome.worldJustUnlocked);
@@ -133,7 +141,11 @@ export class ResultScene extends Phaser.Scene {
         }
       },
     });
-    if (this.mode === 'campaign') {
+    if (this.mode === 'campaign' && trial !== undefined && trial.id === 'journey-quota-01' && journeyTrialUnlocked('journey-quota-02', s.store.data)) {
+      makeButton(this, { x: buttonsX, y: buttonsTop + 126, width: 268, height: 44, label: 'Øv mer: Spar flyttene', labelSize: 14, accent: COLORS.line,
+        onClick: () => this.scene.start(SCENE.board, { mode: 'campaign', levelId: 'journey-quota-02' }) });
+    }
+    if (this.mode === 'campaign' && trial === undefined) {
       const offer = masteryOffer(s.store.data, world);
       const practice = offer === null ? practiceDestination(s.store.data, world) : null;
       const adaptive = offer ?? practice;
@@ -255,7 +267,8 @@ export class ResultScene extends Phaser.Scene {
     if (this.mode === 'sticky') return `STICKY  ·  PRØVEBRETT ${this.levelId.slice(-2)}/03`;
     if (this.mode === 'daily') return 'DAGENS SPEIL ER ÅPNET';
     if (this.mode === 'free') return `FRI SPILLING  ·  VERDEN ${world}`;
-    return `SPEIL ${this.levelId.toUpperCase()}  ·  VERDEN ${world}`;
+    const trial = journeyTrial(this.levelId);
+    return trial === undefined ? `SPEIL ${this.levelId.toUpperCase()}  ·  VERDEN ${world}` : `${trial.displayTitle.toUpperCase()}  ·  VERDEN ${world}`;
   }
 
   private buildUnlockBanner(x: number, y: number, world: number): void {

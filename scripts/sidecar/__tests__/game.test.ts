@@ -52,6 +52,16 @@ describe('sidecar engine boundary', () => {
       expect(() => validateManifest([{ ...puzzle, tiles }])).toThrow(/tile/);
     }
   });
+  it('validates quota literals and distinguishes their manifest states', () => {
+    const limited = (movesLeft: number): Puzzle => ({ ...puzzle, id: `q${movesLeft}`, tiles: puzzle.tiles.map(t => t.id === 1 ? { ...t, movesLeft } : t) });
+    for (const quota of [-1, 1.5, 2 ** 54]) expect(() => validateManifest([{ ...limited(quota), id: 'invalid' }])).toThrow(/quota/i);
+    expect(validateManifest([puzzle, limited(1), limited(2)])).toHaveLength(3);
+    expect(validateManifest(FIXTURES)[0]).toBe('663d4bb67148580fd3ec9856e864ba58feec937b23b9e83e09408695dfd6d7ed');
+    const exhausted = { ...puzzle, tiles: puzzle.tiles.map(t => t.id === 0 ? { ...t, movesLeft: 0 } : t) };
+    const request = makeRequest(exhausted, createBoard(exhausted.tiles, exhausted.hand), 'p', []);
+    expect(request.choices.map(c => c.command)).toEqual([{ type: 'swap', a: 1, b: 2 }]);
+    expect(request.observation.tiles[0]?.movesLeft).toBe(0);
+  });
   it('rejects cross-split duplicate states even with different IDs', () => {
     expect(() => validateManifest([puzzle, { ...puzzle, id: 'other', split: 'holdout' }])).toThrow(/duplicate/i);
     expect(validateManifest(FIXTURES).length).toBe(FIXTURES.length);

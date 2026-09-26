@@ -1,4 +1,5 @@
 import type { MoveCommand } from './commands';
+import { hasCenterBonus } from './goals';
 import { isPalindrome } from './palindrome';
 import type { Rules } from './rules';
 import { applyMove } from './step';
@@ -12,6 +13,7 @@ export interface SolveRequest {
   readonly hand: Hand;
   readonly maxMoves: number;
   readonly limits: { readonly states: number; readonly ms?: number };
+  readonly objective?: { readonly kind: 'centerBonus'; readonly tileId: number };
 }
 
 export type SolveResult =
@@ -20,7 +22,11 @@ export type SolveResult =
   | { readonly status: 'unknown' }
   | { readonly status: 'cancelled' };
 
-export const stateKey = (tiles: readonly Tile[], hand: Hand): string => {
+export const stateKey = (tiles: readonly Tile[], hand: Hand, preserveIdentity = false): string => {
+  if (preserveIdentity || tiles.some((t) => t.movesLeft !== undefined)) {
+    return JSON.stringify([tiles.map((t) => [t.id, t.symbol, t.locked, t.wild,
+      t.movesLeft ?? null, t.sticky === true, t.bondedTo ?? null]), hand.wild, hand.remove]);
+  }
   const base = `${symbolKey(tiles)}|${hand.wild}|${hand.remove}`;
   if (!tiles.some((t) => t.sticky === true || t.bondedTo !== undefined)) return base;
   return `${base}|${tiles.map((t) => `${t.sticky === true ? 1 : 0}:${t.bondedTo === undefined ? '' : tiles.findIndex((p) => p.id === t.bondedTo)}`).join(',')}`;
@@ -77,15 +83,21 @@ export class BfsSearch {
   constructor(private readonly req: SolveRequest) {
     const start = makeSnapshot(req.tiles, req.hand);
     if (isPalindrome(start.tiles)) {
-      this.done = { status: 'solved', moves: 0 };
+      this.done = this.matchesObjective(start.tiles)
+        ? { status: 'solved', moves: 0 } : { status: 'unreachableWithinBudget' };
       return;
     }
     if (req.maxMoves <= 0) {
       this.done = { status: 'unreachableWithinBudget' };
       return;
     }
-    this.visited.add(stateKey(start.tiles, start.hand));
+    this.visited.add(stateKey(start.tiles, start.hand, req.objective !== undefined));
     this.queue.push({ snap: start, depth: 0 });
+  }
+
+  private matchesObjective(tiles: readonly Tile[]): boolean {
+    return this.req.objective === undefined ||
+      hasCenterBonus(tiles, { kind: 'centerTile', tileId: this.req.objective.tileId });
   }
 
   /** Utvider inntil maxStatesThisStep tilstander. Returnerer null hvis søket ikke er ferdig. */
@@ -100,9 +112,10 @@ export class BfsSearch {
       for (const move of legalMoves(this.req.rules, item.snap)) {
         const r = applyMove(this.req.rules, item.snap, move);
         if (!r.ok) continue;
-        const key = stateKey(r.value.tiles, r.value.hand);
+        const key = stateKey(r.value.tiles, r.value.hand, this.req.objective !== undefined);
         if (this.visited.has(key)) continue;
         if (isPalindrome(r.value.tiles)) {
+          if (!this.matchesObjective(r.value.tiles)) continue;
           this.done = { status: 'solved', moves: item.depth + 1 };
           return this.done;
         }

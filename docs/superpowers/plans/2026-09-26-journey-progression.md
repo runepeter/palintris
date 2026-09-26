@@ -44,14 +44,14 @@ Filer: ny src/game/mastery.ts, src/core/storage.ts, src/core/progression.ts, src
 Filer: src/scenes/BoardScene.ts, faktisk bevegelsesrenderer, src/game/moveAnimation.ts og tester/E2E.
 - [x] Reproduserende test: helbrettknapp lager `{type:'rotate',from:0,to:n-1,dir:'left'}` og gir forventet ID-rekkefølge. Låste brikker avviser hele trekket. Input under animasjon skal ikke doble trekket.
 - [x] Gjenbruk motoren, legg til synlige knapper etter introduksjon. Vis kantbrikkens bane til motsatt ende og de øvrige brikkenes forskyvning. Redusert bevegelse skal fortsatt vise retningen.
-- [ ] Review, mobil-/animasjonskontroll, tester, commit og verifisert deploy.
+- [x] Review, mobil-/animasjonskontroll, tester, commit og verifisert deploy.
 
 ## Leveranse 4: Kvote og midtbonus i reisen
 Filer: src/core/tiles.ts, src/core/step.ts, src/core/commands.ts, src/core/solver.ts, src/core/solverProtocol.ts, src/core/level.ts, kampanje-/reiseinnhold, lagring, TileView/BoardScene/ResultScene og tester.
 - [x] Skriv liten eksakt kontrakt for nye brikkefelt/mål og innholdstilgang før dispatch. Kvote følger ID, brukes én gang per endret posisjon per kommando, null avviser atomisk, angre gjenoppretter.
-- [ ] Røde tester for begge deltakere i swap, rotate, mirror med urørt midte, undo/reset, søkenøkler, reload og ugyldige data. Ingen håndkort/sticky i første kvoteinnhold.
-- [ ] Bonusmål refererer konkret brikke-ID på oddetallsbrett med minst tre av symbolet. Vanlig palindrom fullfører; markert brikke i midten gir bonusmerke. Solver verifiserer både vanlig og bonusløsning, og at bonusen krever et reelt valg.
-- [ ] Introduser i eksisterende reise med egne nivå-IDer, aldri nye lobbyknapper eller overskriving av gamle stjerner. Merk kvote og bonus tydelig før og under spill.
+- [x] Røde tester for begge deltakere i swap, rotate, mirror med urørt midte, undo/reset, søkenøkler, reload og ugyldige data. Ingen håndkort/sticky i første kvoteinnhold.
+- [x] Bonusmål refererer konkret brikke-ID på oddetallsbrett med minst tre av symbolet. Vanlig palindrom fullfører; markert brikke i midten gir bonusmerke. Solver verifiserer både vanlig og bonusløsning, og at bonusen krever et reelt valg.
+- [x] Introduser i eksisterende reise med egne nivå-IDer, aldri nye lobbyknapper eller overskriving av gamle stjerner. Merk kvote og bonus tydelig før og under spill.
 - [ ] Uavhengig domene-/UI-review, full testpakke, mobil visuell kontroll, signert commit og offentlig verifisert deploy.
 
 ## Tillegg fra Sir

@@ -47,9 +47,10 @@ export function validateManifest(puzzles: readonly Puzzle[]): string[] {
     if (!/^[A-Za-z0-9_-]+$/.test(p.id) || p.id.length > 100 || !Number.isInteger(p.budget) || p.budget < 1 || p.budget > 10) throw new Error('Invalid puzzle');
     if (!['train', 'dev', 'holdout'].includes(p.split) || !isArray(p.ops) || p.ops.length === 0 || p.ops.some(op => !ALL_OPS.includes(op)) || new Set(p.ops).size !== p.ops.length) throw new Error('Invalid puzzle rules/split');
     if (!isArray(p.tiles) || p.tiles.length < 3 || p.tiles.length > 14 || new Set(p.tiles.map(t => t.id)).size !== p.tiles.length || p.tiles.some(t => !Number.isSafeInteger(t.id) || t.id < 0 || typeof t.symbol !== 'string' || t.symbol.length !== 1 || typeof t.locked !== 'boolean' || typeof t.wild !== 'boolean' || (t.locked && t.wild))) throw new Error('Invalid tile identity or properties');
+    if (p.tiles.some(t => t.movesLeft !== undefined && (!Number.isSafeInteger(t.movesLeft) || t.movesLeft < 0))) throw new Error('Invalid tile quota');
     if (![p.hand.wild, p.hand.remove].every(n => Number.isInteger(n) && n >= 0 && n <= 10)) throw new Error('Invalid hand');
     // Exclude labels and budgets: renaming an identical position must not hide leakage.
-    const key = hash({ tiles: p.tiles.map(t => ({ symbol: t.symbol, wild: t.wild, locked: t.locked, sticky: t.sticky === true, bond: p.tiles.findIndex(other => other.id === t.bondedTo) })), hand: p.hand, ops: [...p.ops].sort() });
+    const key = hash({ tiles: p.tiles.map(t => ({ symbol: t.symbol, wild: t.wild, locked: t.locked, sticky: t.sticky === true, bond: p.tiles.findIndex(other => other.id === t.bondedTo), ...(t.movesLeft === undefined ? {} : { movesLeft: t.movesLeft }) })), hand: p.hand, ops: [...p.ops].sort() });
     if (ids.has(p.id) || states.has(key)) throw new Error('Duplicate puzzle ID or state across manifest');
     ids.add(p.id); states.add(key);
     const res = solve({ rules: makeRules(p.ops), tiles: p.tiles, hand: p.hand, maxMoves: p.budget, limits: { states: 50000 } });

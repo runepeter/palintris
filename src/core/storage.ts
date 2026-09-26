@@ -1,3 +1,4 @@
+import { journeyTrial } from '../content/journeyTrials';
 import type { Command } from './commands';
 import { EMPTY_ACCESS, introductionsSolved, levelId, parseLevelId, WORLD_COUNT, type CampaignAccess, type StarMap } from './progression';
 
@@ -49,6 +50,7 @@ export const campaignProgress = (data: SaveData): CampaignProgress =>
   data.campaign ?? { firstAttempts: {}, access: EMPTY_ACCESS };
 
 export interface SaveData {
+  readonly journeyBadges?: readonly string[];
   readonly campaign?: CampaignProgress;
   readonly saveVersion: 1;
   readonly contentVersion: number;
@@ -250,6 +252,8 @@ export const parseSave = (raw: unknown): SaveData | null => {
   const campaign = parseCampaign(raw['campaign'], Object.fromEntries(Object.entries(stars).map(([id, r]) => [id, r.stars])));
   return {
     ...(campaign === undefined ? {} : { campaign }),
+    ...(Array.isArray(raw['journeyBadges']) ? { journeyBadges: [...new Set(raw['journeyBadges'].filter((id): id is string =>
+      typeof id === 'string' && journeyTrial(id) !== undefined))] } : {}),
     saveVersion: 1,
     contentVersion,
     stars,
@@ -309,4 +313,9 @@ export const setDailyProgress = (data: SaveData, progress: DailyProgress | undef
     return { ...data, daily: { attempts: data.daily.attempts, streak: data.daily.streak } };
   }
   return { ...data, daily: { ...data.daily, inProgress: progress } };
+};
+
+export const recordJourneyBadge = (data: SaveData, id: string): SaveData => {
+  if (journeyTrial(id) === undefined || data.journeyBadges?.includes(id) === true) return data;
+  return { ...data, journeyBadges: [...(data.journeyBadges ?? []), id] };
 };

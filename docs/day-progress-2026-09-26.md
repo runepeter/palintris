@@ -90,3 +90,28 @@ Kjør på én stabil kildekodetilstand: unit/type/lint, relevante E2E og e2e:rel
 - Root CUA390×844: intro skjulte knappene; Skjønner viste dem; venstre/høyre ga ett trekk hver og gjenopprettet opprinnelig ID/symbolrekkefølge etter to motsatte rotasjoner. Wrapbuen og retningspilen observert under begge faktiske trykk.
 - Lokalt skjermbildearkiv har nå03-rotation/{before,after},4førPNG+JSON og36etterPNG. Sidecar er signert commitf5ed212. Ingen sidecarprosesser aktive.
 - Neste leveranse4 har grensekontrakt i .superpowers/sdd/2026-09-26-journey-progression/delivery4-api-plan.md og eksisterende mechanics-contract. Vent til rotasjonsartifact er pakket før nye src-endringer.
+
+
+## Verifisert leveranse3, kl.11.19
+- Kilde46f2e42a38f060337012796ea5c4114fc1b5edbe, artifact/tmp/palintris-release-zfzjtlzi.
+- Nyprod https://palintris-nleig2utn-cyclaw.vercel.app, dpl_A9FrnXYiBSk9UcDLhbNGnnYEuUaz, READY/production og aliasbekreftet. Alle12offentlige filer SHA256-match.
+- Rollback https://palintris-lzu2neggr-cyclaw.vercel.app.6/6produksjonstester bestått etter426unit/66E2E.
+- OffentligCUA390×844 fraeksisterendelagring: knappervisesw2-03, venstrerotasjon0→1medsynligbue, Angre1→0, Menyreturnerer. Egnefanerlukket/viewportnullstilt.
+
+## Leveranse4 pågår, kl.11.23
+- domain_review implementerte coremovesLeft/goals/solver/protokoll.79fokuserte tester; uavhengig sidecar_domain_review77tester+240differensielle småbrett PASS. Safeintegerfunn rettet medsærskilttest; ingen endring avgamle90brett.
+- mastery_contract implementerte trialregistry/tilgang/lagring/reise/intro med77grønne tester. Uavhengig sidecar_assessment fant malformedSolvedInfo (wild/negativquota/bonusunderminimum); eierretter medtester nå.
+- scene_review implementerer trialUI/TileView/kartpanel/resultat/Menuworldlookup ogE2E. Pågående fokusertPlaywright, rootkjører ingen annenE2E. Førkartbilder tatt, etterbilder følger.
+- Root tilpasser sidecargrensen tilkvoter: rødtmanifesttestbekreftet manglendevalidering/hash; fix/bevaringavlegacyhash, publicregeltekst og180sstandardfrist pågår. Ingenautomatiskmodellserieellerregelendringer. Ingenruntimeagentkjøringeraktive.
+- Devserver3006/caffeinate1414/heartbeataktive. Neste: avsluttreviewfikser+visuellQA, samletrød/grønn/fullpakke, signertDcommit, dist-onlydeploy ogoffentligspillkontroll. Sisteend-to-end/mobilkontroll og pauseautomatikk nårallscopeferdig, senest23.
+
+
+## Leveranse4 — verifisert kandidat, kl.11.39
+- Kvoten følger brikke-ID gjennom swap/rotate/mirror og angre/reset; null avviser hele trekket. Solver/protokoll inkluderer identitet og restkvote. Markert midtbrikke gir separat valgfritt merke, aldri ekstra ordinær stjerne.
+- Tre nye bonusbrett i reisen: To flytt, Spar flyttene, Din midtbrikke. Første kvote etter verden2-mestring/12 ekte seire; midtbonus etter kvote og verden3-intro. Andre kvote er valgfri øving. Gamle90brett og lagring bevart.
+- Domene-, integrasjons-, UI- og visuell review PASS. Reproduserte funn rettet: ugyldige kvoter/sluttdata, bonus under reelt minimum, harmonitekst over dead-end-varsel, evige kart-tweens ved panelbytte. Rapportene ligger i /tmp/palintris-trials-{core,integration,ui-code,visual}-review.md.
+- Stabil kilde:456/456unit,73/73E2E,8/8produksjons-E2E (Chromium/WebKit), typecheck/lint/build/diff-check grønne. Logger /tmp/palintris-trials-{unit,e2e-full,release,typecheck-final,lint-final}.log. Produksjonstesten spiller intro→kvote→bonus→reload uten utviklingskroker.
+- Uavhengig motorprobe:240 småbrett mot referansesøk PASS. Root spilte hele anbefalte reisen med ekte CampaignMode/BoardSession og lagringsrundtur:27brett,18unike førsteforsøk,6mestrede verdener,66åpne repetisjonsbrett uten falske stjerner, bevart midtmerke, ingen verden7. Optimal løsning etter én time ga fortsatt mestring. Logg /tmp/palintris-trials-journey-probe.log.
+- Sidecar har nå kvotevalidering/innholdshash og180sstandardfrist. Legacy ordinary hash bevart. Faktisk lokal Gemma-kvotesmoke:1kall,1spill,1trekk, BFS1, fullført; sidecar-runs/2026-09-26-quota-smoke. Ingen modell-/regelendring, midtbonus foreløpig ikke evalueringsmål.
+-22før/etterPNG kopiert til hovedrepoets screenshots-local/2026-09-26/04-trials. Galleri oppdatert; root så kvote0-varsel og midtbrikkestart uten overlapp. Uavhengig visuell review dekker360×640/844×390 og stabilt bonus-/normalresultat/reload.
+- Neste: signert kildecommit, dist-onlydeploy, offentlige filhash og faktisk gammel/ny spillflyt. Ingen implementeringsagent eller sidecar-prosess aktiv. QAserver3006/caffeinate1414/heartbeat fortsatt aktive til sluttkontroll.

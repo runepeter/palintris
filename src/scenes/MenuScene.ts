@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { journeyTrial } from '../content/journeyTrials';
 import { audio } from '../audio/sound';
 import { LEVELS_PER_WORLD, parseLevelId, solvedInWorld } from '../core/progression';
 import { campaignProgress } from '../core/storage';
@@ -38,7 +39,7 @@ export class MenuScene extends Phaser.Scene {
     const access = campaignProgress(store.data).access;
     const destination = journeyDestination(stars, access);
     const milestone = nextJourneyMilestone(stars, access);
-    const world = parseLevelId(destination)?.world ?? 1;
+    const world = journeyTrial(destination)?.world ?? parseLevelId(destination)?.world ?? 1;
     const solved = solvedInWorld(world, stars);
     const accent = worldAccent(world);
     const start = Object.values(stars).every((value) => value <= 0);

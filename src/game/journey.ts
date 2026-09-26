@@ -1,8 +1,16 @@
+import { isJourneyTrialUnlocked, journeyTrial } from '../content/journeyTrials';
 import { EMPTY_ACCESS, isLevelUnlocked, isWorldMastered, isWorldUnlocked, levelId, LEVELS_PER_WORLD, solvedInWorld, WORLD_COUNT, WORLD_GATE, type StarMap, type CampaignAccess } from '../core/progression';
 import { INTROS } from './intro';
 
+const newTrialDestination = (stars: StarMap, access: CampaignAccess): string | undefined =>
+  ['journey-quota-01', 'journey-center-01'].find((id) => (stars[id] ?? 0) <= 0 && isJourneyTrialUnlocked(id, stars, access));
+
 /** Velger alltid et tilgjengelig, uløst brett i den lengst åpnede verdenen. */
 export const journeyDestination = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): string => {
+  const intro = INTROS.find(({ id }) => id.startsWith('w') && (stars[id] ?? 0) <= 0 && isLevelUnlocked(id, stars, access));
+  if (intro !== undefined) return intro.id;
+  const trial = newTrialDestination(stars, access);
+  if (trial !== undefined) return trial;
   for (let world = WORLD_COUNT; world >= 1; world--) {
     if (!isWorldUnlocked(world, stars, access) || isWorldMastered(world, stars, access)) continue;
     for (let n = 1; n <= LEVELS_PER_WORLD; n++) {
@@ -14,6 +22,7 @@ export const journeyDestination = (stars: StarMap, access: CampaignAccess = EMPT
 };
 
 export const journeyComplete = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): boolean => {
+  if (newTrialDestination(stars, access) !== undefined) return false;
   for (let world = 1; world <= WORLD_COUNT; world++) {
     if (solvedInWorld(world, stars) < LEVELS_PER_WORLD && !isWorldMastered(world, stars, access)) return false;
   }
@@ -27,8 +36,11 @@ export interface JourneyMilestone {
 
 /** Introene beskriver de faktiske mekanikkene i det eksisterende kampanjeinnholdet. */
 export const nextJourneyMilestone = (stars: StarMap, access: CampaignAccess = EMPTY_ACCESS): JourneyMilestone => {
+  const destination = journeyDestination(stars, access);
+  const trial = journeyTrial(destination);
+  if (trial !== undefined) return { title: `Neste: ${trial.displayTitle}`, detail: trial.bonusGoal === undefined ? 'En brikke har et begrenset antall flytt.' : 'Lag et speil. Få bonus med den merkede brikken i midten.' };
   const milestones = [
-    ...INTROS.map((intro) => ({ id: intro.id, title: intro.title })),
+    ...INTROS.filter((intro) => intro.id.startsWith('w')).map((intro) => ({ id: intro.id, title: intro.title })),
     { id: 'w6-01', title: 'Harmoniens port' },
   ];
   const next = milestones.find(({ id }) => (stars[id] ?? 0) <= 0);

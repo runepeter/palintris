@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { journeyComplete, journeyDestination, journeyNextLevel, nextJourneyMilestone } from '../journey';
 
+const learnedTrials = { 'journey-quota-01': 1, 'journey-center-01': 1 };
+
 const solved = (world: number, count: number): Record<string, number> =>
   Object.fromEntries(Array.from({ length: count }, (_, i) => [`w${world}-${String(i + 1).padStart(2, '0')}`, 1]));
 
@@ -22,13 +24,13 @@ describe('journeyDestination', () => {
   });
 
   it('replays the last board after the campaign is complete', () => {
-    const all: Record<string, number> = {};
+    const all: Record<string, number> = { ...learnedTrials };
     for (let world = 1; world <= 6; world++) Object.assign(all, solved(world, 15));
     expect(journeyDestination(all)).toBe('w6-15');
   });
 
   it('returns to an accessible unfinished board when the highest world is complete', () => {
-    const stars = { ...solved(1, 15), ...solved(2, 15), ...solved(3, 15), ...solved(4, 15), ...solved(5, 15), ...solved(6, 15) };
+    const stars: Record<string, number> = { ...learnedTrials, ...solved(1, 15), ...solved(2, 15), ...solved(3, 15), ...solved(4, 15), ...solved(5, 15), ...solved(6, 15) };
     delete stars['w2-15'];
     expect(journeyDestination(stars)).toBe('w2-15');
   });
@@ -48,11 +50,11 @@ describe('nextJourneyMilestone', () => {
   });
 
   it('does not call an unfinished campaign complete after the last introduction', () => {
-    const stars = { ...solved(1, 15), ...solved(2, 15), ...solved(3, 15), ...solved(4, 15), ...solved(5, 15), 'w6-01': 1 };
+    const stars: Record<string, number> = { ...learnedTrials, ...solved(1, 15), ...solved(2, 15), ...solved(3, 15), ...solved(4, 15), ...solved(5, 15), 'w6-01': 1 };
     expect(nextJourneyMilestone(stars)).toEqual({ title: 'Neste: Verden 6, nivå 2', detail: 'Alle mekanikker er åpnet. Fullfør neste speil.' });
   });
   it('names the actual remaining board when it lies in an earlier world', () => {
-    const stars: Record<string, number> = {};
+    const stars: Record<string, number> = { ...learnedTrials };
     for (let world = 1; world <= 6; world++) Object.assign(stars, solved(world, 15));
     delete stars['w2-15'];
     expect(nextJourneyMilestone(stars)).toEqual({ title: 'Neste: Verden 2, nivå 15', detail: 'Alle mekanikker er åpnet. Fullfør neste speil.' });
@@ -61,7 +63,7 @@ describe('nextJourneyMilestone', () => {
 
 describe('journeyComplete', () => {
   it('requires every campaign board before the lobby offers replay', () => {
-    const stars: Record<string, number> = {};
+    const stars: Record<string, number> = { ...learnedTrials };
     for (let world = 1; world <= 6; world++) Object.assign(stars, solved(world, 15));
     expect(journeyComplete(stars)).toBe(true);
     delete stars['w2-15'];
@@ -81,7 +83,7 @@ describe('reisen med mestring', () => {
     expect(journeyDestination(solved(1, 3), { offeredCheckpoints: ['w1-15'], masteredWorlds: [] })).toBe('w1-04');
   });
   it('fullfører reisen med seks ekte prøver og introer uten å kreve bonusrepetisjon', () => {
-    const mastered: Record<string, number> = { ...solved(1, 1), ...solved(2, 1), ...solved(3, 1), ...solved(4, 1), ...solved(5, 2), 'w6-01': 1 };
+    const mastered: Record<string, number> = { ...learnedTrials, ...solved(1, 1), ...solved(2, 1), ...solved(3, 1), ...solved(4, 1), ...solved(5, 2), 'w6-01': 1 };
     for (let world = 1; world <= 6; world++) mastered[`w${world}-15`] = 2;
     const all = { offeredCheckpoints: [], masteredWorlds: [1, 2, 3, 4, 5, 6] };
     expect(journeyComplete(mastered, all)).toBe(true);
@@ -92,7 +94,7 @@ describe('reisen med mestring', () => {
 
 
 it('tilbyr ikke et nytt nivå etter siste mestringsprøve eller alle nitti speil', () => {
-  const stars: Record<string, number> = {};
+  const stars: Record<string, number> = { ...learnedTrials };
   for (let world = 1; world <= 6; world++) Object.assign(stars, solved(world, 15));
   expect(journeyNextLevel(stars)).toBeNull();
   delete stars['w6-14'];

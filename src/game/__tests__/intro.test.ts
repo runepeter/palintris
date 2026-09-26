@@ -21,8 +21,8 @@ const spec = (mechanic: IntroMechanic) => {
 
 describe('INTROS', () => {
   it('dekker de seks mekanikkene med unike nivå-id-er', () => {
-    expect(INTROS.map((s) => s.mechanic)).toEqual(['swap', 'rotate', 'mirror', 'locked', 'wild', 'remove']);
-    expect(INTROS.map((s) => s.id)).toEqual(['w1-01', 'w2-01', 'w3-01', 'w4-01', 'w5-01', 'w5-02']);
+    expect(INTROS.filter((s) => s.id.startsWith('w')).map((s) => s.mechanic)).toEqual(['swap', 'rotate', 'mirror', 'locked', 'wild', 'remove']);
+    expect(INTROS.filter((s) => s.id.startsWith('w')).map((s) => s.id)).toEqual(['w1-01', 'w2-01', 'w3-01', 'w4-01', 'w5-01', 'w5-02']);
     expect(new Set(INTROS.map((s) => s.id)).size).toBe(INTROS.length);
   });
 

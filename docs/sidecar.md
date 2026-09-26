@@ -11,7 +11,7 @@ npm run sidecar -- --output sidecar-runs/round-1 --minutes 20 --max-calls 40 --t
 
 Standardsettet har åtte kuraterte brett: to trening, tre utvikling og tre holdout. Swap, rotate, mirror, wildcard, remove og låste brikker er representert. Hvert brett har to trekk i budsjett. Full runde kjører 14 spill og ett strategiforslag, maksimalt 29 modellkall før eventuell feil. Smoke spiller bare første treningsbrett. Sticky dekkes av motoradapterens tester, ikke standardutvalget. Modellen får synlig tilstand, egne tidligere trekk og lovlige valg; løsningsspor og BFS-fasit er skjult.
 
-CLI-valg: `--model`, `--base-url`, `--timeout-ms` (standard 60000), `--minutes` (maks 60), `--max-calls`, `--manifest`, `--from`, `--smoke`. Se `npm run sidecar -- --help`.
+CLI-valg: `--model`, `--base-url`, `--timeout-ms` (standard 180000), `--minutes` (maks 60), `--max-calls`, `--manifest`, `--from`, `--smoke`. Se `npm run sidecar -- --help`.
 
 ## Resultater og stopp
 
@@ -78,3 +78,5 @@ npm run build
 - Trekkresponsene i fullrunden tok 0,10–0,60 sekunder. Gjenopptakelse med samme kommando ga fortsatt 19 kall og 14 spill.
 
 Full sporbarhet ligger lokalt i `sidecar-runs/2026-09-26-round-1/report.md` og tilhørende checkpoints. Runfiler er ignorert av Git. Dette var en liten gjennomførbarhetsprøve, ikke et estimat på generell spilleevne.
+
+Kvotebrikker støttes via valgfritt `movesLeft` (trygt heltall ≥0). Kvoten inngår i manifestets tilstandsidentitet; vanlige brett beholder tidligere hasher. Modellen får kvoten og bare trekk motoren godtar. Sidecaren vurderer vanlig palindrom; markert midtbonus er foreløpig ikke et evalueringsmål. Standard kallfrist er180sekunder etter observert tregt førstesvar.

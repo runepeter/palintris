@@ -30,6 +30,9 @@ export const INTROS: readonly IntroSpec[] = [
   { id: 'w4-01', mechanic: 'locked', title: 'Låste brikker', text: 'Låste brikker flytter seg ikke. Jobb rundt dem', gesture: 'tap' },
   { id: 'w5-01', mechanic: 'wild', title: 'Joker', text: 'Dra jokeren fra hånden inn i et mellomrom', gesture: 'dragHand' },
   { id: 'w5-02', mechanic: 'remove', title: 'Fjern en brikke', text: 'Dra en brikke ned i hånden for å fjerne den', gesture: 'dragHand' },
+  { id: 'journey-quota-01', mechanic: 'swap', title: 'To flytt', text: 'Tallet følger brikken. Hver flytting bruker én. Ved 0 må brikken bli stående.', compactText: 'Tallet følger brikken. Ved 0 kan den ikke flyttes.', gesture: 'drag' },
+  { id: 'journey-quota-02', mechanic: 'swap', title: 'Spar flyttene', text: 'Den merkede brikken har to flytt. Planlegg hvor den skal ende.', gesture: 'drag' },
+  { id: 'journey-center-01', mechanic: 'swap', title: 'Din midtbrikke', text: 'Alle speil teller. Få et ekstra merke med akkurat den merkede brikken i midten.', compactText: 'Alle speil teller. Merket brikke i midten gir bonus.', gesture: 'drag' },
 ];
 
 export const introFor = (levelId: string): IntroSpec | null => INTROS.find((s) => s.id === levelId) ?? null;

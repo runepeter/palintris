@@ -134,5 +134,18 @@ export const applyMove = (
     (snap.tiles.length !== result.value.tiles.length || result.value.tiles[i]?.id !== t.id))) {
     return reject('stickyConflict');
   }
-  return ok({ ...result.value, tiles: bindStickyPairs(result.value.tiles) });
+  let tiles = result.value.tiles;
+  if (snap.tiles.some((t) => t.movesLeft !== undefined)) {
+    const charged = new Map<number, number>();
+    for (const [index, tile] of snap.tiles.entries()) {
+      if (tile.movesLeft === undefined || tiles[index]?.id === tile.id) continue;
+      if (tile.movesLeft === 0) return reject('quotaExhausted');
+      charged.set(tile.id, tile.movesLeft - 1);
+    }
+    tiles = tiles.map((tile) => {
+      const movesLeft = charged.get(tile.id);
+      return movesLeft === undefined ? tile : { ...tile, movesLeft };
+    });
+  }
+  return ok({ ...result.value, tiles: bindStickyPairs(tiles) });
 };
