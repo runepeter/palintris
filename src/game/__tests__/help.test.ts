@@ -18,13 +18,13 @@ describe('hjelp på brettet', () => {
     expect(helpSpec(new Set(['swap', 'insertWild'])).text).not.toContain('Fjern');
   });
 
-  it('holder seg til to korte linjer og en kort form som ikke avkortes', () => {
+  it('holder seg til to korte linjer og en kort form som ikke avkortes på 360 px', () => {
     for (const ops of subsets()) {
       const spec = helpSpec(ops);
       const lines = spec.text.split('\n');
       expect(lines.length, [...ops].join()).toBeLessThanOrEqual(2);
       for (const line of lines) expect(line.length, line).toBeLessThanOrEqual(44);
-      expect((spec.compactText ?? '').length, spec.compactText).toBeLessThanOrEqual(46);
+      expect((spec.compactText ?? '').length, spec.compactText).toBeLessThanOrEqual(30);
     }
   });
 
@@ -33,5 +33,12 @@ describe('hjelp på brettet', () => {
     expect(spec.id).toBe('help');
     expect(introSatisfiedBy(spec, { type: 'swap', a: 0, b: 1 })).toBe(true);
     expect(introSatisfiedBy(spec, { type: 'undo' })).toBe(true);
+  });
+});
+
+describe('kort form', () => {
+  it('prioriterer gesten for utsnitt, deretter hånden', () => {
+    expect(helpSpec(new Set(['swap', 'rotate', 'insertWild', 'remove'])).compactText).toContain('Hold og dra');
+    expect(helpSpec(new Set(['swap', 'insertWild', 'remove'])).compactText).toContain('Fjern');
   });
 });

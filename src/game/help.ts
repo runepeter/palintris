@@ -19,10 +19,11 @@ export const helpSpec = (ops: ReadonlySet<OpName>): IntroSpec => {
     : wild ? 'Dra jokeren fra hånden til et mellomrom.'
       : remove ? 'Dra en brikke ned i Fjern for å fjerne den.' : null;
   const goal = 'Rekken skal være lik fra begge sider.';
-  const compact = wild && remove ? 'Joker til mellomrom. Brikke ned i Fjern.'
-    : wild ? 'Dra jokeren fra hånden til et mellomrom.'
-      : remove ? 'Dra en brikke ned i Fjern.'
-        : segment ? 'Bytt: dra til nabo. Utsnitt: hold og dra.' : 'Dra en brikke til naboen. Lik begge veier.';
+  // Kort form er én linje uten tittel på lave skjermer; gesten for utsnitt glemmes lettest.
+  const compact = segment ? 'Hold og dra: velg et utsnitt'
+    : wild && remove ? 'Joker inn · brikke ned i Fjern'
+      : wild ? 'Dra jokeren inn i et mellomrom'
+        : remove ? 'Dra en brikke ned i Fjern' : 'Dra en brikke til naboen';
   return {
     id: HELP_ID,
     mechanic: 'locked',

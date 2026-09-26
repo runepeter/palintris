@@ -107,9 +107,13 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 360, height: 500 }
     expect(await hook(page).introVisible()).toBe(false);
     await clickText(page, '?');
     await expect.poll(() => hook(page).introVisible()).toBe(true);
+    await waitForSceneFrame(page);
     const shown = await texts(page);
-    expect(shown).toContain('Slik spiller du');
-    expect(shown.some(text => text.includes('hold og dra'))).toBe(true);
+    // Under 560 px høyde viser overlayet bare kortformen, uten tittel.
+    if (viewport.height >= 560) {
+      expect(shown).toContain('Slik spiller du');
+      expect(shown.some(text => text.startsWith('Bytt: dra til naboen. Utsnitt: hold og dra.'))).toBe(true);
+    } else expect(shown).toContain('Hold og dra: velg et utsnitt');
     expect(shown.filter(text => text.endsWith('…'))).toEqual([]);
     await capture(page, `help-w2-02-${viewport.width}x${viewport.height}`);
     await clickText(page, 'Skjønner');

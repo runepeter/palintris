@@ -574,7 +574,7 @@ export class BoardScene extends Phaser.Scene {
       const s = services(this);
       const attempt = campaignProgress(s.store.data).firstAttempts[this.levelId];
       const eligible = !this.devPreview && attempt !== undefined && attempt.end === undefined &&
-        !this.paused && !document.hidden && this.scene.isActive() && this.intro === null &&
+        !this.paused && !document.hidden && this.scene.isActive() && (this.intro === null || this.introSpec?.id === HELP_ID) &&
         !this.inputLocked && this.pendingTweens === 0 && !this.solvedFired && this.pendingVictory === null;
       const elapsed = this.campaignClock.tick(delta, eligible);
       this.elapsedMs += elapsed;
@@ -1174,7 +1174,7 @@ export class BoardScene extends Phaser.Scene {
 
   /** Trekket introen ba om er gjort; da er den lært og skal ikke komme igjen. */
   private checkIntro(cmd: Command): void {
-    if (this.modeKind === 'sticky') return;
+    if (this.modeKind === 'sticky' && this.introSpec?.id !== HELP_ID) return;
     if (this.introSpec === null || !introSatisfiedBy(this.introSpec, cmd)) return;
     if (cmd.type === 'rotate' && this.pendingTweens > 0) {
       const id = this.introSpec.id;

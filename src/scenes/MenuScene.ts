@@ -44,7 +44,7 @@ export class MenuScene extends Phaser.Scene {
     const accent = worldAccent(world);
     const start = Object.values(stars).every((value) => value <= 0);
     const complete = journeyComplete(stars, access);
-    const actionLabel = start ? 'Start reisen  →' : complete ? 'Spill igjen  →' : 'Fortsett reisen  →';
+    const actionLabel = start ? 'Start reisen  →' : !complete ? 'Fortsett reisen  →' : (stars[destination] ?? 0) > 0 ? 'Spill igjen  →' : 'Spill bonusbrett  →';
     const go = (): void => { this.scene.start(SCENE.board, { mode: 'campaign', levelId: destination }); };
 
     if (landscape) {
