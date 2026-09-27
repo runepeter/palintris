@@ -9,7 +9,8 @@ export default defineConfig({
     screenshot: 'only-on-failure', trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
+    // Programvarerendering: med sovende skjerm kan GPU-banen i headless Chromium henge (ReadPixels-stall).
+    { name: 'chromium', use: { browserName: 'chromium', launchOptions: { args: ['--use-angle=swiftshader', '--use-gl=angle'] } } },
     { name: 'webkit', use: { browserName: 'webkit' } },
   ],
   webServer: {

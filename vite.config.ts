@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode !== 'production',
     minify: 'esbuild',
     target: 'ES2020',
+    // Phaser endres sjelden; egen bunt gjør at en ny deploy bare laster ned spillkoden på nytt.
+    rollupOptions: { output: { manualChunks: { phaser: ['phaser'] } } },
   },
   server: {
     port: 3000,
