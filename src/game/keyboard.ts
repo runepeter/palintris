@@ -51,6 +51,10 @@ export class KeyboardController {
     this.state = { cursor: 0, selected: null, segment: null };
   }
 
+  clearSelection(): void {
+    this.state = { ...this.state, selected: null, segment: null };
+  }
+
   clampCursor(): void {
     const max = Math.max(0, this.env.count() - 1);
     const cursor = Math.min(this.state.cursor, max);

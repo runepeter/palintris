@@ -217,6 +217,7 @@ export class BoardScene extends Phaser.Scene {
   private speilglimtCaption: Phaser.GameObjects.Text | null = null;
   private speilglimtCaptionFor: string | null = null;
   private handHitAreas: readonly HandBox[] = [];
+  private handPitch = 0;
   private sacrificePrompt: Phaser.GameObjects.Container | null = null;
 
   /** Fast referanse, så teardown kan koble den av den globale ScaleManager. */
@@ -688,7 +689,7 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /**
-   * Sonene ligger på rad med pitch contentWidth/4. Radien må holde seg under halve pitchen,
+   * Sonene ligger på rad med pitch handPitch. Radien må holde seg under halve pitchen,
    * ellers overlapper nabosirklene på smale skjermer og Joker vinner på rekkefølge alene.
    * Treffet begrenses også til hånd-stripa, så sirklene aldri skygger for brettet.
    */
@@ -698,7 +699,7 @@ export class BoardScene extends Phaser.Scene {
       const box = this.handHitAreas.find((area) => area.x === z.x && area.y === z.y);
       return box !== undefined && Math.abs(x - box.x) <= box.width / 2 && Math.abs(y - box.y) <= box.height / 2;
     }
-    const r = Math.min(ZONE_HIT, contentWidth(this) / 8 - 2);
+    const r = Math.min(ZONE_HIT, this.handPitch / 2 - 2);
     return Math.hypot(x - z.x, y - z.y) <= r;
   }
 
@@ -987,10 +988,12 @@ export class BoardScene extends Phaser.Scene {
     // event-objektet kan leveres flere ganger. Auto-repeat skal heller ikke telle som trekk.
     if (e.repeat || e === this.lastKeyEvent) return;
     this.lastKeyEvent = e;
+    // Nettleserens snarveier (Cmd+R, Ctrl+G …) skal ikke også gjøre trekk eller bruke glimt.
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (this.inputLocked || this.view.solved || this.sacrificePrompt !== null) return;
     // Snarveier utenfor markørstyringen; begge har egne vakter for når de er tillatt.
     if (e.code === 'KeyH') { this.showHelp(); return; }
-    if (e.code === 'KeyG') { this.showSpeilglimt(); return; }
+    if (e.code === 'KeyG') { this.showSpeilglimt(true); return; }
     const code = KEY_MAP[e.code];
     if (code === undefined) return;
     if (this.banner !== null && code !== 'KeyZ' && code !== 'KeyR') return;
@@ -1619,6 +1622,7 @@ export class BoardScene extends Phaser.Scene {
     const slots: readonly HandSlot[] = this.modeKind === 'sticky' ? ['wild', 'remove', 'undo', 'reset']
       : [...(ops.has('insertWild') ? ['wild' as const] : []), ...(ops.has('remove') ? ['remove' as const] : []), 'undo', 'reset'];
     const pitch = w / slots.length;
+    this.handPitch = pitch;
     const centerOf = (slot: HandSlot): number => left + pitch * (slots.indexOf(slot) + 0.5);
     const zoneW = pitch - SPACE.md;
     const tray = this.add.graphics();
@@ -1726,7 +1730,7 @@ export class BoardScene extends Phaser.Scene {
     if (forget) this.paidSpeilglimt = null;
   }
 
-  private showSpeilglimt(): void {
+  private showSpeilglimt(fromKeyboard = false): void {
     if (!this.speilglimtEligible() || this.speilglimtBlocked()) return;
     const quote = this.session.currentHint();
     if (quote === null || !this.session.isCurrentHint(quote)) return;
@@ -1739,8 +1743,12 @@ export class BoardScene extends Phaser.Scene {
       this.paidSpeilglimt = quote;
     }
     this.machine.reset();
-    this.keyboard.reset();
-    this.keyboardActive = false;
+    // Fra tastaturet beholdes markøren, så spilleren kan fortsette der hen var.
+    if (fromKeyboard) this.keyboard.clearSelection();
+    else {
+      this.keyboard.reset();
+      this.keyboardActive = false;
+    }
     this.syncGestureVisuals();
     this.drawSpeilglimt();
     this.refreshChrome(false);

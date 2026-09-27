@@ -83,6 +83,7 @@ som serveres statisk.
 
 Vercel-prosjektet `cyclaw/palintris` er koblet til `runepeter/palintris` på GitHub.
 Push til `main` publiserer automatisk på [palintris.vercel.app](https://palintris.vercel.app/).
+Hashede skript under `/assets` får ett års `immutable` cache (`vercel.json`); legg derfor aldri uhashede `.js` i `public/assets`.
 
 Installer testnettlesere med `npx playwright install chromium webkit` før lokal fullverifisering.
 CI kjører også produksjonstestene: oppstart, første seier, lagring, innstillinger og blokkert lokal lagring.

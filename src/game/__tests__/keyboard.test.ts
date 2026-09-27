@@ -137,3 +137,15 @@ describe('hånd, undo, reset, escape', () => {
     expect(k.state).toEqual({ cursor: 2, selected: null, segment: null });
   });
 });
+
+describe('clearSelection', () => {
+  it('fjerner valg og utsnitt, men beholder markøren', () => {
+    const k = kb();
+    k.handle(key('ArrowRight'));
+    k.handle(key('ArrowRight'));
+    k.handle(key('Space'));
+    expect(k.state.selected).toBe(2);
+    k.clearSelection();
+    expect(k.state).toEqual({ cursor: 2, selected: null, segment: null });
+  });
+});
