@@ -154,7 +154,7 @@ test('reset på urørt brett beholder betalt glimt; et ekte trekk fjerner marker
   await expect.poll(async () => (await hook(page).view()).solveStatus.kind).toBe('known');
   await clickLabel(page, 'Speilglimt');
   expect(await hasMarks(page)).toBe(true);
-  await clickLabel(page, 'Reset');
+  await clickLabel(page, 'Nullstill');
   expect(await hasMarks(page)).toBe(true);
   await clickLabel(page, 'Speilglimt');
   expect((await save(page)).tools?.speilglimtSpent).toBe(1);

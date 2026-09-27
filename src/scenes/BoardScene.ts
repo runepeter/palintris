@@ -1656,6 +1656,7 @@ export class BoardScene extends Phaser.Scene {
         width: zoneW,
         height: ZONE_HEIGHT,
         label: 'Angre',
+        labelSize: SKIP_LABEL,
         accent: COLORS.inkMuted,
         enabled: this.view.canUndo,
         onClick: () => {
@@ -1672,8 +1673,8 @@ export class BoardScene extends Phaser.Scene {
         y: cy,
         width: zoneW,
         height: ZONE_HEIGHT,
-        label: skip ? 'Hopp over' : 'Reset',
-        labelSize: skip ? SKIP_LABEL : undefined,
+        label: skip ? 'Hopp over' : 'Nullstill',
+        labelSize: SKIP_LABEL,
         accent: COLORS.danger,
         onClick: () => {
           if (this.inputLocked || this.pendingTweens > 0) return;
@@ -1831,7 +1832,7 @@ export class BoardScene extends Phaser.Scene {
     }
     this.hand.add(makeButton(this, { ...layout.undo, label: 'Angre', labelSize: 15, accent: COLORS.inkMuted, enabled: this.view.canUndo,
       onClick: () => { if (this.inputLocked || this.pendingTweens > 0) return; this.dispatch({ type: 'undo' }); audio.playUndo(); } }));
-    this.hand.add(makeButton(this, { ...layout.reset, label: 'Reset', labelSize: 15, accent: COLORS.danger,
+    this.hand.add(makeButton(this, { ...layout.reset, label: 'Nullstill', labelSize: 15, accent: COLORS.danger,
       onClick: () => { if (this.inputLocked || this.pendingTweens > 0) return; this.dispatch({ type: 'reset' }); } }));
     this.updateSpeilglimtButton();
   }

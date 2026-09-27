@@ -22,7 +22,7 @@ et trekkbudsjett.
 Hele rekken skal være lik fra begge ender. Bytt nabobrikker ved å dra eller trykke på begge.
 Hold og dra over flere brikker for å velge et utsnitt når rotasjon eller speiling er tillatt.
 Tillatte verktøy vises på brettet, og «?» øverst til høyre viser en kort hjelp for dem.
-Angre og Reset lar deg prøve igjen i de vanlige modusene; Meny avslutter brettet.
+Angre og Nullstill lar deg prøve igjen i de vanlige modusene; Meny avslutter brettet.
 **Speilglimt** i kampanjen: ett glimt per tre ulike løste brett (maks 30). Et glimt viser neste trekk på en
 korteste løsning; du flytter selv. Hjelp gir vanlige stjerner, men teller ikke som sterkt forsøk.
 I Speilekspedisjonen er trekk bindende. Meny og omlasting bevarer forsøket;

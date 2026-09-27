@@ -33,9 +33,9 @@ export class ChallengesScene extends Phaser.Scene {
       ];
       for (const entry of entries) {
         makeButton(this, { x: entry.x, y: h * 0.43, width: Math.min(220, w * 0.27), height: 52,
-          label: entry.label, labelSize: entry.label === 'Speilekspedisjonen' ? 15 : 19, accent: entry.accent,
+          label: entry.label, labelSize: 17, accent: entry.accent,
           onClick: () => this.scene.start(entry.scene, entry.scene === SCENE.board ? { mode: 'blitz' } : undefined) });
-        makeLabel(this, entry.x, h * 0.59, entry.description, { size: 11, color: COLORS.inkMuted, font: 'body' });
+        makeLabel(this, entry.x, h * 0.43 + 40, entry.description, { size: 11, color: COLORS.inkMuted, font: 'body' });
       }
       if (import.meta.env.DEV) this.sticky(cx, h * 0.74, 180);
       makeButton(this, { x: cx, y: h - 43, width: 180, height: 44, label: 'Tilbake', labelSize: 15, accent: COLORS.line,

@@ -68,6 +68,14 @@ const dateFromKey = (dateKey: string): Date | null => {
   return utcDateKey(d) === dateKey ? d : null;
 };
 
+const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember'] as const;
+
+/** «26. september» for visning; tom streng for ugyldig nøkkel. */
+export const formatDailyDate = (dateKey: string): string => {
+  const d = dateFromKey(dateKey);
+  return d === null ? '' : `${d.getUTCDate()}. ${MONTHS[d.getUTCMonth()] ?? ''}`;
+};
+
 export const parseDailyPuzzleId = (id: string): { dateKey: string; contentVersion: number } | null => {
   const m = PUZZLE_ID.exec(id);
   if (m === null) return null;

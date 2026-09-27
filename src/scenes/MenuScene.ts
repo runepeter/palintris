@@ -52,7 +52,8 @@ export class MenuScene extends Phaser.Scene {
       const right = w * 0.72;
       const width = Math.min(320, w * 0.42);
       makeLabel(this, left, h * 0.23, 'PALINTRIS', { size: 34, color: COLORS.ink, bold: true }).setLetterSpacing(2);
-      makeLabel(this, left, h * 0.35, 'Finn balansen. Åpne speilverdenen.', { size: 12, color: COLORS.inkMuted, font: 'body' });
+      makeLabel(this, left, h * 0.35, 'Finn balansen. Åpne speilverdenen.', { size: 12, color: COLORS.inkMuted, font: 'body' })
+        .setShadow(0, 2, cssColor(COLORS.shadow), 6, true, true);
       this.preview(left, h * 0.62, 40);
       this.milestoneCard(right, h * 0.28, width, milestone.title, milestone.detail, world, solved, accent, true);
       makeButton(this, { x: right, y: h * 0.56, width, height: 50, label: actionLabel, labelSize: 19, accent, onClick: go });
@@ -68,7 +69,9 @@ export class MenuScene extends Phaser.Scene {
     makeLabel(this, cx, h * 0.075, 'ET LITE EVENTYR I SYMMETRI', { size: 10, color: COLORS.star, font: 'body' }).setLetterSpacing(2.2);
     makeLabel(this, cx, h * 0.145, 'PALINTRIS', { size: Math.min(42, w * 0.105), color: COLORS.ink, bold: true })
       .setLetterSpacing(3).setShadow(0, 3, cssColor(COLORS.shadow), 8, true, true);
-    makeLabel(this, cx, h * 0.205, 'Finn balansen. Åpne speilverdenen.', { size: 13, color: COLORS.inkMuted, font: 'body' });
+    // Undertittelen står over den lyse portalen; samme skygge som tittelen holder den lesbar.
+    makeLabel(this, cx, h * 0.205, 'Finn balansen. Åpne speilverdenen.', { size: 13, color: COLORS.inkMuted, font: 'body' })
+      .setShadow(0, 2, cssColor(COLORS.shadow), 6, true, true);
     this.preview(cx, mainY - (h < 700 ? 255 : 265), h < 700 ? 38 : 48);
     this.milestoneCard(cx, mainY - 108, width, milestone.title, milestone.detail, world, solved, accent, false);
     makeButton(this, { x: cx, y: mainY, width, height: 58, label: actionLabel, labelSize: 21, accent, onClick: go });

@@ -72,6 +72,8 @@ export const makeButton = (scene: Phaser.Scene, opts: ButtonOpts): Phaser.GameOb
     font: 'body',
     bold: true,
   });
+  // Smale knapper (hånden på 360 px) skal krympe teksten fremfor å la den gå over kanten.
+  label.setScale(Math.min(1, (opts.width - 12) / label.width));
   const c = scene.add.container(opts.x, opts.y, [g, label]);
   c.setSize(Math.max(44, opts.width), Math.max(44, opts.height));
   if (enabled) {

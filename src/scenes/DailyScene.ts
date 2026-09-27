@@ -2,7 +2,7 @@ import { screenWidth, screenHeight } from './viewport';
 import { makeBackdrop } from './art';
 import Phaser from 'phaser';
 import type { DailyAttempt } from '../core/storage';
-import { bestAttempt, dailyShareText, displayStreak, mmss, parseDailyPuzzleId, sharedAttempt } from '../game/daily';
+import { bestAttempt, dailyShareText, displayStreak, formatDailyDate, mmss, parseDailyPuzzleId, sharedAttempt } from '../game/daily';
 import { COLORS, SPACE } from '../theme/theme';
 import { services } from './services';
 import { copyText, makeButton, makeLabel, SCENE } from './ui';
@@ -62,14 +62,17 @@ export class DailyScene extends Phaser.Scene {
     const dateKey = parseDailyPuzzleId(id)?.dateKey ?? '';
     const streak = displayStreak(s.store.data, dateKey);
 
-    const top = h * 0.18;
-    makeLabel(this, cx, top, 'Daglig', { size: 44, color: COLORS.inkMuted, bold: true });
-    makeLabel(this, cx, top + 44, dateKey, { size: 18, color: COLORS.inkMuted, font: 'body' });
-    makeLabel(this, cx, top + 74, `Rekke: ${streak} ${streak === 1 ? 'dag' : 'dager'}`, { size: 16, color: COLORS.inkMuted, font: 'body' });
-    makeLabel(this, cx, top + 110, this.status(best), { size: 18, font: 'body' });
+    // Liggende telefon har under 400 px: tettere topp og knapper som aldri går ut av skjermen.
+    const compact = h < 560;
+    const top = compact ? h * 0.12 : h * 0.18;
+    const step = compact ? 0.78 : 1;
+    makeLabel(this, cx, top, 'Daglig', { size: compact ? 34 : 44, color: COLORS.ink, bold: true });
+    makeLabel(this, cx, top + 44 * step, formatDailyDate(dateKey), { size: 18, color: COLORS.inkMuted, font: 'body' });
+    makeLabel(this, cx, top + 74 * step, `Rekke: ${streak} ${streak === 1 ? 'dag' : 'dager'}`, { size: 16, color: COLORS.inkMuted, font: 'body' });
+    makeLabel(this, cx, top + 110 * step, this.status(best), { size: 18, font: 'body' });
 
-    const buttonsTop = h * 0.58;
     const pitch = BUTTON_H + SPACE.md;
+    const buttonsTop = Math.min(h * 0.58, h - pitch * 2 - BUTTON_H / 2 - 20);
     makeButton(this, {
       x: cx, y: buttonsTop, width: BUTTON_W, height: BUTTON_H,
       label: best === undefined ? 'Spill' : 'Nytt forsøk',

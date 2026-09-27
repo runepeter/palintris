@@ -189,10 +189,13 @@ export class WorldMapScene extends Phaser.Scene {
     const bonus = mastered && starCount === 0;
     const g = drawMedallion(this, 0, 0, radius, unlocked ? accent : COLORS.line);
     const numberLabel = makeLabel(this, 0, -size * 0.12, String(n), { size: Math.round(size * 0.32), color: unlocked ? COLORS.ink : COLORS.inkMuted, bold: true });
-    const starLabel = makeLabel(this, 0, size * 0.3, bonus ? 'BONUS' : '★'.repeat(starCount) + '☆'.repeat(3 - starCount), { size: Math.round(size * (bonus ? 0.14 : 0.18)), color: bonus ? accent : starCount > 0 ? COLORS.star : COLORS.line, font: 'body' });
+    // Aktiv node viser «NESTE» inni medaljongen; utenfor krasjet etiketten med raden over.
+    const starLabel = active
+      ? makeLabel(this, 0, size * 0.3, 'NESTE', { size: Math.max(8, Math.round(size * 0.14)), color: COLORS.star, font: 'body', bold: true }).setLetterSpacing(1)
+      : makeLabel(this, 0, size * 0.3, bonus ? 'BONUS' : '★'.repeat(starCount) + '☆'.repeat(3 - starCount), { size: Math.round(size * (bonus ? 0.14 : 0.18)), color: bonus ? accent : starCount > 0 ? COLORS.star : COLORS.line, font: 'body' });
     const children: Phaser.GameObjects.GameObject[] = [beacon, g, numberLabel, starLabel];
-    if (active) children.push(makeLabel(this, 0, -radius - 13, 'NESTE', { size: 8, color: COLORS.star, font: 'body', bold: true }).setLetterSpacing(1.3));
-    if (gate && !bonus && (screenHeight(this) >= 560 || n === LEVELS_PER_WORLD)) children.push(makeLabel(this, 0, radius + 13, mastered ? (starCount === 0 ? 'BONUS' : n === LEVELS_PER_WORLD ? 'MESTRET' : 'MILEPÆL') : n === LEVELS_PER_WORLD ? (masteryOffer(services(this).store.data, this.world) === id ? 'MESTRING' : 'PORT') : 'MILEPÆL', { size: 7, color: accent, font: 'body', bold: true }).setLetterSpacing(1));
+    // Bare siste node har etikett under seg: den ligger i nederste rad, så ingen node dekker den.
+    if (n === LEVELS_PER_WORLD && !bonus) children.push(makeLabel(this, 0, radius + 13, mastered ? 'MESTRET' : masteryOffer(services(this).store.data, this.world) === id ? 'MESTRING' : 'PORT', { size: 9, color: accent, font: 'body', bold: true }).setLetterSpacing(1));
     const c = this.add.container(x, y, children);
     c.setSize(Math.max(44, size), Math.max(44, size));
     if (!unlocked) return;

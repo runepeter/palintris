@@ -3,6 +3,7 @@ import type { DailyAttempt, SaveData, StorageLike } from '../../core/storage';
 import { defaultSave } from '../../core/storage';
 import {
   bestAttempt,
+  formatDailyDate,
   DAILY_BUDGET,
   dailyLevel,
   dailyPuzzleId,
@@ -308,5 +309,13 @@ describe('DailyMode', () => {
     const out = mode.onSolved('tull', 2);
     expect(out.stars).toBe(0);
     expect(store.data.daily.attempts).toHaveLength(0);
+  });
+});
+
+describe('dato på norsk', () => {
+  it('viser dag og måned uten ISO-format', () => {
+    expect(formatDailyDate('2026-09-26')).toBe('26. september');
+    expect(formatDailyDate('2026-01-01')).toBe('1. januar');
+    expect(formatDailyDate('ugyldig')).toBe('');
   });
 });
