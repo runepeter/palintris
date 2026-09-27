@@ -120,5 +120,17 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 360, height: 500 }
     await expect.poll(() => hook(page).introVisible()).toBe(false);
     const save = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}') as SaveData, SAVE_KEY);
     expect(save.introsSeen).not.toContain('help');
+    await page.keyboard.press('h');
+    await expect.poll(() => hook(page).introVisible()).toBe(true);
   });
 }
+
+test('standardhånden viser bare verktøy brettet tillater', async ({ page }) => {
+  await enter(page, [], [], 'w1-01');
+  const shown = await texts(page);
+  expect(shown.some(text => text.startsWith('Joker') || text.startsWith('Fjern'))).toBe(false);
+  expect(shown).toEqual(expect.arrayContaining(['Angre', 'Nullstill']));
+  const zones = await hook(page).zones();
+  expect(zones.wild).toEqual({ x: -100, y: -100 });
+  expect(zones.undo.x).toBeGreaterThan(0);
+});

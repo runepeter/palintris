@@ -31,6 +31,7 @@ I Speilekspedisjonen er trekk bindende. Meny og omlasting bevarer forsøket;
 På tastatur: piltaster flytter markøren, mellomrom velger, og neste pil bytter med naboen.
 Shift + pil velger utsnitt; Q/E roterer og W speiler. Z angrer, R tilbakestiller,
 J setter inn joker og X fjerner en brikke når verktøyet er tilgjengelig.
+H viser hjelp for brettet, og G bruker Speilglimt der det finnes.
 
 Fremgang og innstillinger lagres i denne nettleseren. Ingen konto eller synkronisering.
 Ved blokkert lagring fungerer spillet, men fremgangen forsvinner ved omlasting eller når siden lukkes.

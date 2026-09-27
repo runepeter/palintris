@@ -75,6 +75,7 @@ const HUD_TOP = 22;
 const HUD_CLOCK = 30;
 /** «Hopp over» er for lang for knappebredden på 390 px med standard teksthøyde. */
 const SKIP_LABEL = 15;
+type HandSlot = 'wild' | 'remove' | 'undo' | 'reset';
 /** Hvor ofte dagsframgangen skrives mens klokken går. Taket på tid tapt i en reload. */
 const DAILY_SAVE_MS = 1000;
 /** Luft over og under intropanelet. Brettflaten avgir panelhøyden pluss dette. */
@@ -987,6 +988,9 @@ export class BoardScene extends Phaser.Scene {
     if (e.repeat || e === this.lastKeyEvent) return;
     this.lastKeyEvent = e;
     if (this.inputLocked || this.view.solved || this.sacrificePrompt !== null) return;
+    // Snarveier utenfor markørstyringen; begge har egne vakter for når de er tillatt.
+    if (e.code === 'KeyH') { this.showHelp(); return; }
+    if (e.code === 'KeyG') { this.showSpeilglimt(); return; }
     const code = KEY_MAP[e.code];
     if (code === undefined) return;
     if (this.banner !== null && code !== 'KeyZ' && code !== 'KeyR') return;
@@ -1610,8 +1614,12 @@ export class BoardScene extends Phaser.Scene {
     const w = contentWidth(this);
     const left = contentLeft(this);
     const cy = screenHeight(this) - HAND_HEIGHT / 2;
-    const pitch = w / 4;
-    const centerOf = (i: number): number => left + pitch * (i + 0.5);
+    // Joker/Fjern vises bare når brettet tillater dem; ellers får Angre og Nullstill plassen.
+    const ops = this.level.rules.allowedOps;
+    const slots: readonly HandSlot[] = this.modeKind === 'sticky' ? ['wild', 'remove', 'undo', 'reset']
+      : [...(ops.has('insertWild') ? ['wild' as const] : []), ...(ops.has('remove') ? ['remove' as const] : []), 'undo', 'reset'];
+    const pitch = w / slots.length;
+    const centerOf = (slot: HandSlot): number => left + pitch * (slots.indexOf(slot) + 0.5);
     const zoneW = pitch - SPACE.md;
     const tray = this.add.graphics();
     tray.fillStyle(COLORS.panel, 0.96);
@@ -1638,20 +1646,23 @@ export class BoardScene extends Phaser.Scene {
       this.zoneCache = { wild: { x: -100, y: -100 }, remove: { x: -100, y: -100 }, undo: { x: -100, y: -100 }, reset: { x: left + w / 2, y: cy + 29 } };
       return;
     }
+    this.armedRing = null;
     if (this.modeKind === 'sticky') {
       this.hand.add(makeLabel(this, left + w / 4, cy, 'Lenkede brikker\nflyttes sammen.', { size: 13, color: COLORS.glow, font: 'body', bold: true }));
-    } else this.hand.add(this.makeZone(centerOf(0), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
-    // Ladet joker har ingen spøkelse å vise, så sonen får en ring i stedet.
-    const ring = this.add.graphics();
-    ring.lineStyle(3, COLORS.ink, 1);
-    ring.strokeRoundedRect(centerOf(0) - zoneW / 2 - 4, cy - ZONE_HEIGHT / 2 - 4, zoneW + 8, ZONE_HEIGHT + 8, RADIUS.button);
-    ring.setVisible(this.machine.state.name === 'wildArmed');
-    this.hand.add(ring);
-    this.armedRing = ring;
-    if (this.modeKind !== 'sticky') this.hand.add(this.makeZone(centerOf(1), cy, zoneW, `Fjern ×${this.view.hand.remove}`, this.view.hand.remove > 0));
+    } else if (slots.includes('wild')) {
+      this.hand.add(this.makeZone(centerOf('wild'), cy, zoneW, `Joker ×${this.view.hand.wild}`, this.view.hand.wild > 0));
+      // Ladet joker har ingen spøkelse å vise, så sonen får en ring i stedet.
+      const ring = this.add.graphics();
+      ring.lineStyle(3, COLORS.ink, 1);
+      ring.strokeRoundedRect(centerOf('wild') - zoneW / 2 - 4, cy - ZONE_HEIGHT / 2 - 4, zoneW + 8, ZONE_HEIGHT + 8, RADIUS.button);
+      ring.setVisible(this.machine.state.name === 'wildArmed');
+      this.hand.add(ring);
+      this.armedRing = ring;
+    }
+    if (this.modeKind !== 'sticky' && slots.includes('remove')) this.hand.add(this.makeZone(centerOf('remove'), cy, zoneW, `Fjern ×${this.view.hand.remove}`, this.view.hand.remove > 0));
     this.hand.add(
       makeButton(this, {
-        x: centerOf(2),
+        x: centerOf('undo'),
         y: cy,
         width: zoneW,
         height: ZONE_HEIGHT,
@@ -1669,7 +1680,7 @@ export class BoardScene extends Phaser.Scene {
     const skip = this.modeKind === 'blitz';
     this.hand.add(
       makeButton(this, {
-        x: centerOf(3),
+        x: centerOf('reset'),
         y: cy,
         width: zoneW,
         height: ZONE_HEIGHT,
@@ -1684,11 +1695,12 @@ export class BoardScene extends Phaser.Scene {
       })
     );
 
+    const offscreen = { x: -100, y: -100 };
     this.zoneCache = {
-      wild: { x: centerOf(0), y: cy },
-      remove: { x: centerOf(1), y: cy },
-      undo: { x: centerOf(2), y: cy },
-      reset: { x: centerOf(3), y: cy },
+      wild: slots.includes('wild') ? { x: centerOf('wild'), y: cy } : offscreen,
+      remove: slots.includes('remove') ? { x: centerOf('remove'), y: cy } : offscreen,
+      undo: { x: centerOf('undo'), y: cy },
+      reset: { x: centerOf('reset'), y: cy },
     };
   }
 

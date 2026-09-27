@@ -200,3 +200,12 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 844, height: 390 }
     await capture(page, `result-unlock-${viewport.width}x${viewport.height}`);
   });
 }
+
+test('G bruker Speilglimt fra tastaturet', async ({ page }) => {
+  await seedAndEnter(page, false);
+  await expect.poll(async () => (await hook(page).view()).solveStatus.kind).toBe('known');
+  await page.keyboard.press('g');
+  await waitForSceneFrame(page);
+  expect((await save(page)).tools?.speilglimtSpent).toBe(1);
+  expect(await hasMarks(page)).toBe(true);
+});
